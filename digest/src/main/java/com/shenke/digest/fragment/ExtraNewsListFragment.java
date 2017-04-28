@@ -1,7 +1,6 @@
 package com.shenke.digest.fragment;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -36,7 +35,7 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 
-import static com.shenke.digest.core.NewsListActivity.mNewsDigestBean;
+
 
 
 public class ExtraNewsListFragment extends BaseFragment {
@@ -195,27 +194,27 @@ public class ExtraNewsListFragment extends BaseFragment {
         @Override
         public void bindItemView(RecyclerView.ViewHolder srcHolder, final int position) {
             final ItemViewHolder holder = (ItemViewHolder) srcHolder;
-            // holder.itemRealm = getItem(position);
-            // if (holder.itemRealm != null)
-            if (mNewsDigestBean != null) {
+             holder.itemRealm = getItem(position);
+             if (holder.itemRealm != null)
+            {
 
                 Typeface typeFaceLabel = Typeface.createFromAsset(holder.itemView.getContext().getAssets(), "fonts/Roboto-Bold.ttf");
                 holder.label.setTypeface(typeFaceLabel);
-                // holder.label.setText("" + holder.itemRealm.label);
-                holder.label.setText("" + mNewsDigestBean.items.get(position).categories.get(0).name);
+                 holder.label.setText("" + holder.itemRealm.label);
+               // holder.label.setText("" + mNewsDigestBean.items.get(position).categories.get(0).name);
                 //title
                 Typeface typeFaceTitle = Typeface.createFromAsset(holder.itemView.getContext().getAssets(), "fonts/Roboto-Light.ttf");
                 holder.title.setTypeface(typeFaceTitle);
-                //holder.title.setText("" + holder.itemRealm.getTitle());
-                holder.title.setText("" + mNewsDigestBean.items.get(position).title);
+                holder.title.setText("" + holder.itemRealm.getTitle());
+               // holder.title.setText("" + mNewsDigestBean.items.get(position).title);
 
                 //press
                 Typeface typeFacePress = Typeface.createFromAsset(holder.itemView.getContext().getAssets(), "fonts/Roboto-Light.ttf");
                 holder.sources.setTypeface(typeFacePress);
-                // holder.sources.setText(holder.itemRealm.getPress());
-                holder.sources.setText(mNewsDigestBean.items.get(position).sources.get(0).publisher);
-                // holder.label.setTextColor(holder.itemRealm.getColor());
-                holder.label.setTextColor(Color.parseColor(mNewsDigestBean.items.get(position).colors.get(0).hexcode));
+               holder.sources.setText(holder.itemRealm.getPress());
+                //holder.sources.setText(mNewsDigestBean.items.get(position).sources.get(0).publisher);
+                 holder.label.setTextColor(holder.itemRealm.getColor());
+                //holder.label.setTextColor(Color.parseColor(mNewsDigestBean.items.get(position).colors.get(0).hexcode));
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 
                     StateListDrawable stateListDrawable = new StateListDrawable();
@@ -276,7 +275,7 @@ public class ExtraNewsListFragment extends BaseFragment {
         public final TextView label;
         public final TextView title;
         public final TextView sources;
-        //  public DetailItem itemRealm;
+         public DetailItem itemRealm;
 
         public ItemViewHolder(View itemView) {
             super(itemView);

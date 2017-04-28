@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.shenke.digest.api.RequestAddress;
 import com.shenke.digest.core.NewsListActivity;
+import com.shenke.digest.entity.Digest;
 import com.shenke.digest.entity.Item;
 import com.shenke.digest.entity.Items;
 import com.shenke.digest.util.LogUtil;
@@ -16,9 +17,38 @@ import java.util.List;
 import rx.Observable;
 import rx.functions.Func1;
 
+import static com.shenke.digest.api.RequestAddress.YAHOO_NEWS_DIGEST;
+
 public class RxNewsParser {
 
     public static String TAG = RxNewsParser.class.getSimpleName();
+
+    public static Observable<Digest> getNewsDigest(String baseUrl, final int create_time, final String timezone, final String date,
+                                                   final String lang, final String region_edition, final String digest_edition,
+                                                   final int more_stories) {
+        if (TextUtils.isEmpty(baseUrl)) {
+            return null;
+        }
+        return Observable.just(baseUrl).map(new Func1<String, String>() {
+            @Override
+            public String call(String s) {
+                String digestUrl = YAHOO_NEWS_DIGEST + "digest?create_time=" + create_time + "&timezone=" + timezone +
+                        "&date=" + date + "&lang=" + lang + "&region_edition=" + region_edition + "&digest_edition=" +
+                        digest_edition + "&more_stories=" + more_stories;
+                return digestUrl;
+            }
+        }).map(new Func1<String, Digest>() {
+            @Override
+            public Digest call(String s) {
+                Gson gson = new Gson();
+                Digest digest = gson.fromJson(s, Digest.class);
+                if (digest != null) {
+                    return digest;
+                }
+                return null;
+            }
+        });
+    }
 
     public static Observable<List<Item>> getNewsList(String baseUrl, final String newsListUrl) {
         if (TextUtils.isEmpty(baseUrl)) {

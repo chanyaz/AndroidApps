@@ -5,6 +5,8 @@ import android.text.TextUtils;
 
 import com.shenke.digest.entity.Color;
 import com.shenke.digest.entity.DetailItem;
+import com.shenke.digest.entity.Digest;
+import com.shenke.digest.entity.DigestRealm;
 import com.shenke.digest.entity.Image;
 import com.shenke.digest.entity.ImageAsset;
 import com.shenke.digest.entity.Item;
@@ -154,6 +156,15 @@ public class EntityHelper {
             itemRealm.setWikis(wikiRealms);
         }
         return itemRealm;
+    }
+
+    public static DigestRealm convert(Digest digest) {
+        if (digest == null) {
+            return null;
+        }
+        DigestRealm digestRealm = new DigestRealm();
+
+        return digestRealm;
     }
 
     public static DetailItem ItemRealm2DetailItem(ItemRealm itemRealm) {
