@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import com.shenke.digest.R;
 import com.shenke.digest.core.NewsDetailActivity;
-import com.shenke.digest.core.NewsListActivity;
 import com.shenke.digest.entity.DetailItem;
 import com.shenke.digest.util.LogUtil;
 import com.shenke.digest.view.CircleLayout;
@@ -80,7 +79,7 @@ public class ExtraFragment extends BaseFragment {
         bigTitle.setTypeface(typeface);
         bigTitle.setText("Did you know?");
         smallTitle.setTypeface(typeface);
-        smallTitle.setText(NewsListActivity.bonus_text);
+        //   smallTitle.setText(NewsListActivity.bonus_text);
         read = $(rootView, R.id.read);
         know = $(rootView, R.id.know);
         TextView urd = $(rootView, R.id.uread);

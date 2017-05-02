@@ -1,8 +1,5 @@
 package com.shenke.digest.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.realm.RealmList;
 
 /**
@@ -20,7 +17,7 @@ public class Digest {
 
     private Poster poster;
 
-    private List<Bonu> bonus = new ArrayList<>();
+    private RealmList<Bonu> bonus ;
 
     private String edition;
     private String lang;
@@ -70,11 +67,11 @@ public class Digest {
         this.poster = poster;
     }
 
-    public List<Bonu> getBonus() {
+    public RealmList<Bonu> getBonus() {
         return bonus;
     }
 
-    public void setBonus(List<Bonu> bonus) {
+    public void setBonus(RealmList<Bonu> bonus) {
         this.bonus = bonus;
     }
 

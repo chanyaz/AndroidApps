@@ -23,7 +23,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.shenke.digest.R;
-import com.shenke.digest.core.NewsListActivity;
 import com.shenke.digest.dialog.EditionDialog;
 import com.shenke.digest.dialog.MoreDigestDialog;
 import com.shenke.digest.entity.DetailItem;
@@ -101,10 +100,8 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<DetailItem> {
                 holder.section.setVisibility(View.VISIBLE);
                 holder.date.setVisibility(View.VISIBLE);
                 holder.sectionArea.setVisibility(View.VISIBLE);
-                // Glide.with((holder.itemView.getContext())).load(holder.itemRealm.img).crossFade().into(holder.img);
-                if (NewsListActivity.originalUrl != "") {
-                    Glide.with((holder.itemView.getContext())).load(NewsListActivity.originalUrl).crossFade().into(holder.img);
-                }
+                Glide.with((holder.itemView.getContext())).load(holder.itemRealm.img).crossFade().into(holder.img);
+
                 if (!TextUtils.isEmpty(date) && date.length() > 32) {
                     String month = DateUtil.MonthFormat(date.substring(27, 31).trim());
                     holder.date.setText(month + " " + date.substring(7, 9));

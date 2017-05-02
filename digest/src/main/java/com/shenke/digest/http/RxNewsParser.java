@@ -5,7 +5,6 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.shenke.digest.api.RequestAddress;
-import com.shenke.digest.core.NewsListActivity;
 import com.shenke.digest.entity.Digest;
 import com.shenke.digest.entity.Item;
 import com.shenke.digest.entity.Items;
@@ -37,50 +36,23 @@ public class RxNewsParser {
                         digest_edition + "&more_stories=" + more_stories;
                 return digestUrl;
             }
-        }).map(new Func1<String, Digest>() {
-            @Override
-            public Digest call(String s) {
-                Gson gson = new Gson();
-                Digest digest = gson.fromJson(s, Digest.class);
-                if (digest != null) {
-                    return digest;
-                }
-                return null;
-            }
-        });
-    }
-
-    public static Observable<List<Item>> getNewsList(String baseUrl, final String newsListUrl) {
-        if (TextUtils.isEmpty(baseUrl)) {
-            return null;
-        }
-        return Observable.just(baseUrl).map(new Func1<String, String>() {
-            @Override
-            public String call(String srcUrl) {
-
-                String contentUrl = NewsListActivity.webpageUrl;
-
-                return newsListUrl + contentUrl;
-
-            }
-        }).map(new Func1<String, String>() {
-
-            @Override
-            public String call(String url) {
-                return get(url);
-            }
-        }).map(new Func1<String, List<Item>>() {
-            @Override
-            public List<Item> call(String json) {
-                Gson gson = new Gson();
-                Items item = gson.fromJson(json, Items.class);
-                if (item != null && item.getItems() != null) {
-                    return item.getItems();
-                }
-                return null;
-            }
-        });
-
+        })
+                .map(new Func1<String, String>() {
+                    @Override
+                    public String call(String url) {
+                        return get(url);
+                    }
+                }).map(new Func1<String, Digest>() {
+                    @Override
+                    public Digest call(String json) {
+                        Gson gson = new Gson();
+                        Digest digest = gson.fromJson(json, Digest.class);
+                        if (digest != null) {
+                            return digest;
+                        }
+                        return null;
+                    }
+                });
     }
 
 

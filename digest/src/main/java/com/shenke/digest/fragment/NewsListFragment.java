@@ -17,18 +17,16 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.shenke.digest.R;
+import com.shenke.digest.adapter.NewsAdapter;
 import com.shenke.digest.core.ExtraNewsListActivity;
 import com.shenke.digest.core.NewsDetailActivity;
-import com.shenke.digest.core.NewsListActivity;
 import com.shenke.digest.db.EntityHelper;
 import com.shenke.digest.dialog.EditionDialog;
 import com.shenke.digest.dialog.MoreDigestDialog;
 import com.shenke.digest.dialog.SettingsDialog;
 import com.shenke.digest.entity.DetailItem;
 import com.shenke.digest.entity.ItemRealm;
-import com.shenke.digest.util.DateUtil;
 import com.shenke.digest.util.Helper;
-import com.shenke.digest.adapter.NewsAdapter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -242,8 +240,7 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
                     @Override
                     public ArrayList<DetailItem> call(Realm realm) {
                         ArrayList<DetailItem> list = new ArrayList<DetailItem>();
-                        String str = DateUtil.format(DateUtil.getPreDay(NewsListActivity.nowdate), "yyyy-MM-dd");
-                        RealmResults<ItemRealm> data = realm.where(ItemRealm.class).contains("published", str).findAllSorted("published");
+                        RealmResults<ItemRealm> data = realm.where(ItemRealm.class).contains("published", "2017-05-01").findAllSorted("published");
                         for (ItemRealm itemRealm : data) {
                             DetailItem detailItem = EntityHelper.ItemRealm2DetailItem(itemRealm);
                             list.add(detailItem);

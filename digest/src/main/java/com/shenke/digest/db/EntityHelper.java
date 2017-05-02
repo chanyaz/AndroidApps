@@ -163,6 +163,17 @@ public class EntityHelper {
             return null;
         }
         DigestRealm digestRealm = new DigestRealm();
+        digestRealm.setBonus(digest.getBonus());
+        digestRealm.setCreateTime(digest.getCreateTime());
+        digestRealm.setDate(digest.getDate());
+        digestRealm.setEdition(digest.getEdition());
+        digestRealm.setItemRealms(digest.getItemRealms());
+        digestRealm.setLang(digest.getLang());
+        digestRealm.setMore_stories(digest.getMore_stories());
+        digestRealm.setPoster(digest.getPoster());
+        digestRealm.setRegion(digest.getRegion());
+        digestRealm.setRegionEdition(digest.getRegionEdition());
+        digestRealm.setTimezone(digest.getTimezone());
 
         return digestRealm;
     }
@@ -288,6 +299,7 @@ public class EntityHelper {
         }
         return img;
     }
+
 
     public static String getVideoUrl(ItemRealm itemRealm) {
         String url = "";
