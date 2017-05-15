@@ -20,12 +20,11 @@ import com.shenke.digest.R;
 import com.shenke.digest.adapter.NewsAdapter;
 import com.shenke.digest.core.ExtraNewsListActivity;
 import com.shenke.digest.core.NewsDetailActivity;
-import com.shenke.digest.db.EntityHelper;
 import com.shenke.digest.dialog.EditionDialog;
 import com.shenke.digest.dialog.MoreDigestDialog;
 import com.shenke.digest.dialog.SettingsDialog;
-import com.shenke.digest.entity.DetailItem;
-import com.shenke.digest.entity.ItemRealm;
+import com.shenke.digest.entity.Cache;
+import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.util.Helper;
 
 import java.util.ArrayList;
@@ -33,25 +32,22 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.realm.Realm;
-import io.realm.RealmResults;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class NewsListFragment extends BaseFragment implements MoreDigestDialog.NoticeDialogListener, SettingsDialog.NoticeEditionListener {
     private final String TAG = "NewsListFragment";
     private NewsAdapter adapter;
-    private Realm realm;
+    private Cache mCache;
     private Subscription subscription;
     private RecyclerView recyclerView;
     private ImageButton menu;
     private boolean initFooterView = false;
-    private ArrayList<DetailItem> list = new ArrayList<>();
+    private ArrayList<NewsDigest.NewsItem> list = new ArrayList<>();
     private int mSection;
     private int mEdition;
     private String mDate;
@@ -60,7 +56,6 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        realm = Realm.getDefaultInstance();
     }
 
     private void getConfg() {
@@ -168,7 +163,7 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
                 Intent intent = new Intent(rootView.getContext(), NewsDetailActivity.class);
                 intent.putExtra(NewsDetailActivity.INDEX, position);
                 intent.putExtra(NewsDetailActivity.MORE, true);
-                intent.putParcelableArrayListExtra(NewsDetailActivity.DATA, list);
+               // intent.putParcelableArrayListExtra(NewsDetailActivity.DATA, list);
                 startActivityForResult(intent, 0x110);
 
             }
@@ -195,7 +190,6 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
 
             }
         });
-        subscription = load();
     }
 
     private void moreDigest() {
@@ -232,57 +226,9 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
 
     }
 
-    private Subscription load() {
-
-        return realm.asObservable()
-                .onBackpressureBuffer()//背压
-                .map(new Func1<Realm, ArrayList<DetailItem>>() {
-                    @Override
-                    public ArrayList<DetailItem> call(Realm realm) {
-                        ArrayList<DetailItem> list = new ArrayList<DetailItem>();
-                        RealmResults<ItemRealm> data = realm.where(ItemRealm.class).contains("published", "2017-05-01").findAllSorted("published");
-                        for (ItemRealm itemRealm : data) {
-                            DetailItem detailItem = EntityHelper.ItemRealm2DetailItem(itemRealm);
-                            list.add(detailItem);
-                        }
-                        return list;
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<ArrayList<DetailItem>>() {
-                    @Override
-                    public void onCompleted() {
-                        Toast.makeText(getContext(), "onCompleted", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        Toast.makeText(getContext(), "onError" + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onNext(ArrayList<DetailItem> itemRealms) {
-
-                        if (adapter != null) {
-                            adapter.clear();
-                            list.clear();
-                            list.addAll(itemRealms);
-                            for (DetailItem itemRealm : itemRealms) {
-                                adapter.addItem(itemRealm);
-                            }
-                            addFooterView(itemRealms);
-                            getConfg();
-                        }
 
 
-                    }
-                });
-
-
-    }
-
-    private void addFooterView(ArrayList<DetailItem> itemRealms) {
+    private void addFooterView(ArrayList<NewsDigest.NewsItem> newsItems) {
         View footer = LayoutInflater.from(recyclerView.getContext()).inflate(R.layout.news_list_footer_view, recyclerView, false);
         adapter.setFooterView(footer);
         View toggleButton = adapter.getFooterView().findViewById(R.id.toggleButton);
@@ -320,7 +266,6 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
     @Override
     public void onDestroy() {
         super.onDestroy();
-        realm.close();
         if (subscription != null) {
             subscription.unsubscribe();
         }

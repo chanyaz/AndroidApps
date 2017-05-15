@@ -10,31 +10,28 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.shenke.digest.BuildConfig;
 import com.shenke.digest.R;
-import com.shenke.digest.api.RequestAddress;
-import com.shenke.digest.db.EntityHelper;
+import com.shenke.digest.api.DigestApi;
 import com.shenke.digest.dialog.DigestLoadDialog;
 import com.shenke.digest.dialog.EditionDialog;
 import com.shenke.digest.dialog.ProductGuideDialog;
-import com.shenke.digest.entity.Digest;
-import com.shenke.digest.entity.DigestRealm;
-import com.shenke.digest.entity.ItemRealm;
+import com.shenke.digest.entity.Cache;
+import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.fragment.NewsListFragment;
-import com.shenke.digest.http.RxNewsParser;
-import com.shenke.digest.service.BatchLoadNewsIntentService;
+import com.shenke.digest.http.RetrofitSingleton;
 import com.shenke.digest.util.IntentUtil;
 import com.shenke.digest.util.LogUtil;
 import com.shenke.digest.util.StatusBarCompat;
 
-import io.realm.Realm;
-import io.realm.RealmAsyncTask;
-import io.realm.RealmResults;
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -43,36 +40,101 @@ public class NewsListActivity extends AppCompatActivity implements DigestLoadDia
     private Subscription subscription;
     private Subscription subscriptionInstall;
     private Subscription subscriptionSave;
-    private Realm realm;
-    private RealmAsyncTask asyncTransaction;
     private DigestLoadDialog digestLoadDialog;
     private MyReceiver myReceiver;
     private int taskCount;
     public static Bitmap bitmap = null;
-
+    private Observer<NewsDigest>observer;
+    public Cache mCache;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         StatusBarCompat.showSystemUI(this);
-        realm = Realm.getDefaultInstance();
+
         setContentView(R.layout.activity_news_list);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(MyReceiver.ACTION_TASK_COUNT);
         myReceiver = new MyReceiver();
         registerReceiver(myReceiver, intentFilter);
-        subscription = checkDataBase();
         subscriptionInstall = checkInstall();
         digestLoadDialog = new DigestLoadDialog();
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container, digestLoadDialog, "loading")
                 .commit();
-
+        fetchData();
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().build());
         }
 
+    }
+
+    private void fetchData() {
+        observer = new Observer<NewsDigest>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                digestLoadDialog.onLoadError();
+            }
+
+            @Override
+            public void onNext(NewsDigest newsDigest) {
+                String url = newsDigest.poster.images.originalUrl;
+                digestLoadDialog.onLoadSuccess();
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.container, new NewsListFragment(), "list")
+                        .commit();
+            }
+        };
+        fetchDataByCache(observer);
+    }
+
+    private void fetchDataByCache(Observer<NewsDigest> observer) {
+        NewsDigest newsDigest = null;
+        try {
+            newsDigest = (NewsDigest) mCache.getAsObject("NewsDigestData");
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
+
+        if (newsDigest != null) {
+            Observable.just(newsDigest).distinct().subscribe(observer);
+        } else {
+            fetchDataByNetWork(observer);
+        }
+    }
+
+    private void fetchDataByNetWork(Observer<NewsDigest> observer) {
+        RetrofitSingleton.getApiService(this)
+                .GetDigestList(0,"8","2017-05-15","en-AA","AA","0",0)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .filter(new Func1<DigestApi, Boolean>() {
+                    @Override
+                    public Boolean call(DigestApi digestApi) {
+                            return digestApi.result.edition.equals("0");
+                    }
+                })
+                .map(new Func1<DigestApi, NewsDigest>() {
+                    @Override
+                    public NewsDigest call(DigestApi digestApi) {
+                       return digestApi.result;
+                    }
+                })
+                .doOnNext(new Action1<NewsDigest>() {
+                    @Override
+                    public void call(NewsDigest newsDigest) {
+                        mCache.put("NewsDigestData",newsDigest,
+                            60*3600 );//默认一小时后缓存失效)
+                    }
+                })
+                .subscribe(observer);
     }
 
     private Subscription checkInstall() {
@@ -103,6 +165,7 @@ public class NewsListActivity extends AppCompatActivity implements DigestLoadDia
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        digestLoadDialog.onLoadError();
                     }
 
                     @Override
@@ -144,6 +207,7 @@ public class NewsListActivity extends AppCompatActivity implements DigestLoadDia
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        digestLoadDialog.onLoadError();
 
                     }
 
@@ -154,145 +218,8 @@ public class NewsListActivity extends AppCompatActivity implements DigestLoadDia
                 });
     }
 
-    /**
-     * checkDataBase from realm database
-     *
-     * @return
-     */
-    private Subscription checkDataBase() {
-
-        return realm.asObservable()
-                .map(new Func1<Realm, Boolean>() {
-                    @Override
-                    public Boolean call(Realm realm) {
-                        //从Realm数据库中条件查询
-                        RealmResults<DigestRealm> digest = realm.where(DigestRealm.class).contains("date", "2017-05-01").findAll();
-
-                        return digest != null && digest.size() > 0;
-                    }
-                })
-                .onBackpressureBuffer()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Boolean>() {
-                    @Override
-                    public void onCompleted() {
-                        LogUtil.d(TAG, "  checkDataBase from database onCompleted called");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        LogUtil.e(TAG, "  checkDataBase from database onError called");
-                    }
-
-                    @Override
-                    public void onNext(Boolean hasLocalData) {
-                        LogUtil.d(TAG, "  checkDataBase from database onNext called");
-                        if (!hasLocalData) {
-                            if (subscription != null && !subscription.isUnsubscribed()) {
-                                subscription.unsubscribe();
-                                subscription = null;
-                            }
-                            if (IntentUtil.isNetworkConnected(NewsListActivity.this)) {
-                                subscription = newsListSubscription();
-                            } else {
-                                digestLoadDialog.onLoadError();
-                            }
-                        } else {
-                            digestLoadDialog.onLoadSuccess();
-                            getSupportFragmentManager()
-                                    .beginTransaction()
-                                    .replace(R.id.container, new NewsListFragment(), "list")
-                                    .commit();
-
-                        }
-                    }
-                });
-
-    }
-
-    /**
-     * load data from internet
-     *
-     * @return
-     */
-    public Subscription newsListSubscription() {
-
-        //TODO:参数处理
-        return RxNewsParser
-                .getNewsDigest(RequestAddress.YAHOO_NEWS_DIGEST, 0, "8", "2017-05-02", "en-AA", "AA", "0", 0)
-                .onBackpressureBuffer()
-                .map(new Func1<Digest, DigestRealm>() {
-                    @Override
-                    public DigestRealm call(Digest digest) {
-                        DigestRealm digestRealm = new DigestRealm();
-                        if (digest != null) {
-                            digestRealm = EntityHelper.convert(digest);
-                        }
-                        return digestRealm;
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<DigestRealm>() {
-                    @Override
-                    public void onCompleted() {
-                        LogUtil.d(TAG, " load data from internet onCompleted called");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        LogUtil.e(TAG, " load data from internet onError called");
-                        e.printStackTrace();
-
-                    }
-
-                    @Override
-                    public void onNext(DigestRealm digestRealm) {
-                        LogUtil.d(TAG, " load data from internet onNext called");
-                        cancelAsyncTransaction();
-                        final DigestRealm data = digestRealm;
-                        asyncTransaction = realm.executeTransactionAsync(new Realm.Transaction() {
-                            @Override
-                            public void execute(Realm realm) {
-                                realm.copyToRealmOrUpdate(data);
-                                LogUtil.d("executeTransactionAsync", "writing data into database");
-                            }
-                        }, new Realm.Transaction.OnSuccess() {
-                            @Override
-                            public void onSuccess() {
-                                LogUtil.d(TAG, "writing data into database successfully");
-                                taskCount = data.getItemRealms().size();
-                                for (ItemRealm itemRealm : data.getItemRealms()) {
-                                    Intent intent = new Intent(NewsListActivity.this, BatchLoadNewsIntentService.class);
-                                    intent.setAction(BatchLoadNewsIntentService.ACTION_BATCH_LOAD);
-                                    intent.putExtra(BatchLoadNewsIntentService.UUID, itemRealm.getId());
-                                    startService(intent);
-                                }
 
 
-                            }
-                        }, new Realm.Transaction.OnError() {
-                            @Override
-                            public void onError(Throwable error) {
-                                LogUtil.e(TAG, " writing data into database unsuccessfully");
-                                error.printStackTrace();
-
-                            }
-                        });
-                    }
-                });
-    }
-
-    /**
-     * 取消异步事务
-     */
-    private void cancelAsyncTransaction() {
-        if (asyncTransaction != null && !asyncTransaction.isCancelled()) {
-            asyncTransaction.cancel();
-            asyncTransaction = null;
-        }
-    }
 
     @Override
     protected void onDestroy() {
@@ -305,8 +232,6 @@ public class NewsListActivity extends AppCompatActivity implements DigestLoadDia
         if (subscriptionSave != null) {
             subscriptionSave.unsubscribe();
         }
-        cancelAsyncTransaction();
-        realm.close();
         unregisterReceiver(myReceiver);
         super.onDestroy();
 
@@ -320,7 +245,6 @@ public class NewsListActivity extends AppCompatActivity implements DigestLoadDia
             if (subscription != null) {
                 subscription.unsubscribe();
             }
-            subscription = newsListSubscription();
 
         } else {
             digestLoadDialog.onLoadError();

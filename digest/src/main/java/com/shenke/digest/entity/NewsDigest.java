@@ -10,7 +10,7 @@ import java.util.List;
  * Created by Cloud on 2017/4/12.
  */
 
-public class NewsDigestBean implements Serializable {
+public class NewsDigest implements Serializable {
     @SerializedName("uuid")
     public String uuid;
     @SerializedName("date")
@@ -111,7 +111,7 @@ public class NewsDigestBean implements Serializable {
     @SerializedName("edition")
     public String edition;
     @SerializedName("items")
-    public List<NewsItem> items = new ArrayList<>();
+    public static List<NewsItem> items = new ArrayList<>();
 
     public class NewsItem {
         @SerializedName("uuid")

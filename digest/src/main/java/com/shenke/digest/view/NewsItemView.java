@@ -11,12 +11,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.shenke.digest.R;
-import com.shenke.digest.entity.Color;
-import com.shenke.digest.entity.ItemRealm;
-import com.shenke.digest.entity.Source;
+
 import com.shenke.digest.util.LogUtil;
 
-import io.realm.RealmList;
 
 public class NewsItemView extends ViewGroup {
     private static final String TAG = NewsItemView.class.getSimpleName();
@@ -101,7 +98,7 @@ public class NewsItemView extends ViewGroup {
         addView(mItemView);
     }
 
-    public void setItemRealm(ItemRealm itemRealm, int index) {
+   /* public void setItemRealm(ItemRealm itemRealm, int index) {
         if (itemRealm != null) {
             mDonutProgress.setText("" + index);
             if (itemRealm.getColors() != null && itemRealm.getColors().size() > 0) {
@@ -126,7 +123,7 @@ public class NewsItemView extends ViewGroup {
             }
         }
 
-    }
+    }*/
 
 
     public void active() {

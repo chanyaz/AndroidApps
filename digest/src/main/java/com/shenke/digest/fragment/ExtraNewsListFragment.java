@@ -1,56 +1,37 @@
 package com.shenke.digest.fragment;
 
-import android.content.Intent;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.StateListDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.shenke.digest.R;
-import com.shenke.digest.adapter.BaseRecyclerViewAdapter;
 import com.shenke.digest.core.ExtraNewsListActivity;
-import com.shenke.digest.core.NewsDetailActivity;
-import com.shenke.digest.db.EntityHelper;
-import com.shenke.digest.entity.DetailItem;
-import com.shenke.digest.entity.ItemRealm;
-import com.shenke.digest.util.LogUtil;
 
-import java.util.ArrayList;
-
-import io.realm.Realm;
-import io.realm.RealmResults;
-import rx.Subscriber;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 
 
 
 
 public class ExtraNewsListFragment extends BaseFragment {
     private final String TAG = "ExtraNewsListFragment";
-    private Realm realm;
+
     private Subscription subscription;
     private RecyclerView recyclerView;
-    private ExtraNewsAdapter adapter;
+ //   private ExtraNewsAdapter adapter;
     private boolean allChecked;
-    private ArrayList<DetailItem> list = new ArrayList<>();
+
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        realm = Realm.getDefaultInstance();
-        subscription = load();
+
+      //  subscription = load();
         allChecked = getArguments().getBoolean(ExtraNewsListActivity.ALL_CHECKED, false);
 
     }
@@ -87,7 +68,7 @@ public class ExtraNewsListFragment extends BaseFragment {
         TextView textView = (TextView) headerView.findViewById(R.id.extra);
         Typeface typeFaceLabel = Typeface.createFromAsset(getContext().getAssets(), "fonts/Roboto-Light.ttf");
         textView.setTypeface(typeFaceLabel);
-        adapter = new ExtraNewsAdapter();
+       /* adapter = new ExtraNewsAdapter();
         adapter.setHeaderView(headerView);
         adapter.addItemClickListenr(new BaseRecyclerViewAdapter.OnItemClickListener() {
             @Override
@@ -96,15 +77,15 @@ public class ExtraNewsListFragment extends BaseFragment {
                 intent.putExtra(NewsDetailActivity.INDEX, position);
                 LogUtil.d(TAG, "position:" + position);
                 intent.putExtra(NewsDetailActivity.MORE, false);
-                intent.putParcelableArrayListExtra(NewsDetailActivity.DATA, list);
+              //  intent.putParcelableArrayListExtra(NewsDetailActivity.DATA, list);
                 startActivity(intent);
             }
         });
-        recyclerView.setAdapter(adapter);
+       // recyclerView.setAdapter(adapter);*/
 
     }
 
-    private Subscription load() {
+   /* private Subscription load() {
 
         return realm.asObservable()
                 .onBackpressureBuffer()
@@ -150,24 +131,24 @@ public class ExtraNewsListFragment extends BaseFragment {
                 });
 
 
-    }
+    }*/
 
     private void addFooterView() {
         View footerView = LayoutInflater.from(recyclerView.getContext()).inflate(R.layout.extra_news_footer_view, recyclerView, false);
-        adapter.setFooterView(footerView);
+       // adapter.setFooterView(footerView);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        realm.close();
+
         if (subscription != null) {
             subscription.unsubscribe();
         }
     }
 
 
-    public class ExtraNewsAdapter extends BaseRecyclerViewAdapter<DetailItem> {
+  /*  public class ExtraNewsAdapter extends BaseRecyclerViewAdapter<DetailItem> {
 
         public ExtraNewsAdapter() {
         }
@@ -248,7 +229,7 @@ public class ExtraNewsListFragment extends BaseFragment {
         public void bindFooterView(RecyclerView.ViewHolder holder, int position) {
 
         }
-    }
+    }*/
 
     public class HeaderViewHolder extends RecyclerView.ViewHolder {
         public final View itemView;
@@ -273,7 +254,6 @@ public class ExtraNewsListFragment extends BaseFragment {
         public final TextView label;
         public final TextView title;
         public final TextView sources;
-         public DetailItem itemRealm;
 
         public ItemViewHolder(View itemView) {
             super(itemView);

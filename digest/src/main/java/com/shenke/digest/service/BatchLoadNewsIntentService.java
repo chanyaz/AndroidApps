@@ -4,20 +4,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import com.shenke.digest.core.NewsListActivity;
-import com.shenke.digest.db.EntityHelper;
-import com.shenke.digest.entity.Item;
-import com.shenke.digest.entity.ItemRealm;
-import com.shenke.digest.http.RxNewsParser;
 import com.shenke.digest.util.LogUtil;
-
-import java.util.List;
-
-import io.realm.Realm;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -27,7 +14,7 @@ import rx.schedulers.Schedulers;
 public class BatchLoadNewsIntentService extends IntentService {
     private static final String TAG = BatchLoadNewsIntentService.class.getSimpleName();
     private volatile int count = 0;
-    private Realm realm;
+
 
     public static final String ACTION_BATCH_LOAD = "com.shenke.digest.action.BATCH_LOAD";
 
@@ -40,7 +27,7 @@ public class BatchLoadNewsIntentService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        realm = Realm.getDefaultInstance();
+
     }
 
 
@@ -51,7 +38,7 @@ public class BatchLoadNewsIntentService extends IntentService {
             if (ACTION_BATCH_LOAD.equals(action)) {
                 final String uuid = intent.getStringExtra(UUID);
                 if (!TextUtils.isEmpty(uuid)) {
-                    loadNewsBy(uuid);
+
                 }
             }
         }
@@ -61,7 +48,7 @@ public class BatchLoadNewsIntentService extends IntentService {
      * Handle action Foo in the provided background thread with the provided
      * parameters.
      */
-    private void loadNewsBy(String uuid) {
+  /*  private void loadNewsBy(String uuid) {
 
         RxNewsParser
                 .getNewsContent(uuid)
@@ -124,12 +111,12 @@ public class BatchLoadNewsIntentService extends IntentService {
 
                     }
                 });
-    }
+    }*/
 
     @Override
     public void onDestroy() {
         LogUtil.d(TAG, "onDestroy  called");
         super.onDestroy();
-        realm.close();
+
     }
 }

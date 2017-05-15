@@ -6,9 +6,7 @@ import android.content.Context;
 import android.os.RemoteException;
 
 import com.amap.api.maps2d.MapsInitializer;
-
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
+import com.shenke.digest.http.RetrofitSingleton;
 
 public class MyApplication extends Application {
     public static MyApplication INSTANCE;
@@ -19,9 +17,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mAppContext = getApplicationContext();
-        Realm.init(this);
-        RealmConfiguration config = new RealmConfiguration.Builder().name("digest.realm").build();//自定义realm配置
-        Realm.setDefaultConfiguration(config);
+        RetrofitSingleton.init(getApplicationContext());
         INSTANCE = this;
         try {
             MapsInitializer.initialize(this);

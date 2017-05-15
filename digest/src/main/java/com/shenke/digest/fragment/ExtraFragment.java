@@ -1,9 +1,6 @@
 package com.shenke.digest.fragment;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,14 +11,12 @@ import android.widget.TextView;
 
 import com.shenke.digest.R;
 import com.shenke.digest.core.NewsDetailActivity;
-import com.shenke.digest.entity.DetailItem;
 import com.shenke.digest.util.LogUtil;
 import com.shenke.digest.view.CircleLayout;
 import com.shenke.digest.view.CircularRevealView;
 
 import java.util.ArrayList;
 
-import io.realm.Realm;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -37,9 +32,9 @@ public class ExtraFragment extends BaseFragment {
     private LinearLayout know;
     private TextView bigTitle;
     private TextView smallTitle;
-    ArrayList<DetailItem> detailItemArrayList;
+
     private boolean allChecked;
-    private Realm realm;
+
     private Subscription subscription;
     private Handler mHandler;
 
@@ -50,8 +45,7 @@ public class ExtraFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        realm = Realm.getDefaultInstance();
-        detailItemArrayList = getArguments().getParcelableArrayList("data");
+
     }
 
     @Override
@@ -87,7 +81,7 @@ public class ExtraFragment extends BaseFragment {
         urd.setTypeface(ty);
         read.setTypeface(ty);
         read.setText("");
-        if (detailItemArrayList != null && detailItemArrayList.size() > 0) {
+      /*  if (detailItemArrayList != null && detailItemArrayList.size() > 0) {
             read.setText(circleLayout.getActiveCount() + " of " + detailItemArrayList.size());
             for (int i = 0; i < detailItemArrayList.size(); i++) {
                 int activeColor = detailItemArrayList.get(i).color;
@@ -164,7 +158,7 @@ public class ExtraFragment extends BaseFragment {
             }
         }
         initHandler();
-        subscription = update();
+        subscription = update();*/
     }
 
     @Override
@@ -183,7 +177,7 @@ public class ExtraFragment extends BaseFragment {
                         case 0x110:
                             int index = (int) msg.obj;
                             circleLayout.activeItem(index);
-                            read.setText(circleLayout.getActiveCount() + " of " + detailItemArrayList.size());
+                         //   read.setText(circleLayout.getActiveCount() + " of " + detailItemArrayList.size());
                             break;
                         default:
                             break;
@@ -217,13 +211,13 @@ public class ExtraFragment extends BaseFragment {
                         @Override
                         public void onNext(ArrayList arrayList) {
                             if (arrayList != null && !allChecked) {
-                                detailItemArrayList = arrayList;
-                                for (int i = 0; i < detailItemArrayList.size(); i++) {
+                              //  detailItemArrayList = arrayList;
+                               /* for (int i = 0; i < detailItemArrayList.size(); i++) {
                                     if (detailItemArrayList.get(i).checked && !circleLayout.isItemActive(i)) {
                                         Message msg = mHandler.obtainMessage(0x110, i);
                                         mHandler.sendMessageDelayed(msg, 500);
                                     }
-                                }
+                                }*/
                             }
                         }
                     });
@@ -235,7 +229,7 @@ public class ExtraFragment extends BaseFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        realm.close();
+
         if (mHandler != null) {
             mHandler.removeMessages(0x110);
         }

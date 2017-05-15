@@ -9,9 +9,10 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.shenke.digest.R;
-import com.shenke.digest.entity.SlideItem;
+import com.shenke.digest.entity.NewsDigest;
 
-public class GalleryAdapter extends BaseRecyclerViewAdapter<SlideItem> {
+
+public class GalleryAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem.SlideShow> {
     @Override
     public RecyclerView.ViewHolder createHeaderViewHolder(ViewGroup parent, int viewType) {
         return null;
@@ -31,7 +32,7 @@ public class GalleryAdapter extends BaseRecyclerViewAdapter<SlideItem> {
     @Override
     public void bindItemView(RecyclerView.ViewHolder holder, final int position) {
         final GalleryViewHolder galleryViewHolder = (GalleryViewHolder) holder;
-        galleryViewHolder.url = getItem(position).getUrl();
+      //  galleryViewHolder.url = NewsDigest.NewsItem.SlideShow.Photos.Element.Images.Resolution.;
         Glide.with(galleryViewHolder.itemView.getContext())
                 .load(galleryViewHolder.url)
                 .crossFade()
