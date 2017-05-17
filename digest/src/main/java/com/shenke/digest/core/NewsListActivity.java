@@ -74,69 +74,78 @@ public class NewsListActivity extends AppCompatActivity implements DigestLoadDia
         observer = new Observer<NewsDigest>() {
             @Override
             public void onCompleted() {
-
+                Log.i("fetchData", "onCompleted");
             }
+
 
             @Override
             public void onError(Throwable e) {
+                Log.e("DigestActivity", e.getMessage().toString());
                 digestLoadDialog.onLoadError();
             }
 
             @Override
-            public void onNext(NewsDigest newsDigest) {
-                String url = newsDigest.poster.images.originalUrl;
-                digestLoadDialog.onLoadSuccess();
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.container, new NewsListFragment(), "list")
-                        .commit();
+            public void onNext(NewsDigest mNewsDigest) {
+                Log.i("fetchData", "onNext");
+
             }
         };
+
         fetchDataByCache(observer);
     }
 
+
+    /**
+     * 从本地获取
+     */
     private void fetchDataByCache(Observer<NewsDigest> observer) {
-        NewsDigest newsDigest = null;
+
+        NewsDigest mNewsDigest = null;
         try {
-            newsDigest = (NewsDigest) mCache.getAsObject("NewsDigestData");
+            mNewsDigest = (NewsDigest) mCache.getAsObject("NewsDigestData");
         } catch (Exception e) {
-            Log.e(TAG, e.toString());
+            Log.e("DigestNews", e.toString());
         }
 
-        if (newsDigest != null) {
-            Observable.just(newsDigest).distinct().subscribe(observer);
+        if (mNewsDigest != null) {
+            Observable.just(mNewsDigest).distinct().subscribe(observer);
         } else {
             fetchDataByNetWork(observer);
         }
     }
 
+    /**
+     * 网络获取并存入缓存，再从缓存中取出
+     */
     private void fetchDataByNetWork(Observer<NewsDigest> observer) {
         RetrofitSingleton.getApiService(this)
-                .GetDigestList(0,"8","2017-05-15","en-AA","AA","0",0)
+                .GetDigestList(
+                        0,"8","2017-05-17","en-AA", "AA", 0, "0"
+                )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .filter(new Func1<DigestApi, Boolean>() {
                     @Override
-                    public Boolean call(DigestApi digestApi) {
-                            return digestApi.result.edition.equals("0");
+                    public Boolean call(DigestApi mDigestApi) {
+                        return mDigestApi.result.lang.equals("en-AA");
                     }
                 })
                 .map(new Func1<DigestApi, NewsDigest>() {
                     @Override
-                    public NewsDigest call(DigestApi digestApi) {
-                       return digestApi.result;
+                    public NewsDigest call(DigestApi mDigestApi) {
+                        return mDigestApi.result;
                     }
                 })
                 .doOnNext(new Action1<NewsDigest>() {
                     @Override
-                    public void call(NewsDigest newsDigest) {
-                        mCache.put("NewsDigestData",newsDigest,
-                            60*3600 );//默认一小时后缓存失效)
+                    public void call(NewsDigest mNewsDigest) {
+                        Log.i("NewsDigestData", mNewsDigest.toString());
+
                     }
                 })
                 .subscribe(observer);
-    }
 
+    }
     private Subscription checkInstall() {
 
         return rx.Observable
@@ -165,7 +174,7 @@ public class NewsListActivity extends AppCompatActivity implements DigestLoadDia
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        digestLoadDialog.onLoadError();
+                       digestLoadDialog.onLoadError();
                     }
 
                     @Override
@@ -207,7 +216,7 @@ public class NewsListActivity extends AppCompatActivity implements DigestLoadDia
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        digestLoadDialog.onLoadError();
+                       // digestLoadDialog.onLoadError();
 
                     }
 

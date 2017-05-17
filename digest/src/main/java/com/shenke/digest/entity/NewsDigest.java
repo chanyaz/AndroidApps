@@ -111,7 +111,7 @@ public class NewsDigest implements Serializable {
     @SerializedName("edition")
     public String edition;
     @SerializedName("items")
-    public static List<NewsItem> items = new ArrayList<>();
+    public List<NewsItem> items = new ArrayList<>();
 
     public class NewsItem {
         @SerializedName("uuid")

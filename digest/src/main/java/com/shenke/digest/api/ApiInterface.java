@@ -1,7 +1,8 @@
 package com.shenke.digest.api;
 
-import retrofit.http.GET;
-import retrofit.http.Query;
+
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 import rx.Observable;
 
 /**
@@ -24,6 +25,6 @@ public interface ApiInterface {
      */
     @GET("digest")
     Observable<DigestApi> GetDigestList(@Query("create_time") int create_time, @Query("timezone") String timezone, @Query("date") String date
-            , @Query("String date") String lang, @Query("region_edition") String region_edition, @Query("digest_edition") String digest_edition,
-                                        @Query("more_stories") int more_stories);
+            , @Query("lang") String lang, @Query("region_edition") String region_edition, @Query("digest_edition") int digest_edition,
+                                        @Query("more_stories") String more_stories);
 }

@@ -13,14 +13,15 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.shenke.digest.api.ApiInterface;
-import com.squareup.okhttp.OkHttpClient;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import retrofit.GsonConverterFactory;
-import retrofit.Retrofit;
-import retrofit.RxJavaCallAdapterFactory;
+import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 
 public class RetrofitSingleton {
 
@@ -44,7 +45,6 @@ public class RetrofitSingleton {
         Executor executor = Executors.newCachedThreadPool();
 
         Gson gson = new GsonBuilder().create();
-
         retrofit = new Retrofit.Builder().addConverterFactory(GsonConverterFactory.create(gson))
                 .baseUrl(ApiInterface.BASE_URL)
                 .callbackExecutor(executor)
