@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.shenke.digest.BuildConfig;
@@ -35,7 +34,7 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-public class NewsListActivity extends AppCompatActivity implements DigestLoadDialog.OnNewsLoadInActivityListener {
+public class NewsListActivity extends BaseActivity implements DigestLoadDialog.OnNewsLoadInActivityListener {
     private static final String TAG = "NewsListActivity";
     private Subscription subscription;
     private Subscription subscriptionInstall;
@@ -87,6 +86,11 @@ public class NewsListActivity extends AppCompatActivity implements DigestLoadDia
             @Override
             public void onNext(NewsDigest mNewsDigest) {
                 Log.i("fetchData", "onNext");
+                digestLoadDialog.onLoadSuccess();
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.container, new NewsListFragment(), "list")
+                        .commit();
 
             }
         };
@@ -96,7 +100,7 @@ public class NewsListActivity extends AppCompatActivity implements DigestLoadDia
 
 
     /**
-     * 从本地获取
+     * 从本地緩存中获取
      */
     private void fetchDataByCache(Observer<NewsDigest> observer) {
 
@@ -118,6 +122,7 @@ public class NewsListActivity extends AppCompatActivity implements DigestLoadDia
      * 网络获取并存入缓存，再从缓存中取出
      */
     private void fetchDataByNetWork(Observer<NewsDigest> observer) {
+        // TODO:參數從Settings中取
         RetrofitSingleton.getApiService(this)
                 .GetDigestList(
                         0,"8","2017-05-17","en-AA", "AA", 0, "0"
@@ -140,7 +145,7 @@ public class NewsListActivity extends AppCompatActivity implements DigestLoadDia
                     @Override
                     public void call(NewsDigest mNewsDigest) {
                         Log.i("NewsDigestData", mNewsDigest.toString());
-
+                        aCache.put("NewsDigestData", mNewsDigest, 3600);//默认一小时后缓存失效
                     }
                 })
                 .subscribe(observer);
