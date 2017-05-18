@@ -79,7 +79,6 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
 
             @Override
             public void onError(Throwable e) {
-                Log.e("DigestActivity", e.getMessage().toString());
                 digestLoadDialog.onLoadError();
             }
 
@@ -87,9 +86,13 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
             public void onNext(NewsDigest mNewsDigest) {
                 Log.i("fetchData", "onNext");
                 digestLoadDialog.onLoadSuccess();
+                NewsListFragment mNewsListFragment = new NewsListFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("NewsDigestData",mNewsDigest);
+                mNewsListFragment.setArguments(bundle);
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.container, new NewsListFragment(), "list")
+                        .replace(R.id.container, mNewsListFragment, "list")
                         .commit();
 
             }
@@ -125,7 +128,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         // TODO:參數從Settings中取
         RetrofitSingleton.getApiService(this)
                 .GetDigestList(
-                        0,"8","2017-05-17","en-AA", "AA", 0, "0"
+                        0,"8","2017-05-18","en-AA", "AA", 0, "0"
                 )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

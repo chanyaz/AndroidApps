@@ -5,9 +5,15 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.StateListDrawable;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +21,23 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.shenke.digest.R;
+import com.shenke.digest.dialog.MoreDigestDialog;
 import com.shenke.digest.entity.NewsDigest;
+import com.shenke.digest.util.DateUtil;
+import com.shenke.digest.util.Helper;
 import com.shenke.digest.view.CircleLayout;
 import com.shenke.digest.view.CircularRevealView;
 import com.shenke.digest.view.DonutProgress;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_EVENING;
+import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_MORNING;
 
 
 public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
@@ -29,6 +47,8 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
     private String date;
     private boolean allChecked;
     public Context mContext;
+    public static NewsDigest mNewsDigest;
+    public  NewsDigest.NewsItem newsItem;
     private OnItemClickListener onItemClickListener;
     private FragmentManager fm;
     private final String TAG = "NewsAdapter";
@@ -38,9 +58,9 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
         this.onItemClickListener = onItemClickListener;
     }
 
-    public NewsAdapter(Context mContext) {
+    public NewsAdapter(Context mContext,NewsDigest mNewsDigest) {
         this.mContext = mContext;
-
+        this.mNewsDigest = mNewsDigest;
     }
 
     public NewsAdapter(Context mContext, FragmentManager fm) {
@@ -64,13 +84,191 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.news_item, parent, false);
         mContext = parent.getContext();
+
         return new ViewHolder(view);
     }
-
     @Override
     public void bindItemView(RecyclerView.ViewHolder srcHolder1, final int position) {
         ViewHolder holder = (ViewHolder) srcHolder1;
+         newsItem = mNewsDigest.items.get(position);
 
+        if (newsItem != null) {
+
+            if (position == 0) {
+                holder.imgArea.setVisibility(View.VISIBLE);
+                holder.img.setVisibility(View.VISIBLE);
+                holder.placeHolder.setVisibility(View.VISIBLE);
+                holder.section.setVisibility(View.VISIBLE);
+                holder.date.setVisibility(View.VISIBLE);
+                holder.sectionArea.setVisibility(View.VISIBLE);
+                Glide.with((holder.itemView.getContext())).load(mNewsDigest.poster.images.originalUrl).crossFade().into(holder.img);
+                String ed;
+                if (mNewsDigest.regionEdition.equals("AA")) {
+                    ed = "Intl.";
+                } else if(mNewsDigest.regionEdition.equals("CA")){
+                    ed = "Canada";
+                }else{
+                    ed = mNewsDigest.regionEdition;
+                }
+                if (!TextUtils.isEmpty(date) && date.length() > 32) {
+                    String month = DateUtil.MonthFormat(date.substring(27, 31).trim());
+                    holder.date.setText(month + " " + date.substring(7, 9));
+
+                    String sec = date.substring(31) +
+                            (section == SECTION_MORNING ? " morning" : " evening")
+                            + " | " + ed;
+                    holder.section.setText(sec);
+
+                } else {
+                    /**默认*/
+                    Date date = DateUtil.getPresentDate();
+                    final String str = Helper.format(date);
+                    String month = DateUtil.MonthFormat(str.substring(27, 31).trim());
+                    holder.date.setText(month + " " + str.substring(7, 9));
+                    try {
+                        GregorianCalendar g = new GregorianCalendar();
+                        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+                        String ymd = sdf1.format(g.getTime());
+                        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        /**
+                         *   此处可自定义每天起始时间
+                         */
+                        Date morning = sdf2.parse(ymd + " 08:00:00");
+                        Date evening = sdf2.parse(ymd + " 18:00:00");
+                        Date present = g.getTime();
+                        if (present.before(morning) || present.after(evening)) {
+                            section = SECTION_EVENING;
+                            String sec = str.substring(31) +
+                                    (section == SECTION_MORNING ? " morning" : " evening")
+                                    + " | " + ed;
+                            holder.section.setText(sec);
+
+                        } else {
+                            section = SECTION_MORNING;
+                            String sec = str.substring(31) +
+                                    (section == SECTION_MORNING ? " morning" : " evening")
+                                    + " | " + ed;
+                            holder.section.setText(sec);
+
+                        }
+                    } catch (ParseException e) {
+
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                holder.imgArea.setVisibility(View.GONE);
+                holder.img.setVisibility(View.GONE);
+                holder.placeHolder.setVisibility(View.GONE);
+                holder.section.setVisibility(View.GONE);
+                holder.date.setVisibility(View.GONE);
+                holder.sectionArea.setVisibility(View.GONE);
+
+            }
+            /**
+             * tap to see moredigest
+             */
+            holder.sectionArea.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    View view = v.getRootView();
+                    view.setDrawingCacheEnabled(true);
+                    view.buildDrawingCache();
+                    bitmap = view.getDrawingCache();
+                    FragmentActivity activity = (FragmentActivity) (mContext);
+                    fm = activity.getSupportFragmentManager();
+                    MoreDigestDialog mMoreDigestDialog = new MoreDigestDialog();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("fragment", TAG);
+                    mMoreDigestDialog.setArguments(bundle);
+                    mMoreDigestDialog.show(fm, "mMoreDigestDialog");
+                }
+            });
+            //index
+            holder.donutProgress.setText("" + (position + 1));
+            //label "Politics"
+            Typeface typeFaceLabel = Typeface.createFromAsset(holder.view.getContext().getAssets(), "fonts/Roboto-Bold.ttf");
+            holder.label.setTypeface(typeFaceLabel);
+            holder.label.setText(newsItem.categories.get(0).name);
+
+            //title
+            Typeface typeFaceTitle = Typeface.createFromAsset(holder.view.getContext().getAssets(), "fonts/Roboto-Light.ttf");
+            holder.title.setTypeface(typeFaceTitle);
+            holder.title.setText("" + newsItem.title);
+
+
+            //press "Yahoo News"
+            Typeface typeFacePress = Typeface.createFromAsset(holder.view.getContext().getAssets(), "fonts/Roboto-Light.ttf");
+            holder.sources.setTypeface(typeFacePress);
+            holder.sources.setText(newsItem.sources.get(0).publisher);
+            final ViewHolder holder1 = holder;
+            final int position1 = position;
+            holder.view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onItemClickListener != null) {
+                        onItemClickListener.onItemClick(holder1, position1);
+
+                    }
+
+                }
+            });
+
+
+            int stateColor = android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode);
+            //index
+            if (newsItem.isChecked()) {
+                holder.donutProgress.setFinishedStrokeColor(stateColor);
+                holder.donutProgress.setUnfinishedStrokeColor(stateColor);
+                holder.donutProgress.setInnerBackgroundColor(stateColor);
+                holder.donutProgress.setTextColor(android.graphics.Color.WHITE);
+
+            } else {
+                holder.donutProgress.setFinishedStrokeColor(stateColor);
+                holder.donutProgress.setUnfinishedStrokeColor(stateColor);
+                holder.donutProgress.setTextColor(stateColor);
+                holder.donutProgress.setInnerBackgroundColor(android.graphics.Color.TRANSPARENT);
+            }
+
+            //label
+            holder.label.setTextColor(stateColor);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+
+                StateListDrawable stateListDrawable = new StateListDrawable();
+                stateListDrawable.addState(new int[]{android.R.attr.state_empty},
+                        new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                int cl = android.graphics.Color.parseColor("#55" + newsItem.colors.get(0).hexcode.substring(1));
+                stateListDrawable.addState(new int[]{android.R.attr.state_pressed},
+                        new ColorDrawable(cl));
+                holder.view.setBackground(stateListDrawable);
+            }
+            if (newsItem.order != null) {
+                if (!newsItem.order.contains("wiki")) {
+                    holder.images.findViewById(R.id.wiki).setVisibility(View.GONE);
+                }
+                if (!newsItem.order.contains("location")) {
+                    holder.images.findViewById(R.id.map).setVisibility(View.GONE);
+                }
+                if (!newsItem.order.contains("video")) {
+                    holder.images.findViewById(R.id.video).setVisibility(View.GONE);
+                }
+                if (!newsItem.order.contains("slideshow")) {
+                    holder.images.findViewById(R.id.images).setVisibility(View.GONE);
+                }
+                if (!newsItem.order.contains("statDetail")) {
+                    holder.images.findViewById(R.id.stats).setVisibility(View.GONE);
+                }
+                if (!newsItem.order.contains("infograph")) {
+                    holder.images.findViewById(R.id.diagram).setVisibility(View.GONE);
+                }
+                if (!newsItem.order.contains("tweetKeyword")) {
+                    holder.images.findViewById(R.id.twitter).setVisibility(View.GONE);
+                }
+            }
+
+
+        }
     }
 
     @Override
@@ -89,22 +287,22 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
         holder.smallTitle.setTypeface(typeface);
         holder.urd.setTypeface(ty);
         holder.textView.setTypeface(ty);
-        final int count = getAllItems().size();
-
+       // final int count = getAllItems().size();
+        final int count = mNewsDigest.items.size();
         holder.textView.setText(holder.circleLayout.getActiveCount() + " of " + count);
 
         int index = 1;
         if (!allChecked) {
             for (int i = 0; i < count; i++) {
-               // int activeColor = getItem(i).color;
-              //  holder.circleLayout.addItem("" + index, activeColor);
+                int activeColor = android.graphics.Color.parseColor(mNewsDigest.items.get(i).colors.get(0).hexcode);
+                holder.circleLayout.addItem("" + index, activeColor);
                 index++;
             }
 
             for (int i = 0; i < count; i++) {
-              /*  if (getItem(i).isChecked()) {
+              if (mNewsDigest.items.get(i).isChecked()) {
                     holder.circleLayout.activeItem(i);
-                }*/
+                }
             }
         }
         if (holder.circleLayout.getActiveCount() == count) {
@@ -187,7 +385,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
     }
 
     public void activationItem(int index) {
-       // getItem(index).setChecked(true);
+       getItem(index).setChecked(true);
         notifyDataSetChanged();
     }
 
@@ -215,7 +413,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
         final View sectionArea;
         final TextView date;
         final TextView section;
-        //public DetailItem itemRealm;
+        //public NewsDigest.NewsItem newsItem;
 
         public ViewHolder(View itemView) {
             super(itemView);

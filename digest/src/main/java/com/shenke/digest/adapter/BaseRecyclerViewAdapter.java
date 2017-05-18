@@ -166,13 +166,13 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {
         if (headerView != null && footerView != null && data != null) {
-            return 2 + data.size();
+            return 2 + NewsAdapter.mNewsDigest.items.size();
         } else if (headerView == null && footerView != null && data != null) {
-            return 1 + data.size();
+            return 1 +NewsAdapter.mNewsDigest.items.size();
         } else if (headerView != null && footerView == null && data != null) {
-            return 1 + data.size();
+            return 1 + NewsAdapter.mNewsDigest.items.size();
         } else if (headerView == null && footerView == null && data != null) {
-            return data.size();
+            return NewsAdapter.mNewsDigest.items.size();
         }
         return 0;
     }

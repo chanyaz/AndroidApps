@@ -47,15 +47,16 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
     private RecyclerView recyclerView;
     private ImageButton menu;
     private boolean initFooterView = false;
-    private ArrayList<NewsDigest.NewsItem> list = new ArrayList<>();
+    private ArrayList<NewsDigest.NewsItem> list = new ArrayList<NewsDigest.NewsItem>();
     private int mSection;
     private int mEdition;
     private String mDate;
     public static Bitmap bitmap;
-
+    public NewsDigest mNewsDigest;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+         mNewsDigest = (NewsDigest) getArguments().getSerializable("NewsDigestData");
     }
 
     private void getConfg() {
@@ -154,7 +155,7 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
             }
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
-        adapter = new NewsAdapter(getContext());
+        adapter = new NewsAdapter(getContext(),mNewsDigest);
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
             @Override
@@ -163,7 +164,7 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
                 Intent intent = new Intent(rootView.getContext(), NewsDetailActivity.class);
                 intent.putExtra(NewsDetailActivity.INDEX, position);
                 intent.putExtra(NewsDetailActivity.MORE, true);
-               // intent.putParcelableArrayListExtra(NewsDetailActivity.DATA, list);
+              // intent.putParcelableArrayListExtra(NewsDetailActivity.DATA,  list);
                 startActivityForResult(intent, 0x110);
 
             }
@@ -190,6 +191,14 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
 
             }
         });
+if(adapter != null){
+    adapter.clear();
+    list.clear();
+    list.addAll(mNewsDigest.items);
+}
+        addFooterView(list);
+        getConfg();
+
     }
 
     private void moreDigest() {
@@ -228,7 +237,7 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
 
 
 
-    private void addFooterView(ArrayList<NewsDigest.NewsItem> newsItems) {
+    private void addFooterView(ArrayList<NewsDigest.NewsItem> items) {
         View footer = LayoutInflater.from(recyclerView.getContext()).inflate(R.layout.news_list_footer_view, recyclerView, false);
         adapter.setFooterView(footer);
         View toggleButton = adapter.getFooterView().findViewById(R.id.toggleButton);
