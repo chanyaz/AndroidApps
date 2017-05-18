@@ -53,10 +53,11 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
     private String mDate;
     public static Bitmap bitmap;
     public NewsDigest mNewsDigest;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-         mNewsDigest = (NewsDigest) getArguments().getSerializable("NewsDigestData");
+        mNewsDigest = (NewsDigest) getArguments().getSerializable("NewsDigestData");
     }
 
     private void getConfg() {
@@ -155,7 +156,7 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
             }
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
-        adapter = new NewsAdapter(getContext(),mNewsDigest);
+        adapter = new NewsAdapter(getContext(), mNewsDigest);
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
             @Override
@@ -164,7 +165,8 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
                 Intent intent = new Intent(rootView.getContext(), NewsDetailActivity.class);
                 intent.putExtra(NewsDetailActivity.INDEX, position);
                 intent.putExtra(NewsDetailActivity.MORE, true);
-              // intent.putParcelableArrayListExtra(NewsDetailActivity.DATA,  list);
+               // intent.putParcelableArrayListExtra(NewsDetailActivity.DATA,  list);
+                intent.putExtra(NewsDetailActivity.DATA,mNewsDigest);
                 startActivityForResult(intent, 0x110);
 
             }
@@ -191,11 +193,11 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
 
             }
         });
-if(adapter != null){
-    adapter.clear();
-    list.clear();
-    list.addAll(mNewsDigest.items);
-}
+        if (adapter != null) {
+            adapter.clear();
+            list.clear();
+            list.addAll(mNewsDigest.items);
+        }
         addFooterView(list);
         getConfg();
 
@@ -234,7 +236,6 @@ if(adapter != null){
         }
 
     }
-
 
 
     private void addFooterView(ArrayList<NewsDigest.NewsItem> items) {

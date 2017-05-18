@@ -20,17 +20,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.shenke.digest.R;
 import com.shenke.digest.adapter.GalleryAdapter;
 import com.shenke.digest.core.ExtraNewsListActivity;
+import com.shenke.digest.core.NewsDetailActivity;
 import com.shenke.digest.dialog.SettingsDialog;
 import com.shenke.digest.dialog.ShareDialog;
+import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.util.DimensionUtil;
-import com.shenke.digest.util.IntentUtil;
 import com.shenke.digest.util.LogUtil;
 import com.shenke.digest.view.DonutProgress;
 
+import rx.Subscriber;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * A simple {@link BaseFragment} subclass.
@@ -48,7 +52,6 @@ public class NewsDetailFragment extends BaseFragment {
     private String uuid;
     private int color;
     private int index;
-
 
 
     private ImageButton back;
@@ -87,6 +90,7 @@ public class NewsDetailFragment extends BaseFragment {
     private Subscription updateIndexSubscription;
     private int distance;
     public static Bitmap bitmap;
+    public NewsDigest mNewsDigest;
 
     public NewsDetailFragment() {
     }
@@ -120,6 +124,7 @@ public class NewsDetailFragment extends BaseFragment {
             uuid = getArguments().getString(UUID);
             color = getArguments().getInt(COLOR);
             index = getArguments().getInt(INDEX);
+            mNewsDigest = (NewsDigest) getArguments().getSerializable("NewsDigestData");
         }
 
     }
@@ -265,7 +270,7 @@ public class NewsDetailFragment extends BaseFragment {
 
             }
         });
-
+        initItem(mNewsDigest);
     }
 
     private void sendEmail() {
@@ -284,24 +289,797 @@ public class NewsDetailFragment extends BaseFragment {
 
     }
 
-    private void loadNetworkData() {
-        if (IntentUtil.isNetworkConnected(getActivity())) {
-            if (subscription != null) {
-                subscription.unsubscribe();
-                subscription = null;
-            }
-        } else {
-            Toast.makeText(getActivity(), "please connect the network", Toast.LENGTH_SHORT).show();
-        }
+    public void activeItem() {
+
+        rx.Observable
+                .create(new rx.Observable.OnSubscribe<Boolean>() {
+
+                    @Override
+                    public void call(final Subscriber<? super Boolean> subscriber) {
+                        return;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Boolean>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(Boolean aBoolean) {
+                        if (aBoolean) {
+                            if (index != -1) {
+
+                                donutProgress.setInnerBackgroundColor(color);
+                                donutProgress.setTextColor(Color.WHITE);
+                                donutProgress.setVisibility(View.VISIBLE);
+                                if (getActivity() instanceof NewsDetailActivity) {
+                                    ((NewsDetailActivity) getActivity()).updateIndex(index);
+                                }
+                            } else {
+                                donutProgress.setVisibility(View.GONE);
+                            }
+                        } else {
+                            LogUtil.e(TAG, "active  the data failed");
+                        }
+                    }
+                });
 
 
     }
 
 
+    private void initItem(NewsDigest mNewsDigest) {
+
+        if (mNewsDigest != null  && mNewsDigest.items.get(index).multiSummary!= null) {
+
+            if (index != -1 && mNewsDigest.items.get(index).isChecked()) {
+                donutProgress.setVisibility(View.VISIBLE);
+                donutProgress.setInnerBackgroundColor(color);
+                donutProgress.setTextColor(Color.WHITE);
+            } else if (index == -1) {
+                donutProgress.setVisibility(View.GONE);
+            } else {
+                donutProgress.setVisibility(View.VISIBLE);
+            }
+
+            //label
+            lable.setText(mNewsDigest.items.get(index).categories.get(0).name);
+            lable.setVisibility(View.VISIBLE);
+            //lable.setTag(ItemRealUtil.getPress(itemRealm));
+            Glide.with(banner.getContext()).load(mNewsDigest.items.get(index).images.originalUrl).crossFade().into(banner);
+            //title
+            title.setText("" + mNewsDigest.items.get(index).title);
+           // title.setTag("" + itemRealm.getLink());
+            title.setVisibility(View.VISIBLE);
+
+            //quote
+           /* addQuote(itemRealm);
+
+            summaryEdition.setVisibility(View.VISIBLE);
+
+            //statics
+            addStatics(itemRealm);
+
+
+            //infographs
+
+            addInfographs(itemRealm);
+
+
+            //longreads
+            addLongreads(itemRealm);
+
+            //locations
+            addLocations(itemRealm);
+
+            //slideshow
+
+            addSlideShow(itemRealm);
+
+            //videos
+            addVideos(itemRealm);
+
+            //wiki
+            addWiki(itemRealm);
+
+            //tweet
+            addTweet(itemRealm);
+            //reference
+            addReference(itemRealm);
+            line.setVisibility(View.VISIBLE);
+            error.setVisibility(View.GONE);
+            if (getActivity() instanceof NewsDetailActivity) {
+                int pageIndex = ((NewsDetailActivity) getActivity()).getCurrentIndex();
+                if (pageIndex == index && !itemRealm.isChecked()) {
+                    // LogUtil.e(TAG, "Fragment index:" + (index - 1) + ";viewpager index:" + pageIndex);
+                    activeItem();
+                }
+            }
+            if (index != -1) {
+                event = getEvent(itemRealm);
+            }
+        } else {
+            error.setVisibility(View.VISIBLE);
+        }
+*/}
+    }
+
+  /*  private void addReference(ItemRealm itemRealm) {
+
+
+        RealmList<Source> sources = itemRealm.getSources();
+
+
+        if (sources != null && sources.size() > 0) {
+            anchorArea.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (references.getVisibility() == View.GONE) {
+                        references.setVisibility(View.VISIBLE);
+                        toggleImage.setImageResource(R.drawable.reference_open);
+                        DrawableCompat.setTint(toggleImage.getDrawable(), color);
+                        references.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                nestedScrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                            }
+                        });
+                    } else if (references.getVisibility() == View.VISIBLE) {
+                        references.setVisibility(View.GONE);
+                        toggleImage.setImageResource(R.drawable.reference_close);
+                        DrawableCompat.setTint(toggleImage.getDrawable(), color);
+                    }
+
+                }
+            });
+        } else {
+            anchorArea.setVisibility(View.GONE);
+            referCount.setVisibility(View.GONE);
+        }
+        if (sources.size() == 1) {
+            anchorArea.setVisibility(View.VISIBLE);
+            ShapeDrawable shapeDrawableAnchor = new ShapeDrawable(new OvalShape());
+            shapeDrawableAnchor.getPaint().setColor(color);
+            shapeDrawableAnchor.getPaint().setStyle(Paint.Style.STROKE);
+            shapeDrawableAnchor.getPaint().setStrokeWidth(DimensionUtil.dp2px(getResources(), 1f));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                anchor.setBackground(shapeDrawableAnchor);
+                // toggleImage.setBackground(shapeDrawableAnchor);
+            }
+            DrawableCompat.setTint(anchor.getDrawable(), color);
+            DrawableCompat.setTint(toggleImage.getDrawable(), color);
+
+            referCount.setText("1 Reference");
+
+            final View referencesItemView =
+                    LayoutInflater.from(references.getContext()).inflate(R.layout.item_source, references, false);
+            TextView publisher = $(referencesItemView, R.id.publisher);
+            //publisher.setTypeface(typefaceBold);
+            publisher.setText(sources.get(0).getPublisher());
+            ViewGroup titleContainer = $(referencesItemView, R.id.titleContainer);
+
+            View referencestitleItemView =
+                    LayoutInflater.from(titleContainer.getContext()).inflate(R.layout.item_source_title, titleContainer, false);
+            View view = $(referencestitleItemView, R.id.dot);
+            ShapeDrawable shapeDrawable = new ShapeDrawable(new OvalShape());
+            shapeDrawable.getPaint().setColor(color);
+            shapeDrawable.getPaint().setStyle(Paint.Style.FILL);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                view.setBackground(shapeDrawable);
+            }
+            TextView sourceTitle = $(referencestitleItemView, R.id.sourceTitle);
+            sourceTitle.setTypeface(typefaceLight);
+            StringBuilder sb = new StringBuilder();
+            sb.append("<a href=\"").append(sources.get(0).getUrl()).append("\">").append(sources.get(0).getTitle()).append("</a>");
+            sourceTitle.setText(Html.fromHtml(sb.toString()));
+            sourceTitle.setLinkTextColor(Color.BLACK);
+            sourceTitle.setMovementMethod(LinkMovementMethod.getInstance());
+            URLSpanNoUnderline.stripUnderlines(sourceTitle);
+            titleContainer.addView(referencestitleItemView);
+
+            references.addView(referencesItemView);
+
+        } else {
+            anchorArea.setVisibility(View.VISIBLE);
+            ShapeDrawable shapeDrawableAnchor = new ShapeDrawable(new OvalShape());
+            shapeDrawableAnchor.getPaint().setColor(color);
+            shapeDrawableAnchor.getPaint().setStyle(Paint.Style.STROKE);
+            shapeDrawableAnchor.getPaint().setStrokeWidth(DimensionUtil.dp2px(getResources(), 1f));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                anchor.setBackground(shapeDrawableAnchor);
+                // toggleImage.setBackground(shapeDrawableAnchor);
+            }
+            DrawableCompat.setTint(anchor.getDrawable(), color);
+            DrawableCompat.setTint(toggleImage.getDrawable(), color);
+
+            referCount.setText(sources.size() + " References");
+
+            ReferenceUtil.
+                    groupSource(sources)
+                    .subscribe(new Subscriber<Source>() {
+                        String lastPublisher = "the elder";
+                        List<List<Source>> bucketList = new ArrayList<>();
+                        List<Source> bucket = null;
+
+                        @Override
+                        public void onCompleted() {
+
+                            bucketList.add(bucket);
+
+                            for (List<Source> list : bucketList) {
+
+                                final View referencesItemView =
+                                        LayoutInflater.from(references.getContext()).inflate(R.layout.item_source, references, false);
+                                TextView publisher = $(referencesItemView, R.id.publisher);
+                                publisher.setText(list.get(0).getPublisher());
+                                // publisher.setTypeface(typefaceBold);
+                                ViewGroup titleContainer = $(referencesItemView, R.id.titleContainer);
+                                //title
+                                for (Source source : list) {
+                                    View referencestitleItemView =
+                                            LayoutInflater.from(titleContainer.getContext()).inflate(R.layout.item_source_title, titleContainer, false);
+                                    View view = $(referencestitleItemView, R.id.dot);
+                                    ShapeDrawable shapeDrawable = new ShapeDrawable(new OvalShape());
+                                    shapeDrawable.getPaint().setColor(color);
+                                    shapeDrawable.getPaint().setStyle(Paint.Style.FILL);
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                        view.setBackground(shapeDrawable);
+                                    }
+                                    TextView sourceTitle = $(referencestitleItemView, R.id.sourceTitle);
+                                    sourceTitle.setTypeface(typefaceLight);
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.append("<a href=\"").append(source.getUrl()).append("\">").append(source.getTitle()).append("</a>");
+                                    sourceTitle.setText(Html.fromHtml(sb.toString()));
+                                    sourceTitle.setLinkTextColor(Color.BLACK);
+                                    sourceTitle.setMovementMethod(LinkMovementMethod.getInstance());
+                                    URLSpanNoUnderline.stripUnderlines(sourceTitle);
+                                    titleContainer.addView(referencestitleItemView);
+                                    // LogUtil.d(TAG, "---------onCompleted getPublisher: " + source.getPublisher() + " -----");
+                                }
+                                //LogUtil.d(TAG, "---------onCompleted round-----");
+
+                                references.addView(referencesItemView);
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onNext(Source source) {
+                            if (!lastPublisher.equalsIgnoreCase(source.getPublisher())) {
+                                if (bucket == null) {
+                                    bucket = new ArrayList<Source>();
+                                    bucket.add(source);
+                                } else {
+                                    bucketList.add(bucket);
+                                    bucket = new ArrayList<Source>();
+                                    bucket.add(source);
+                                }
+                                lastPublisher = source.getPublisher();
+                            } else {
+                                bucket.add(source);
+                            }
+
+                        }
+                    });
+        }
+    }
+
+    private void addTweet(ItemRealm itemRealm) {
+        tweets.removeAllViews();
+        TweetRealm tweetRealm = itemRealm.getTweets();
+        if (tweetRealm != null && tweetRealm.getTweets() != null
+                && tweetRealm.getTweets().size() > 0) {
+            RealmList<TweetItemRealm> tweetItemRealms = tweetRealm.getTweets();
+            for (TweetItemRealm tweetItemRealm : tweetItemRealms) {
+
+                View tweetItemView =
+                        LayoutInflater.from(tweets.getContext()).inflate(R.layout.item_twitter, tweets, false);
+
+                TextView tweetName = $(tweetItemView, R.id.tweetName);
+                tweetName.setText("" + tweetItemRealm.getUser().getName());
+                // tweetName.setTypeface(typefaceBold);
+
+                TextView tweetScreenName = $(tweetItemView, R.id.tweetScreenName);
+                //  tweetScreenName.setTypeface(typefaceBold);
+                StringBuilder sb = new StringBuilder();
+                sb.append("<a href=\"https://mobile.twitter.com/").append(tweetItemRealm.getUser().getScreen_name()).append("\">");
+                sb.append("@").append(tweetItemRealm.getUser().getScreen_name()).append("<a>");
+                tweetScreenName.setText(Html.fromHtml(sb.toString()));
+                tweetScreenName.setMovementMethod(LinkMovementMethod.getInstance());
+                tweetScreenName.setLinkTextColor(Color.parseColor("#FF95CEFB"));
+                URLSpanNoUnderline.stripUnderlines(tweetScreenName);
+
+                TextView tweetTime = $(tweetItemView, R.id.tweetTime);
+                String d = TweetTransformer.twitterTime(tweetItemRealm.getCreated_at());
+                tweetTime.setText(d);
+
+
+                TextView tweetText = $(tweetItemView, R.id.tweetText);
+                tweetText.setTypeface(typefaceLight);
+                String text = tweetItemRealm.getText();
+                Spanned s = Html.fromHtml(TweetTransformer.convert(text));
+                tweetText.setText(s);
+
+                tweetText.setLinkTextColor(getResources().getColor(R.color.twitter_border));
+                tweetText.setMovementMethod(LinkMovementMethod.getInstance());
+                URLSpanNoUnderline.stripUnderlines(tweetText);
+
+                if (!TextUtils.isEmpty(tweetItemRealm.getId())) {
+
+                    final String replyUrl = "https://twitter.com/intent/tweet?in_reply_to=" + tweetItemRealm.getId();
+                    ImageView twitterReply = $(tweetItemView, R.id.twitterReply);
+                    twitterReply.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Uri uri = Uri.parse(replyUrl);
+                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                            startActivity(intent);
+                        }
+                    });
+
+                    final String retweet = "https://twitter.com/intent/retweet?tweet_id=" + tweetItemRealm.getId() + "&related=twitterapi,twittermedia,twitter,support";
+                    ImageView twitterRetweet = $(tweetItemView, R.id.twitterRetweet);
+                    twitterRetweet.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Uri uri = Uri.parse(retweet);
+                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                            startActivity(intent);
+                        }
+                    });
+
+                    final String favoriteUrl = "https://twitter.com/intent/favorite?tweet_id=" + tweetItemRealm.getId();
+                    ImageView twitterFavorite = $(tweetItemView, R.id.twitterFavorite);
+                    twitterFavorite.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Uri uri = Uri.parse(favoriteUrl);
+                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                            startActivity(intent);
+                        }
+                    });
+
+                }
+
+
+                tweets.addView(tweetItemView);
+
+            }
+
+
+        }
+    }
+
+    private void addWiki(ItemRealm itemRealm) {
+        wikis.removeAllViews();
+        RealmList<WikiRealm> wikiRealms = itemRealm.getWikis();
+        if (wikiRealms != null && !wikiRealms.isEmpty()) {
+
+            for (WikiRealm wikiRealm : wikiRealms) {
+
+                View wikiItemView =
+                        LayoutInflater.from(wikis.getContext()).inflate(R.layout.item_wiki, wikis, false);
+
+                TextView wikiTitle = $(wikiItemView, R.id.wikiTitle);
+                wikiTitle.setText("" + wikiRealm.getTitle());
+                // wikiTitle.setTypeface(typefaceBold);
+                TextView wikiText = $(wikiItemView, R.id.wikiText);
+                wikiText.setText("" + wikiRealm.getText());
+                wikiText.setTypeface(typefaceLight);
+
+                ImageView wikiSearch = $(wikiItemView, R.id.wikiSearch);
+                DrawableCompat.setTint(wikiSearch.getDrawable(), color);
+
+                TextView searchTerms = $(wikiItemView, R.id.searchTerms);
+                StringBuilder sb = new StringBuilder();
+                for (StringRealmWrapper sw : wikiRealm.getSearchTerms()) {
+                    sb.append(sw.getValue()).append("");
+                }
+
+                searchTerms.setText("learn more:" + sb.toString());
+
+                searchTerms.setTextColor(color);
+                searchTerms.setTypeface(typefaceLight);
+                if (!TextUtils.isEmpty(wikiRealm.getUrl())) {
+                    final String wikiUrl = wikiRealm.getUrl();
+                    wikiItemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Uri uri = Uri.parse(wikiUrl);
+                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                            startActivity(intent);
+                        }
+                    });
+                }
+
+                wikis.addView(wikiItemView);
+
+            }
+        }
+    }
+
+    private void addVideos(ItemRealm itemRealm) {
+        videos.removeAllViews();
+        RealmList<Video> videoList = itemRealm.getVideos();
+        if (videoList != null && !videoList.isEmpty()) {
+            for (Video video : videoList) {
+
+                View videoItemView =
+                        LayoutInflater.from(videos.getContext()).inflate(R.layout.item_video, videos, false);
+                TextView title = $(videoItemView, R.id.title);
+                title.setText("" + video.getTitle());
+                //title.setTypeface(typefaceBold);
+                ImageView playIcon = $(videoItemView, R.id.playIcon);
+                ShapeDrawable shapeDrawable = new ShapeDrawable(new OvalShape());
+                shapeDrawable.getPaint().setColor(color);
+                shapeDrawable.getPaint().setStyle(Paint.Style.FILL);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    playIcon.setBackground(shapeDrawable);
+                }
+
+                ImageView imageView = $(videoItemView, R.id.thumbnail);
+                Glide.with(imageView.getContext()).load(video.getThumbnail()).centerCrop().crossFade().into(imageView);
+                RealmList<Stream> streams = video.getStreams();
+                if (streams != null && streams.size() > 0) {
+                    String url = null;
+                    for (Stream stream : streams) {
+                        if (!TextUtils.isEmpty(stream.getUrl())
+                                && !TextUtils.isEmpty(stream.getMime_type())
+                                && !"application/vnd.apple.mpegurl".equalsIgnoreCase(stream.getMime_type())
+                                ) {
+                            url = stream.getUrl();
+                            break;
+                        }
+                    }
+                    if (url != null) {
+                        final String src = url;
+                        videoItemView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent mpdIntent = new Intent(v.getContext(), MediaPlayerActivity.class);
+                                mpdIntent.setData(Uri.parse(src));
+                                mpdIntent.putExtra(MediaPlayerActivity.CONTENT_TYPE_EXTRA, Util.TYPE_OTHER);
+                                mpdIntent.putExtra(MediaPlayerActivity.CONTENT_ID_EXTRA, src);
+                                mpdIntent.putExtra(MediaPlayerActivity.PROVIDER_EXTRA, "");
+                                startActivity(mpdIntent);
+                            }
+                        });
+
+                    }
+                }
+
+                videos.addView(videoItemView);
+
+
+            }
+
+        }
+    }
+
+    private void addInfographs(ItemRealm itemRealm) {
+        infographs.removeAllViews();
+        RealmList<Infograph> infographList = itemRealm.getInfographs();
+        if (infographList != null && infographList.size() > 0) {
+            for (Infograph infograph : infographList) {
+
+                View infographItemView =
+                        LayoutInflater.from(infographs.getContext()).inflate(R.layout.item_infograph, infographs, false);
+
+                TextView infographTitle = $(infographItemView, R.id.infographTitle);
+                infographTitle.setText(infograph.getTitle());
+
+                TextView infographCaption = $(infographItemView, R.id.infographCaption);
+                infographCaption.setText(infograph.getCaption());
+
+                ImageView infographImg = $(infographItemView, R.id.infographImg);
+
+                String src = EntityHelper.getImageSrc(infograph.getImages());
+                Glide.with(infographImg.getContext()).load(src).crossFade().into(infographImg);
+
+                infographs.addView(infographItemView);
+            }
+        }
+    }
+
+    private void addStatics(ItemRealm itemRealm) {
+        statDetail.removeAllViews();
+        RealmList<StatDetail> statDetails = itemRealm.getStatDetail();
+        if (statDetails != null && !statDetails.isEmpty()) {
+
+            for (StatDetail stat : statDetails) {
+
+                View staticItemView =
+                        LayoutInflater.from(statDetail.getContext()).inflate(R.layout.item_statics, statDetail, false);
+                TextView statDetailTitle = $(staticItemView, R.id.statDetailTitle);
+                statDetailTitle.setText(stat.getTitle().getText());
+                statDetailTitle.setTextColor(color);
+
+
+                TextView statDetailValue = $(staticItemView, R.id.statDetailValue);
+                statDetailValue.setText(stat.getValue().getText());
+                statDetailValue.setTypeface(typefaceLight);
+
+                TextView statDetailUnits = $(staticItemView, R.id.statDetailUnits);
+                statDetailUnits.setText(stat.getUnits().getText());
+                statDetailUnits.setTypeface(typefaceLight);
+
+                TextView statDetailDescription = $(staticItemView, R.id.statDetailDescription);
+                statDetailDescription.setText(stat.getDescription().getText());
+                statDetailDescription.setTypeface(typefaceLight);
+                statDetail.addView(staticItemView);
+
+            }
+
+        }
+    }
+
+    private void addQuote(ItemRealm itemRealm) {
+        summary.removeAllViews();
+        RealmList<Summary> summaries = itemRealm.getMultiSummary();
+        if (summaries != null && !summaries.isEmpty()) {
+            for (Summary item : summaries) {
+                View summaryItemView =
+                        LayoutInflater.from(summary.getContext()).inflate(R.layout.item_summary, summary, false);
+                TextView textView = $(summaryItemView, R.id.summaryText);
+                textView.setTypeface(typefaceLight);
+
+                ViewGroup quoteContainer = $(summaryItemView, R.id.quoteContainer);
+                textView.setText(item.getText());
+                if (item.getQuote() == null || item.getQuote().getText() == null) {
+                    quoteContainer.removeAllViews();
+                } else {
+                    Quote quote = item.getQuote();
+                    TextView quoteSymbol = $(quoteContainer, R.id.quoteSymbol);
+                    quoteSymbol.setTextColor(color);
+                    TextView quoteText = $(quoteContainer, R.id.quoteText);
+                    quoteText.setTextColor(color);
+                    // quoteText.setTypeface(typefaceLight);
+                    quoteText.setText(quote.getText());
+                    TextView quoteSource = $(quoteContainer, R.id.quoteSource);
+                    quoteSource.setText(quote.getSource());
+                    //quoteSource.setTypeface(typefaceBold);
+                    View verticalLine = $(quoteContainer, R.id.verticalLine);
+                    verticalLine.setBackgroundColor(color);
+                }
+                summary.addView(summaryItemView);
+            }
+        }
+    }
+
+    private void addLongreads(ItemRealm itemRealm) {
+        longreads.removeAllViews();
+        RealmList<LongRead> longReads = itemRealm.getLongreads();
+        if (longReads != null && !longReads.isEmpty()) {
+            for (LongRead longRead : longReads) {
+
+                View longReadItemView =
+                        LayoutInflater.from(longreads.getContext()).inflate(R.layout.item_topic_in_depth, longreads, false);
+
+
+                Image image = longRead.getImages();
+
+                String src = getImageSource(image);
+
+                if (src != null && src.length() > 0) {
+                    ImageView longreadImg = $(longReadItemView, R.id.longreadImg);
+
+                    Glide.with(longreads.getContext()).load(src).centerCrop().crossFade().into(longreadImg);
+                }
+
+
+                TextView longreadTitle = $(longReadItemView, R.id.longreadTitle);
+
+                longreadTitle.setText(longRead.getTitle());
+                longreadTitle.setTextColor(color);
+
+                TextView longreadPublisher = $(longReadItemView, R.id.longreadPublisher);
+                longreadPublisher.setText(longRead.getPublisher());
+
+
+                TextView longreadDescription = $(longReadItemView, R.id.longreadDescription);
+                longreadDescription.setText(longRead.getDescription());
+                longreadDescription.setTypeface(typefaceLight);
+                if (!TextUtils.isEmpty(longRead.getUrl())) {
+                    final String depthUrl = longRead.getUrl();
+                    longReadItemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Uri uri = Uri.parse(depthUrl);
+                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                            startActivity(intent);
+                        }
+                    });
+
+
+                }
+
+                longreads.addView(longReadItemView);
+
+            }
+        }
+    }
+
+    private void addLocations(ItemRealm itemRealm) {
+        locations.removeAllViews();
+        RealmList<Location> locationList = itemRealm.getLocations();
+        if (locationList != null && !locationList.isEmpty()) {
+            for (Location location : locationList) {
+
+                View locationItemView =
+                        LayoutInflater.from(locations.getContext()).inflate(R.layout.item_location, locations, false);
+                TextView caption = $(locationItemView, R.id.caption);
+                caption.setText(location.getCaption());
+                final double latitude = Double.valueOf(TextUtils.isEmpty(location.getLatitude()) ? "0" : location.getLatitude());
+                final double longitude = Double.valueOf(TextUtils.isEmpty(location.getLongtitude()) ? "0" : location.getLongtitude());
+                final int zoomLevel = Integer.valueOf(TextUtils.isEmpty(location.getZoonLevel()) ? "0" : location.getZoonLevel());
+                AMapOptions aMapOptions = new AMapOptions();
+                aMapOptions.scaleControlsEnabled(false).scrollGesturesEnabled(false);
+                SupportMapFragment supportMapFragment = SupportMapFragment.newInstance(aMapOptions);
+
+                LatLng latLng = new LatLng(latitude, longitude);
+                final ImageView errorTag = $(locationItemView, R.id.errorTag);
+                final ImageView locationImg = $(locationItemView, R.id.locationImg);
+                AMap aMap = supportMapFragment.getMap();
+                aMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .icon(BitmapDescriptorFactory
+                                .defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(
+                        latLng, zoomLevel, 0, 0));
+                aMap.moveCamera(cameraUpdate);
+                aMap.getUiSettings().setAllGesturesEnabled(false);
+                aMap.getUiSettings().setZoomControlsEnabled(false);
+                aMap.getUiSettings().setZoomGesturesEnabled(false);
+                aMap.getUiSettings().setMyLocationButtonEnabled(false);
+                aMap.setMapLanguage(AMap.ENGLISH);
+                aMap.setOnMapLoadedListener(new AMap.OnMapLoadedListener() {
+                    @Override
+                    public void onMapLoaded() {
+                        errorTag.setVisibility(View.GONE);
+                        locationImg.setVisibility(View.GONE);
+                    }
+                });
+                getChildFragmentManager().beginTransaction().add(R.id.mapContainer, supportMapFragment).commit();
+                final String captionStr = location.getCaption();
+                final String name = location.getName();
+                $(locationItemView, R.id.mask).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getContext(), LocationActivity.class);
+                        intent.putExtra(LocationActivity.LATITUDE, latitude);
+                        intent.putExtra(LocationActivity.LONGITUDE, longitude);
+                        intent.putExtra(LocationActivity.ZOOM_LEVER, zoomLevel);
+                        intent.putExtra(LocationActivity.CAPTION, captionStr);
+                        intent.putExtra(LocationActivity.NAME, name);
+                        startActivity(intent);
+                    }
+                });
+                // caption.setTypeface(typefaceBold);
+                locations.addView(locationItemView);
+            }
+        }
+    }
+
+    private void addSlideShow(ItemRealm itemRealm) {
+        Slideshow slideshow1 = itemRealm.getSlideshow();
+        RealmList<Photo> photos = slideshow1.getPhotos();
+        final ArrayList<SlideItem> slideItems = new ArrayList<SlideItem>();
+        for (Photo photo : photos) {
+            SlideItem slideItem = new SlideItem();
+            slideItem.caption = photo.getCaption();
+            slideItem.headline = photo.getHeadline();
+            slideItem.provider_name = photo.getProvider_name();
+            slideItem.url = EntityHelper.getImageSrc(photo.getImages());
+            slideItems.add(slideItem);
+            galleryAdapter.addItem(slideItem);
+        }
+        if (slideItems.isEmpty()) {
+            singleImage.setVisibility(View.GONE);
+            gallery.setVisibility(View.GONE);
+        } else if (slideItems.size() == 1) {
+            singleImage.setVisibility(View.VISIBLE);
+            gallery.setVisibility(View.GONE);
+            String src = EntityHelper.getImageSrc(photos.get(0).getImages());
+            Glide.with(singleImage.getContext()).load(src).centerCrop().crossFade().into(singleImage);
+            singleImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(v.getContext(), SlideShowActivity.class);
+                    intent.putParcelableArrayListExtra(SlideShowActivity.DATA, slideItems);
+                    intent.putExtra(SlideShowActivity.CURRENT_INDEX, 0);
+                    startActivity(intent);
+                }
+            });
+
+        } else {
+            singleImage.setVisibility(View.GONE);
+            gallery.setVisibility(View.VISIBLE);
+            galleryAdapter.addItemClickListenr(new BaseRecyclerViewAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(RecyclerView.ViewHolder holder, int position) {
+                    Intent intent = new Intent(gallery.getContext(), SlideShowActivity.class);
+                    intent.putParcelableArrayListExtra(SlideShowActivity.DATA, slideItems);
+                    intent.putExtra(SlideShowActivity.CURRENT_INDEX, position);
+                    startActivity(intent);
+                }
+            });
+
+
+        }
+
+
+    }
+
+    private Subscription getEvent(final ItemRealm itemRealm) {
+        if (getActivity() instanceof NewsDetailActivity) {
+            return ((NewsDetailActivity) getActivity())
+                    .getRxBus()
+                    .toObserverable(Integer.class)
+                    .onBackpressureBuffer()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<Integer>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onNext(Integer integer) {
+                            if (index == integer) {
+                                // LogUtil.e(TAG, "Fragment index:" + (index - 1) + ";viewpager index:" + integer);
+                                if (!itemRealm.isChecked()) {
+                                    activeItem();
+                                }
+                            }
+
+                        }
+                    })
+                    ;
+        }
+        return null;
+    }
+
+
+    private String getImageSource(Image image) {
+
+        String src = null;
+        if (image != null) {
+            src = image.getUrl();
+            RealmList<ImageAsset> imageAssets = image.getImage_assets();
+            for (ImageAsset imageAsset : imageAssets) {
+                if ("pc:size=square".equalsIgnoreCase(imageAsset.getTag()) || "pc:size=square_large".equalsIgnoreCase(imageAsset.getTag())) {
+                    src = imageAsset.getUrl();
+                    break;
+
+                }
+                src = imageAsset.getUrl();
+            }
+
+        }
+        return src;
+
+    }
+*/
+
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         if (subscription != null) {
             subscription.unsubscribe();
             subscription = null;
