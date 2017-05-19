@@ -89,17 +89,23 @@ public class ExtraNewsListActivity extends BaseActivity {
         }
     }
     private void fetchDataByNetWork(Observer<NewsDigest> observer) {
-        // TODO:參數從Settings中取
+        int create_time = 0;
+        String timezone = "8";
+        String date = "2017-05-19";
+        String lang = "en-AA";
+        String region_edition = "AA";
+        int digest_edition = 0;
+        String more_stories = "1";
         RetrofitSingleton.getApiService(this)
                 .GetDigestList(
-                        0,"8","2017-05-18","en-AA", "AA", 0, "1"
+                        create_time,timezone,date,lang, region_edition, digest_edition, more_stories
                 )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .filter(new Func1<DigestApi, Boolean>() {
                     @Override
                     public Boolean call(DigestApi mDigestApi) {
-                        return mDigestApi.result.lang.equals("en-AA");
+                        return mDigestApi.result.more_stories.equals("1");
                     }
                 })
                 .map(new Func1<DigestApi, NewsDigest>() {

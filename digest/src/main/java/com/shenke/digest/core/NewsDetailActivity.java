@@ -127,11 +127,11 @@ public class NewsDetailActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             if (!more && mNewsDigest != null && !mNewsDigest.items.isEmpty()) {
                 NewsDigest.NewsItem newsItem = mNewsDigest.items.get(position);
-                return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), -1);
+                return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), -1,mNewsDigest);
             } else if (more && mNewsDigest != null && !mNewsDigest.items.isEmpty()) {
                 if (position < getCount() - 1) {
                     NewsDigest.NewsItem newsItem= mNewsDigest.items.get(position);
-                    return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), position);
+                    return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), position,mNewsDigest);
 
                 } else {
                     Fragment fragment = new ExtraFragment();
@@ -163,7 +163,7 @@ public class NewsDetailActivity extends AppCompatActivity {
 
     public void updateIndex(int index) {
         if (data != null && !data.isEmpty() && index >= 0 && index < data.size()) {
-           // data.get(index).checked = true;
+           //data.get(index).checked = true;
         }
 
     }

@@ -7,6 +7,7 @@ import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 
 import com.shenke.digest.R;
 import com.shenke.digest.adapter.NewsAdapter;
+import com.shenke.digest.core.NewsListActivity;
 import com.shenke.digest.fragment.NewsListFragment;
 import com.shenke.digest.util.DateUtil;
 import com.shenke.digest.util.Helper;
@@ -61,8 +63,8 @@ public class MoreDigestDialog extends DialogFragment {
     private ImageView img;
     private TextView tvHour, tvMinute, tvSecond, infoType;
     private View layoutContainer;
-    public static final int SECTION_MORNING = 1;
-    public static final int SECTION_EVENING = 2;
+    public static final int SECTION_MORNING = 0;
+    public static final int SECTION_EVENING = 1;
     private int section;
     private int mHour;
     private int mMinute;
@@ -351,6 +353,7 @@ public class MoreDigestDialog extends DialogFragment {
             newsDay.setText(str.substring(0, 3));
             ImageView daytime = (ImageView) item.findViewById(R.id.daytime);
             daytime.setTag(str);
+           final  Intent intent = new Intent(getContext(), NewsListActivity.class);
             daytime.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -359,6 +362,9 @@ public class MoreDigestDialog extends DialogFragment {
                     if (mNoticeDialogListener != null) {
                         mNoticeDialogListener.onItemclick(SECTION_MORNING, str);//section、date
                     }
+                    intent.putExtra("SECTION",SECTION_MORNING);
+                    intent.putExtra("DATE",str);
+                    startActivity(intent);
                     dismiss();
                 }
             });
@@ -372,6 +378,9 @@ public class MoreDigestDialog extends DialogFragment {
                         mNoticeDialogListener.onItemclick(SECTION_EVENING, str);
 
                     }
+                    intent.putExtra("SECTION",SECTION_EVENING);
+                    intent.putExtra("DATE",str);
+                    startActivity(intent);
                     dismiss();
                 }
             });

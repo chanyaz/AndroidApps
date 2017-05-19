@@ -39,6 +39,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
+import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_MORNING;
+
 public class NewsListFragment extends BaseFragment implements MoreDigestDialog.NoticeDialogListener, SettingsDialog.NoticeEditionListener {
     private final String TAG = "NewsListFragment";
     private NewsAdapter adapter;
@@ -57,6 +59,11 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mSection = getArguments().getInt("SENCTION",0);
+        final String str = Helper.format(new Date());
+        // date = "2017-05-19";
+       String date = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
+        mDate = getArguments().getString("DATE",date);
         mNewsDigest = (NewsDigest) getArguments().getSerializable("NewsDigestData");
     }
 
@@ -67,7 +74,7 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
                     public void call(Subscriber<? super Map<String, String>> subscriber) {
                         try {
                             SharedPreferences spf = getContext().getSharedPreferences(EditionDialog.PREFS_NAME, 0);
-                            int selectedSection = spf.getInt(EditionDialog.SECTION_SELECTED, MoreDigestDialog.SECTION_MORNING);
+                            int selectedSection = spf.getInt(EditionDialog.SECTION_SELECTED, SECTION_MORNING);
                             String dateSection = spf.getString(EditionDialog.DATE_SELECTED, Helper.format(new Date()));
                             int edition = spf.getInt(EditionDialog.EDITION, EditionDialog.EDITION_INT);
                             Map<String, String> map = new HashMap<String, String>();
@@ -266,6 +273,8 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
      */
     public void extraNews() {
         Intent intent = new Intent(getContext(), ExtraNewsListActivity.class);
+        intent.putExtra("SECTION",mSection);
+        intent.putExtra("DATE",mDate);
         intent.putExtra(ExtraNewsListActivity.ALL_CHECKED, adapter.isAllChecked());
         startActivity(intent);
         getActivity().overridePendingTransition(R.anim.move_in, R.anim.move_out);

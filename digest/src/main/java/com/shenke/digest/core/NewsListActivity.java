@@ -21,9 +21,12 @@ import com.shenke.digest.entity.Cache;
 import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.fragment.NewsListFragment;
 import com.shenke.digest.http.RetrofitSingleton;
+import com.shenke.digest.util.Helper;
 import com.shenke.digest.util.IntentUtil;
 import com.shenke.digest.util.LogUtil;
 import com.shenke.digest.util.StatusBarCompat;
+
+import java.util.Date;
 
 import rx.Observable;
 import rx.Observer;
@@ -43,8 +46,13 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     private MyReceiver myReceiver;
     private int taskCount;
     public static Bitmap bitmap = null;
-    private Observer<NewsDigest>observer;
+    private Observer<NewsDigest> observer;
     public Cache mCache;
+    private int mSection;
+    private int mEdition;
+    private String mDate;
+    private String lang;
+    String date = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +65,8 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         registerReceiver(myReceiver, intentFilter);
         subscriptionInstall = checkInstall();
         digestLoadDialog = new DigestLoadDialog();
+        mSection = getIntent().getIntExtra("SECTION", 0);
+        mDate = getIntent().getStringExtra("DATE");
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container, digestLoadDialog, "loading")
@@ -88,7 +98,9 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                 digestLoadDialog.onLoadSuccess();
                 NewsListFragment mNewsListFragment = new NewsListFragment();
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("NewsDigestData",mNewsDigest);
+                bundle.putString("DATE",date);
+                bundle.putInt("SENCTION",mSection);
+                bundle.putSerializable("NewsDigestData", mNewsDigest);
                 mNewsListFragment.setArguments(bundle);
                 getSupportFragmentManager()
                         .beginTransaction()
@@ -110,6 +122,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         NewsDigest mNewsDigest = null;
         try {
             mNewsDigest = (NewsDigest) mCache.getAsObject("NewsDigestData");
+
         } catch (Exception e) {
             Log.e("DigestNews", e.toString());
         }
@@ -125,17 +138,37 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
      * 网络获取并存入缓存，再从缓存中取出
      */
     private void fetchDataByNetWork(Observer<NewsDigest> observer) {
-        // TODO:參數從Settings中取
+        int create_time = 0;
+        String timezone = "8";
+
+        if (mDate != null) {//Thu 05/18/2017 16:15:41 周四 May Thursday
+            date = mDate.trim().substring(10, 14) + "-" + mDate.trim().substring(4, 6) + "-" + mDate.trim().substring(7, 9);
+
+        } else {
+            final String str = Helper.format(new Date());
+            // date = "2017-05-19";
+            date = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
+        }
+        String lang = "en-AA";
+        String region_edition = lang.trim().substring(3, 5);
+
+        int digest_edition = 0;
+        if (mSection == 1) {
+            digest_edition = 1;
+        } else {
+            digest_edition = 0;
+        }
+        String more_stories = "0";
         RetrofitSingleton.getApiService(this)
                 .GetDigestList(
-                        0,"8","2017-05-18","en-AA", "AA", 0, "0"
+                        create_time, timezone, date, lang, region_edition, digest_edition, more_stories
                 )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .filter(new Func1<DigestApi, Boolean>() {
                     @Override
                     public Boolean call(DigestApi mDigestApi) {
-                        return mDigestApi.result.lang.equals("en-AA");
+                        return mDigestApi.result.more_stories.equals("0");
                     }
                 })
                 .map(new Func1<DigestApi, NewsDigest>() {
@@ -154,6 +187,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                 .subscribe(observer);
 
     }
+
     private Subscription checkInstall() {
 
         return rx.Observable
@@ -182,7 +216,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                       digestLoadDialog.onLoadError();
+                        digestLoadDialog.onLoadError();
                     }
 
                     @Override
@@ -224,7 +258,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                       // digestLoadDialog.onLoadError();
+                        // digestLoadDialog.onLoadError();
 
                     }
 
@@ -234,8 +268,6 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                     }
                 });
     }
-
-
 
 
     @Override
@@ -262,11 +294,12 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
             if (subscription != null) {
                 subscription.unsubscribe();
             }
-
+            fetchData();
         } else {
             digestLoadDialog.onLoadError();
         }
     }
+
 
     public class MyReceiver extends BroadcastReceiver {
         public static final String ACTION_TASK_COUNT = "com.shenke.digest.core.action.TASK_COUNT";

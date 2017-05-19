@@ -4,33 +4,63 @@ package com.shenke.digest.fragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.maps2d.AMap;
+import com.amap.api.maps2d.AMapOptions;
+import com.amap.api.maps2d.CameraUpdate;
+import com.amap.api.maps2d.CameraUpdateFactory;
+import com.amap.api.maps2d.SupportMapFragment;
+import com.amap.api.maps2d.model.BitmapDescriptorFactory;
+import com.amap.api.maps2d.model.CameraPosition;
+import com.amap.api.maps2d.model.LatLng;
+import com.amap.api.maps2d.model.MarkerOptions;
 import com.bumptech.glide.Glide;
+import com.google.android.exoplayer.util.Util;
 import com.shenke.digest.R;
+import com.shenke.digest.adapter.BaseRecyclerViewAdapter;
 import com.shenke.digest.adapter.GalleryAdapter;
 import com.shenke.digest.core.ExtraNewsListActivity;
+import com.shenke.digest.core.LocationActivity;
+import com.shenke.digest.core.MediaPlayerActivity;
 import com.shenke.digest.core.NewsDetailActivity;
 import com.shenke.digest.dialog.SettingsDialog;
 import com.shenke.digest.dialog.ShareDialog;
+import com.shenke.digest.dialog.SlideShowActivity;
 import com.shenke.digest.entity.NewsDigest;
+import com.shenke.digest.entity.SlideItem;
 import com.shenke.digest.util.DimensionUtil;
 import com.shenke.digest.util.LogUtil;
+import com.shenke.digest.util.ReferenceUtil;
+import com.shenke.digest.util.URLSpanNoUnderline;
 import com.shenke.digest.view.DonutProgress;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import rx.Subscriber;
 import rx.Subscription;
@@ -86,7 +116,6 @@ public class NewsDetailFragment extends BaseFragment {
     private Typeface typefaceThin;
     private GalleryAdapter galleryAdapter;
     private TextView error;
-    //private Context mContext;
     private Subscription updateIndexSubscription;
     private int distance;
     public static Bitmap bitmap;
@@ -105,12 +134,13 @@ public class NewsDetailFragment extends BaseFragment {
      * @return A new instance of fragment NewsDetailFragment.
      */
 
-    public static NewsDetailFragment newInstance(String uuid, int color, int index) {
+    public static NewsDetailFragment newInstance(String uuid, int color, int index,NewsDigest mNewsDigest) {
         NewsDetailFragment fragment = new NewsDetailFragment();
         Bundle args = new Bundle();
         args.putString(UUID, uuid);
         args.putInt(COLOR, color);
         args.putInt(INDEX, index);
+        args.putSerializable("NewsDigestData",mNewsDigest);
         fragment.setArguments(args);
         LogUtil.d(TAG, "uuid:" + uuid);
         return fragment;
@@ -152,7 +182,7 @@ public class NewsDetailFragment extends BaseFragment {
                 Bundle bundle = new Bundle();
                 bundle.putString(ShareDialog.TITLE, title.getText().toString());
                 bundle.putString(ShareDialog.LINK, title.getTag().toString());
-                bundle.putString(ShareDialog.SOURCE, lable.getTag().toString());
+                bundle.putString(ShareDialog.SOURCE, mNewsDigest.items.get(index).sources.get(0).publisher);
                 shareDialog.setArguments(bundle);
                 shareDialog.show(getChildFragmentManager(), "share");
             }
@@ -246,7 +276,7 @@ public class NewsDetailFragment extends BaseFragment {
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         gallery.setLayoutManager(linearLayoutManager);
         gallery.setItemViewCacheSize(2);
-        galleryAdapter = new GalleryAdapter();
+        galleryAdapter = new GalleryAdapter(getContext(), mNewsDigest);
         gallery.setAdapter(galleryAdapter);
         nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
@@ -352,7 +382,7 @@ public class NewsDetailFragment extends BaseFragment {
             //label
             lable.setText(mNewsDigest.items.get(index).categories.get(0).name);
             lable.setVisibility(View.VISIBLE);
-            //lable.setTag(ItemRealUtil.getPress(itemRealm));
+            lable.setTag(mNewsDigest.items.get(index).sources.get(0).publisher);
             Glide.with(banner.getContext()).load(mNewsDigest.items.get(index).images.originalUrl).crossFade().into(banner);
             //title
             title.setText("" + mNewsDigest.items.get(index).title);
@@ -360,61 +390,60 @@ public class NewsDetailFragment extends BaseFragment {
             title.setVisibility(View.VISIBLE);
 
             //quote
-           /* addQuote(itemRealm);
+            addQuote(mNewsDigest.items.get(index));
 
             summaryEdition.setVisibility(View.VISIBLE);
 
-            //statics
-            addStatics(itemRealm);
+            //statDetail
+            addStatDetail(mNewsDigest.items.get(index));
 
 
             //infographs
 
-            addInfographs(itemRealm);
+            addInfographs(mNewsDigest.items.get(index));
 
 
             //longreads
-            addLongreads(itemRealm);
+            addLongreads(mNewsDigest.items.get(index));
 
             //locations
-            addLocations(itemRealm);
+            addLocations(mNewsDigest.items.get(index));
 
             //slideshow
 
-            addSlideShow(itemRealm);
+            addSlideShow(mNewsDigest.items.get(index));
 
             //videos
-            addVideos(itemRealm);
+            addVideos(mNewsDigest.items.get(index));
 
             //wiki
-            addWiki(itemRealm);
+            addWiki(mNewsDigest.items.get(index));
 
             //tweet
-            addTweet(itemRealm);
+           // addTweet(mNewsDigest.items.get(index));
             //reference
-            addReference(itemRealm);
+            addReference(mNewsDigest.items.get(index));
             line.setVisibility(View.VISIBLE);
             error.setVisibility(View.GONE);
             if (getActivity() instanceof NewsDetailActivity) {
                 int pageIndex = ((NewsDetailActivity) getActivity()).getCurrentIndex();
-                if (pageIndex == index && !itemRealm.isChecked()) {
+                if (pageIndex == index && !mNewsDigest.items.get(index).isChecked()) {
                     // LogUtil.e(TAG, "Fragment index:" + (index - 1) + ";viewpager index:" + pageIndex);
                     activeItem();
                 }
             }
             if (index != -1) {
-                event = getEvent(itemRealm);
+                event = getEvent(mNewsDigest.items.get(index));
             }
         } else {
             error.setVisibility(View.VISIBLE);
         }
-*/}
     }
 
-  /*  private void addReference(ItemRealm itemRealm) {
+   private void addReference(NewsDigest.NewsItem newsItem) {
 
 
-        RealmList<Source> sources = itemRealm.getSources();
+        List<NewsDigest.NewsItem.Source> sources = newsItem.sources;
 
 
         if (sources != null && sources.size() > 0) {
@@ -462,7 +491,7 @@ public class NewsDetailFragment extends BaseFragment {
                     LayoutInflater.from(references.getContext()).inflate(R.layout.item_source, references, false);
             TextView publisher = $(referencesItemView, R.id.publisher);
             //publisher.setTypeface(typefaceBold);
-            publisher.setText(sources.get(0).getPublisher());
+            publisher.setText(sources.get(0).publisher);
             ViewGroup titleContainer = $(referencesItemView, R.id.titleContainer);
 
             View referencestitleItemView =
@@ -477,7 +506,7 @@ public class NewsDetailFragment extends BaseFragment {
             TextView sourceTitle = $(referencestitleItemView, R.id.sourceTitle);
             sourceTitle.setTypeface(typefaceLight);
             StringBuilder sb = new StringBuilder();
-            sb.append("<a href=\"").append(sources.get(0).getUrl()).append("\">").append(sources.get(0).getTitle()).append("</a>");
+            sb.append("<a href=\"").append(sources.get(0).url).append("\">").append(sources.get(0).title).append("</a>");
             sourceTitle.setText(Html.fromHtml(sb.toString()));
             sourceTitle.setLinkTextColor(Color.BLACK);
             sourceTitle.setMovementMethod(LinkMovementMethod.getInstance());
@@ -503,26 +532,26 @@ public class NewsDetailFragment extends BaseFragment {
 
             ReferenceUtil.
                     groupSource(sources)
-                    .subscribe(new Subscriber<Source>() {
+                    .subscribe(new Subscriber<NewsDigest.NewsItem.Source>() {
                         String lastPublisher = "the elder";
-                        List<List<Source>> bucketList = new ArrayList<>();
-                        List<Source> bucket = null;
+                        List<List<NewsDigest.NewsItem.Source>> bucketList = new ArrayList<>();
+                        List<NewsDigest.NewsItem.Source> bucket = null;
 
                         @Override
                         public void onCompleted() {
 
                             bucketList.add(bucket);
 
-                            for (List<Source> list : bucketList) {
+                            for (List<NewsDigest.NewsItem.Source> list : bucketList) {
 
                                 final View referencesItemView =
                                         LayoutInflater.from(references.getContext()).inflate(R.layout.item_source, references, false);
                                 TextView publisher = $(referencesItemView, R.id.publisher);
-                                publisher.setText(list.get(0).getPublisher());
+                                publisher.setText(list.get(0).publisher);
                                 // publisher.setTypeface(typefaceBold);
                                 ViewGroup titleContainer = $(referencesItemView, R.id.titleContainer);
                                 //title
-                                for (Source source : list) {
+                                for (NewsDigest.NewsItem.Source source : list) {
                                     View referencestitleItemView =
                                             LayoutInflater.from(titleContainer.getContext()).inflate(R.layout.item_source_title, titleContainer, false);
                                     View view = $(referencestitleItemView, R.id.dot);
@@ -535,7 +564,7 @@ public class NewsDetailFragment extends BaseFragment {
                                     TextView sourceTitle = $(referencestitleItemView, R.id.sourceTitle);
                                     sourceTitle.setTypeface(typefaceLight);
                                     StringBuilder sb = new StringBuilder();
-                                    sb.append("<a href=\"").append(source.getUrl()).append("\">").append(source.getTitle()).append("</a>");
+                                    sb.append("<a href=\"").append(source.url).append("\">").append(source.title).append("</a>");
                                     sourceTitle.setText(Html.fromHtml(sb.toString()));
                                     sourceTitle.setLinkTextColor(Color.BLACK);
                                     sourceTitle.setMovementMethod(LinkMovementMethod.getInstance());
@@ -555,17 +584,17 @@ public class NewsDetailFragment extends BaseFragment {
                         }
 
                         @Override
-                        public void onNext(Source source) {
-                            if (!lastPublisher.equalsIgnoreCase(source.getPublisher())) {
+                        public void onNext(NewsDigest.NewsItem.Source source) {
+                            if (!lastPublisher.equalsIgnoreCase(source.publisher)) {
                                 if (bucket == null) {
-                                    bucket = new ArrayList<Source>();
+                                    bucket = new ArrayList<NewsDigest.NewsItem.Source>();
                                     bucket.add(source);
                                 } else {
                                     bucketList.add(bucket);
-                                    bucket = new ArrayList<Source>();
+                                    bucket = new ArrayList<NewsDigest.NewsItem.Source>();
                                     bucket.add(source);
                                 }
-                                lastPublisher = source.getPublisher();
+                                lastPublisher = source.publisher;
                             } else {
                                 bucket.add(source);
                             }
@@ -575,9 +604,9 @@ public class NewsDetailFragment extends BaseFragment {
         }
     }
 
-    private void addTweet(ItemRealm itemRealm) {
+  /*  private void addTweet(NewsDigest.NewsItem newsItem) {
         tweets.removeAllViews();
-        TweetRealm tweetRealm = itemRealm.getTweets();
+        NewsDigest.NewsItem.TweetKeyword tweetRealm = newsItem.tweetKeywords;
         if (tweetRealm != null && tweetRealm.getTweets() != null
                 && tweetRealm.getTweets().size() > 0) {
             RealmList<TweetItemRealm> tweetItemRealms = tweetRealm.getTweets();
@@ -659,23 +688,23 @@ public class NewsDetailFragment extends BaseFragment {
 
 
         }
-    }
+    }*/
 
-    private void addWiki(ItemRealm itemRealm) {
+    private void addWiki(NewsDigest.NewsItem newsItem) {
         wikis.removeAllViews();
-        RealmList<WikiRealm> wikiRealms = itemRealm.getWikis();
-        if (wikiRealms != null && !wikiRealms.isEmpty()) {
+        List<NewsDigest.NewsItem.Wiki> wikiList = newsItem.wikis;
+        if (wikiList != null && !wikiList.isEmpty()) {
 
-            for (WikiRealm wikiRealm : wikiRealms) {
+            for (NewsDigest.NewsItem.Wiki wiki : wikiList) {
 
                 View wikiItemView =
                         LayoutInflater.from(wikis.getContext()).inflate(R.layout.item_wiki, wikis, false);
 
                 TextView wikiTitle = $(wikiItemView, R.id.wikiTitle);
-                wikiTitle.setText("" + wikiRealm.getTitle());
+                wikiTitle.setText("" + wiki.title);
                 // wikiTitle.setTypeface(typefaceBold);
                 TextView wikiText = $(wikiItemView, R.id.wikiText);
-                wikiText.setText("" + wikiRealm.getText());
+                wikiText.setText("" + wiki.text);
                 wikiText.setTypeface(typefaceLight);
 
                 ImageView wikiSearch = $(wikiItemView, R.id.wikiSearch);
@@ -683,16 +712,16 @@ public class NewsDetailFragment extends BaseFragment {
 
                 TextView searchTerms = $(wikiItemView, R.id.searchTerms);
                 StringBuilder sb = new StringBuilder();
-                for (StringRealmWrapper sw : wikiRealm.getSearchTerms()) {
-                    sb.append(sw.getValue()).append("");
+                for (NewsDigest.NewsItem.Wiki.Term term : wiki.searchTerms) {
+                   // sb.append(term.value).append("");
                 }
 
                 searchTerms.setText("learn more:" + sb.toString());
 
                 searchTerms.setTextColor(color);
                 searchTerms.setTypeface(typefaceLight);
-                if (!TextUtils.isEmpty(wikiRealm.getUrl())) {
-                    final String wikiUrl = wikiRealm.getUrl();
+                if (!TextUtils.isEmpty(wiki.url)) {
+                    final String wikiUrl = wiki.url;
                     wikiItemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -709,16 +738,16 @@ public class NewsDetailFragment extends BaseFragment {
         }
     }
 
-    private void addVideos(ItemRealm itemRealm) {
+    private void addVideos(NewsDigest.NewsItem newsItem) {
         videos.removeAllViews();
-        RealmList<Video> videoList = itemRealm.getVideos();
+        List<NewsDigest.NewsItem.Video> videoList = newsItem.videos;
         if (videoList != null && !videoList.isEmpty()) {
-            for (Video video : videoList) {
+            for (NewsDigest.NewsItem.Video video : videoList) {
 
                 View videoItemView =
                         LayoutInflater.from(videos.getContext()).inflate(R.layout.item_video, videos, false);
                 TextView title = $(videoItemView, R.id.title);
-                title.setText("" + video.getTitle());
+                title.setText("" + video.title);
                 //title.setTypeface(typefaceBold);
                 ImageView playIcon = $(videoItemView, R.id.playIcon);
                 ShapeDrawable shapeDrawable = new ShapeDrawable(new OvalShape());
@@ -729,16 +758,16 @@ public class NewsDetailFragment extends BaseFragment {
                 }
 
                 ImageView imageView = $(videoItemView, R.id.thumbnail);
-                Glide.with(imageView.getContext()).load(video.getThumbnail()).centerCrop().crossFade().into(imageView);
-                RealmList<Stream> streams = video.getStreams();
+                Glide.with(imageView.getContext()).load(video.thumbnail).centerCrop().crossFade().into(imageView);
+                List<NewsDigest.NewsItem.Video.Stream> streams = video.streams;
                 if (streams != null && streams.size() > 0) {
                     String url = null;
-                    for (Stream stream : streams) {
-                        if (!TextUtils.isEmpty(stream.getUrl())
-                                && !TextUtils.isEmpty(stream.getMime_type())
-                                && !"application/vnd.apple.mpegurl".equalsIgnoreCase(stream.getMime_type())
+                    for (NewsDigest.NewsItem.Video.Stream stream : streams) {
+                        if (!TextUtils.isEmpty(stream.url)
+                                && !TextUtils.isEmpty(stream.mime_type)
+                                && !"application/vnd.apple.mpegurl".equalsIgnoreCase(stream.mime_type)
                                 ) {
-                            url = stream.getUrl();
+                            url = stream.url;
                             break;
                         }
                     }
@@ -767,24 +796,25 @@ public class NewsDetailFragment extends BaseFragment {
         }
     }
 
-    private void addInfographs(ItemRealm itemRealm) {
+    private void addInfographs(NewsDigest.NewsItem newsItem) {
         infographs.removeAllViews();
-        RealmList<Infograph> infographList = itemRealm.getInfographs();
+        List<NewsDigest.NewsItem.Infograph> infographList = newsItem.infographs;
         if (infographList != null && infographList.size() > 0) {
-            for (Infograph infograph : infographList) {
+            for (NewsDigest.NewsItem.Infograph infograph : infographList) {
 
                 View infographItemView =
                         LayoutInflater.from(infographs.getContext()).inflate(R.layout.item_infograph, infographs, false);
 
                 TextView infographTitle = $(infographItemView, R.id.infographTitle);
-                infographTitle.setText(infograph.getTitle());
+                infographTitle.setText(infograph.title);
 
                 TextView infographCaption = $(infographItemView, R.id.infographCaption);
-                infographCaption.setText(infograph.getCaption());
+                infographCaption.setText(infograph.caption);
 
                 ImageView infographImg = $(infographItemView, R.id.infographImg);
 
-                String src = EntityHelper.getImageSrc(infograph.getImages());
+                //String src = EntityHelper.getImageSrc(infograph.getImages());
+                String src = infograph.images.originalUrl;
                 Glide.with(infographImg.getContext()).load(src).crossFade().into(infographImg);
 
                 infographs.addView(infographItemView);
@@ -792,30 +822,30 @@ public class NewsDetailFragment extends BaseFragment {
         }
     }
 
-    private void addStatics(ItemRealm itemRealm) {
+    private void addStatDetail(NewsDigest.NewsItem newsItem) {
         statDetail.removeAllViews();
-        RealmList<StatDetail> statDetails = itemRealm.getStatDetail();
+        List<NewsDigest.NewsItem.StatDetail> statDetails = newsItem.statDetail;
         if (statDetails != null && !statDetails.isEmpty()) {
 
-            for (StatDetail stat : statDetails) {
+            for (NewsDigest.NewsItem.StatDetail stat : statDetails) {
 
                 View staticItemView =
                         LayoutInflater.from(statDetail.getContext()).inflate(R.layout.item_statics, statDetail, false);
                 TextView statDetailTitle = $(staticItemView, R.id.statDetailTitle);
-                statDetailTitle.setText(stat.getTitle().getText());
+                statDetailTitle.setText(stat.title.text);
                 statDetailTitle.setTextColor(color);
 
 
                 TextView statDetailValue = $(staticItemView, R.id.statDetailValue);
-                statDetailValue.setText(stat.getValue().getText());
+                statDetailValue.setText(stat.value.text);
                 statDetailValue.setTypeface(typefaceLight);
 
                 TextView statDetailUnits = $(staticItemView, R.id.statDetailUnits);
-                statDetailUnits.setText(stat.getUnits().getText());
+                statDetailUnits.setText(stat.units.text);
                 statDetailUnits.setTypeface(typefaceLight);
 
                 TextView statDetailDescription = $(staticItemView, R.id.statDetailDescription);
-                statDetailDescription.setText(stat.getDescription().getText());
+                statDetailDescription.setText(stat.description.text);
                 statDetailDescription.setTypeface(typefaceLight);
                 statDetail.addView(staticItemView);
 
@@ -824,30 +854,30 @@ public class NewsDetailFragment extends BaseFragment {
         }
     }
 
-    private void addQuote(ItemRealm itemRealm) {
+    private void addQuote(NewsDigest.NewsItem newsItem ) {
         summary.removeAllViews();
-        RealmList<Summary> summaries = itemRealm.getMultiSummary();
+        List<NewsDigest.NewsItem.Summary> summaries = newsItem.multiSummary;
         if (summaries != null && !summaries.isEmpty()) {
-            for (Summary item : summaries) {
+            for (NewsDigest.NewsItem.Summary item : summaries) {
                 View summaryItemView =
                         LayoutInflater.from(summary.getContext()).inflate(R.layout.item_summary, summary, false);
                 TextView textView = $(summaryItemView, R.id.summaryText);
                 textView.setTypeface(typefaceLight);
 
                 ViewGroup quoteContainer = $(summaryItemView, R.id.quoteContainer);
-                textView.setText(item.getText());
-                if (item.getQuote() == null || item.getQuote().getText() == null) {
+                textView.setText(item.text);
+                if (item.quote == null || item.quote.text== null) {
                     quoteContainer.removeAllViews();
                 } else {
-                    Quote quote = item.getQuote();
+                    NewsDigest.NewsItem.Summary.Quote quote = item.quote;
                     TextView quoteSymbol = $(quoteContainer, R.id.quoteSymbol);
                     quoteSymbol.setTextColor(color);
                     TextView quoteText = $(quoteContainer, R.id.quoteText);
                     quoteText.setTextColor(color);
                     // quoteText.setTypeface(typefaceLight);
-                    quoteText.setText(quote.getText());
+                    quoteText.setText(quote.text);
                     TextView quoteSource = $(quoteContainer, R.id.quoteSource);
-                    quoteSource.setText(quote.getSource());
+                    quoteSource.setText(quote.source);
                     //quoteSource.setTypeface(typefaceBold);
                     View verticalLine = $(quoteContainer, R.id.verticalLine);
                     verticalLine.setBackgroundColor(color);
@@ -857,20 +887,20 @@ public class NewsDetailFragment extends BaseFragment {
         }
     }
 
-    private void addLongreads(ItemRealm itemRealm) {
+    private void addLongreads(NewsDigest.NewsItem newsItem) {
         longreads.removeAllViews();
-        RealmList<LongRead> longReads = itemRealm.getLongreads();
+        List<NewsDigest.NewsItem.Longread> longReads = newsItem.longreads;
         if (longReads != null && !longReads.isEmpty()) {
-            for (LongRead longRead : longReads) {
+            for (NewsDigest.NewsItem.Longread longRead : longReads) {
 
                 View longReadItemView =
                         LayoutInflater.from(longreads.getContext()).inflate(R.layout.item_topic_in_depth, longreads, false);
 
 
-                Image image = longRead.getImages();
+               // Image image = longRead.getImages();
 
-                String src = getImageSource(image);
-
+                //String src = getImageSource(image);
+                String src = longRead.images.originalUrl;
                 if (src != null && src.length() > 0) {
                     ImageView longreadImg = $(longReadItemView, R.id.longreadImg);
 
@@ -880,18 +910,18 @@ public class NewsDetailFragment extends BaseFragment {
 
                 TextView longreadTitle = $(longReadItemView, R.id.longreadTitle);
 
-                longreadTitle.setText(longRead.getTitle());
+                longreadTitle.setText(longRead.title);
                 longreadTitle.setTextColor(color);
 
                 TextView longreadPublisher = $(longReadItemView, R.id.longreadPublisher);
-                longreadPublisher.setText(longRead.getPublisher());
+                longreadPublisher.setText(longRead.publisher);
 
 
                 TextView longreadDescription = $(longReadItemView, R.id.longreadDescription);
-                longreadDescription.setText(longRead.getDescription());
+                longreadDescription.setText(longRead.description);
                 longreadDescription.setTypeface(typefaceLight);
-                if (!TextUtils.isEmpty(longRead.getUrl())) {
-                    final String depthUrl = longRead.getUrl();
+                if (!TextUtils.isEmpty(longRead.url)) {
+                    final String depthUrl = longRead.url;
                     longReadItemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -910,19 +940,19 @@ public class NewsDetailFragment extends BaseFragment {
         }
     }
 
-    private void addLocations(ItemRealm itemRealm) {
+    private void addLocations(NewsDigest.NewsItem newsItem) {
         locations.removeAllViews();
-        RealmList<Location> locationList = itemRealm.getLocations();
+        List<NewsDigest.NewsItem.Location> locationList = newsItem.locations;
         if (locationList != null && !locationList.isEmpty()) {
-            for (Location location : locationList) {
+            for (NewsDigest.NewsItem.Location location : locationList) {
 
                 View locationItemView =
                         LayoutInflater.from(locations.getContext()).inflate(R.layout.item_location, locations, false);
                 TextView caption = $(locationItemView, R.id.caption);
-                caption.setText(location.getCaption());
-                final double latitude = Double.valueOf(TextUtils.isEmpty(location.getLatitude()) ? "0" : location.getLatitude());
-                final double longitude = Double.valueOf(TextUtils.isEmpty(location.getLongtitude()) ? "0" : location.getLongtitude());
-                final int zoomLevel = Integer.valueOf(TextUtils.isEmpty(location.getZoonLevel()) ? "0" : location.getZoonLevel());
+                caption.setText(location.caption);
+                final double latitude = Double.valueOf(TextUtils.isEmpty(location.latitude) ? "0" : location.latitude);
+                final double longitude = Double.valueOf(TextUtils.isEmpty(location.longtitude) ? "0" : location.longtitude);
+                final int zoomLevel = Integer.valueOf(TextUtils.isEmpty(location.zoonLevel) ? "0" : location.zoonLevel);
                 AMapOptions aMapOptions = new AMapOptions();
                 aMapOptions.scaleControlsEnabled(false).scrollGesturesEnabled(false);
                 SupportMapFragment supportMapFragment = SupportMapFragment.newInstance(aMapOptions);
@@ -951,8 +981,8 @@ public class NewsDetailFragment extends BaseFragment {
                     }
                 });
                 getChildFragmentManager().beginTransaction().add(R.id.mapContainer, supportMapFragment).commit();
-                final String captionStr = location.getCaption();
-                final String name = location.getName();
+                final String captionStr = location.caption;
+                final String name = location.name;
                 $(locationItemView, R.id.mask).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -971,18 +1001,19 @@ public class NewsDetailFragment extends BaseFragment {
         }
     }
 
-    private void addSlideShow(ItemRealm itemRealm) {
-        Slideshow slideshow1 = itemRealm.getSlideshow();
-        RealmList<Photo> photos = slideshow1.getPhotos();
+    private void addSlideShow(NewsDigest.NewsItem newsItem) {
+        List<NewsDigest.NewsItem.SlideShow.Photos.Element> elements = newsItem.slideshow.photos.elements;
         final ArrayList<SlideItem> slideItems = new ArrayList<SlideItem>();
-        for (Photo photo : photos) {
+        for (NewsDigest.NewsItem.SlideShow.Photos.Element element : elements) {
             SlideItem slideItem = new SlideItem();
-            slideItem.caption = photo.getCaption();
-            slideItem.headline = photo.getHeadline();
-            slideItem.provider_name = photo.getProvider_name();
-            slideItem.url = EntityHelper.getImageSrc(photo.getImages());
+            slideItem.caption = element.caption;
+            slideItem.headline = element.headline;
+            slideItem.provider_name = element.provider_name;
+           // slideItem.url = EntityHelper.getImageSrc(photo.getImages());
+            slideItem.url = element.images.originalUrl;
             slideItems.add(slideItem);
             galleryAdapter.addItem(slideItem);
+
         }
         if (slideItems.isEmpty()) {
             singleImage.setVisibility(View.GONE);
@@ -990,7 +1021,8 @@ public class NewsDetailFragment extends BaseFragment {
         } else if (slideItems.size() == 1) {
             singleImage.setVisibility(View.VISIBLE);
             gallery.setVisibility(View.GONE);
-            String src = EntityHelper.getImageSrc(photos.get(0).getImages());
+            //String src = EntityHelper.getImageSrc(photos.get(0).getImages());
+            String src = elements.get(0).images.originalUrl;
             Glide.with(singleImage.getContext()).load(src).centerCrop().crossFade().into(singleImage);
             singleImage.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -1017,11 +1049,9 @@ public class NewsDetailFragment extends BaseFragment {
 
 
         }
-
-
     }
 
-    private Subscription getEvent(final ItemRealm itemRealm) {
+    private Subscription getEvent(final NewsDigest.NewsItem newsItem) {
         if (getActivity() instanceof NewsDetailActivity) {
             return ((NewsDetailActivity) getActivity())
                     .getRxBus()
@@ -1043,7 +1073,7 @@ public class NewsDetailFragment extends BaseFragment {
                         public void onNext(Integer integer) {
                             if (index == integer) {
                                 // LogUtil.e(TAG, "Fragment index:" + (index - 1) + ";viewpager index:" + integer);
-                                if (!itemRealm.isChecked()) {
+                                if (!newsItem.isChecked()) {
                                     activeItem();
                                 }
                             }
@@ -1056,7 +1086,7 @@ public class NewsDetailFragment extends BaseFragment {
     }
 
 
-    private String getImageSource(Image image) {
+   /* private String getImageSource(Image image) {
 
         String src = null;
         if (image != null) {
@@ -1074,8 +1104,8 @@ public class NewsDetailFragment extends BaseFragment {
         }
         return src;
 
-    }
-*/
+    }*/
+
 
     @Override
     public void onDestroy() {

@@ -1,6 +1,7 @@
 package com.shenke.digest.adapter;
 
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,9 +11,26 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.shenke.digest.R;
 import com.shenke.digest.entity.NewsDigest;
+import com.shenke.digest.entity.SlideItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class GalleryAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem.SlideShow> {
+    public Context mContext;
+    public static NewsDigest mNewsDigest;
+    public NewsDigest.NewsItem.SlideShow mSlideShow;
+    private List<SlideItem> data = new ArrayList<SlideItem>();
+    public GalleryAdapter(Context mContext,NewsDigest mNewsDigest){
+        this.mContext = mContext;
+        this.mNewsDigest = mNewsDigest;
+
+    }
+    public GalleryAdapter(Context mContext){
+        this.mContext = mContext;
+
+    }
     @Override
     public RecyclerView.ViewHolder createHeaderViewHolder(ViewGroup parent, int viewType) {
         return null;
@@ -26,18 +44,26 @@ public class GalleryAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem.
     @Override
     public RecyclerView.ViewHolder createItemViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_image, parent, false);
+        mContext = parent.getContext();
         return new GalleryViewHolder(view);
+
     }
 
     @Override
     public void bindItemView(RecyclerView.ViewHolder holder, final int position) {
         final GalleryViewHolder galleryViewHolder = (GalleryViewHolder) holder;
-      //  galleryViewHolder.url = NewsDigest.NewsItem.SlideShow.Photos.Element.Images.Resolution.;
-        Glide.with(galleryViewHolder.itemView.getContext())
-                .load(galleryViewHolder.url)
-                .crossFade()
-                .centerCrop()
-                .into(galleryViewHolder.imageView);
+        mSlideShow = mNewsDigest.items.get(position).slideshow;
+        if(mSlideShow != null){
+            if(mNewsDigest.items.get(position).slideshow.photos.total != 0){
+                galleryViewHolder.url = mNewsDigest.items.get(position).slideshow.photos.elements.get(position).images.originalUrl;
+                Glide.with(galleryViewHolder.itemView.getContext())
+                        .load(galleryViewHolder.url)
+                        .crossFade()
+                        .centerCrop()
+                        .into(galleryViewHolder.imageView);
+            }
+        }
+
         galleryViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,6 +85,11 @@ public class GalleryAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem.
     @Override
     public void bindFooterView(RecyclerView.ViewHolder holder, int position) {
 
+    }
+
+    public void addItem(SlideItem slideItem) {
+        data.add(slideItem);
+        notifyDataSetChanged();
     }
 
     public static class GalleryViewHolder extends RecyclerView.ViewHolder {

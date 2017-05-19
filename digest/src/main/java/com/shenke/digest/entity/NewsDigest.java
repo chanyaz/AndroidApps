@@ -139,9 +139,9 @@ public class NewsDigest implements Serializable {
             @SerializedName("latitude")
             public String latitude;
             @SerializedName("longitude")
-            public String longitude;
-            @SerializedName("zoomLevel")
-            public String zoomLevel;
+            public String longtitude;
+            @SerializedName("zoonLevel")
+            public String zoonLevel;
             @SerializedName("type")
             public String type;
             @SerializedName("caption")
@@ -180,7 +180,42 @@ public class NewsDigest implements Serializable {
         public List<Infograph> infographs = new ArrayList<>();
 
         public class Infograph implements Serializable{
+            @SerializedName("title")
+            public String title;
+            @SerializedName("caption")
+            public String caption;
+            @SerializedName("images")
+            public Images images ;
 
+            public class Images implements Serializable{
+                @SerializedName("originalUrl")
+                public String originalUrl;
+                @SerializedName("originalWidth")
+                public int originalWidth;
+                @SerializedName("originalHeight")
+                public int originalHeight;
+                @SerializedName("mimeType")
+                public String mimeType;
+                @SerializedName("provider")
+                public String provider;
+                @SerializedName("title")
+                public String title;
+                @SerializedName("caption")
+                public String caption;
+                @SerializedName("resolutions")
+                public List<Resolution> resolutions = new ArrayList<>();
+
+                public class Resolution implements Serializable{
+                    @SerializedName("height")
+                    public int height;
+                    @SerializedName("width")
+                    public int width;
+                    @SerializedName("url")
+                    public String url;
+                    @SerializedName("tag")
+                    public String tag;
+                }
+            }
         }
 
         @SerializedName("stats")
@@ -277,6 +312,12 @@ public class NewsDigest implements Serializable {
         public class Longread implements Serializable{
             @SerializedName("title")
             public String title;
+            @SerializedName("publisher")
+            public String publisher;
+            @SerializedName("description")
+            public String description;
+            @SerializedName("url")
+            public String url;
             @SerializedName("images")
             public Images images;
 
