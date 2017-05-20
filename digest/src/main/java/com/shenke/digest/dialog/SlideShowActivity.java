@@ -2,8 +2,10 @@ package com.shenke.digest.dialog;
 
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -12,13 +14,23 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.shenke.digest.R;
+import com.shenke.digest.entity.SlideItem;
 import com.shenke.digest.util.StatusBarCompat;
 
+import java.util.ArrayList;
+
 import uk.co.senab.photoview.PhotoView;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class SlideShowActivity extends AppCompatActivity {;
     /**
@@ -29,7 +41,7 @@ public class SlideShowActivity extends AppCompatActivity {;
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    //private SectionsPagerAdapter mSectionsPagerAdapter;
+    private SectionsPagerAdapter mSectionsPagerAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -43,7 +55,7 @@ public class SlideShowActivity extends AppCompatActivity {;
 
     public static final String CURRENT_INDEX = "current_index";
     private int current_index = 0;
-    //private ArrayList<SlideItem> slideItems;
+    private ArrayList<SlideItem> slideItems;
     private ViewGroup infoArea;
 
     @Override
@@ -60,19 +72,19 @@ public class SlideShowActivity extends AppCompatActivity {;
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         Intent intent = getIntent();
-       // slideItems = intent.getParcelableArrayListExtra(DATA);
+        slideItems = intent.getParcelableArrayListExtra(DATA);
         current_index = intent.getIntExtra(CURRENT_INDEX, 0);
-       // mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), slideItems);
+       mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), slideItems);
         // Set up the ViewPager with the sections adapter.;
-      //  mViewPager.setAdapter(mSectionsPagerAdapter);
+       mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setOffscreenPageLimit(1);
         mViewPager.setCurrentItem(current_index);
-      //  SlideItem slideItem = slideItems.get(current_index);
-       /* press.setText("" + slideItem.getProvider_name());
+       SlideItem slideItem = slideItems.get(current_index);
+       press.setText("" + slideItem.getProvider_name());
         headLine.setText("" + slideItem.getHeadline());
         caption.setText("" + slideItem.getCaption());
         label.setText((current_index + 1) + " of " + slideItems.size());
-*/
+
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -82,11 +94,11 @@ public class SlideShowActivity extends AppCompatActivity {;
 
             @Override
             public void onPageSelected(int position) {
-               /* SlideItem slideItem = slideItems.get(position);
+               SlideItem slideItem = slideItems.get(position);
                 press.setText("" + slideItem.getProvider_name());
                 headLine.setText("" + slideItem.getHeadline());
                 caption.setText("" + slideItem.getCaption());
-                label.setText((position + 1) + " of " + slideItems.size());*/
+                label.setText((position + 1) + " of " + slideItems.size());
             }
 
             @Override
@@ -100,11 +112,11 @@ public class SlideShowActivity extends AppCompatActivity {;
     public void toggleMsg() {
         if (infoArea.getVisibility() == View.VISIBLE) {
             infoArea.setVisibility(View.GONE);
-            //  getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             StatusBarCompat.hideSystemUI(this);
         } else {
             infoArea.setVisibility(View.VISIBLE);
-            //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             StatusBarCompat.showSystemUI(this);
         }
     }
@@ -151,24 +163,24 @@ public class SlideShowActivity extends AppCompatActivity {;
          * Returns a new instance of this fragment for the given section
          * number.
          */
-    /*    public static PlaceholderFragment newInstance(SlideItem slideItem) {
+     public static PlaceholderFragment newInstance(SlideItem slideItem) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
 
             args.putParcelable(SLIDE_ITEM, slideItem);
             fragment.setArguments(args);
             return fragment;
-        }*/
+        }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             Bundle args = getArguments();
-          // SlideItem slideItem = args.getParcelable(SLIDE_ITEM);
+           SlideItem slideItem = args.getParcelable(SLIDE_ITEM);
             final View rootView = inflater.inflate(R.layout.fragment_slide_show, container, false);
             final ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
             PhotoView photoView = (PhotoView) rootView.findViewById(R.id.photoView);
-           /*  Glide.with(rootView.getContext()).load(slideItem.getUrl()).crossFade().into(new GlideDrawableImageViewTarget(photoView) {
+            Glide.with(rootView.getContext()).load(slideItem.getUrl()).crossFade().into(new GlideDrawableImageViewTarget(photoView) {
                 @Override
                 public void onLoadFailed(Exception e, Drawable errorDrawable) {
                     super.onLoadFailed(e, errorDrawable);
@@ -190,7 +202,7 @@ public class SlideShowActivity extends AppCompatActivity {;
                     }
 
                 }
-            });*/
+            });
             return rootView;
         }
 
@@ -207,11 +219,11 @@ public class SlideShowActivity extends AppCompatActivity {;
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    //public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-       // private ArrayList<SlideItem> slideItems;
+        private ArrayList<SlideItem> slideItems;
 
-      /*  public SectionsPagerAdapter(FragmentManager fm, ArrayList<SlideItem> slideItems) {
+      public SectionsPagerAdapter(FragmentManager fm, ArrayList<SlideItem> slideItems) {
             super(fm);
 
             this.slideItems = slideItems;
@@ -244,8 +256,8 @@ public class SlideShowActivity extends AppCompatActivity {;
                     return "SECTION 3";
             }
             return null;
-        }*/
-   // }
+        }
+   }
 
 
 }

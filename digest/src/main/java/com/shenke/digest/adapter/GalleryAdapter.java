@@ -19,18 +19,21 @@ import java.util.List;
 
 public class GalleryAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem.SlideShow> {
     public Context mContext;
-    public static NewsDigest mNewsDigest;
-    public NewsDigest.NewsItem.SlideShow mSlideShow;
+    public static NewsDigest.NewsItem.SlideShow mSlideShow;
+    public NewsDigest.NewsItem.SlideShow slideShow;
     private List<SlideItem> data = new ArrayList<SlideItem>();
-    public GalleryAdapter(Context mContext,NewsDigest mNewsDigest){
+    public SlideItem slideItem;
+
+    public GalleryAdapter(Context mContext, NewsDigest.NewsItem.SlideShow mSlideShow) {
         this.mContext = mContext;
-        this.mNewsDigest = mNewsDigest;
+        this.mSlideShow = mSlideShow;
+    }
+
+    public GalleryAdapter(Context mContext) {
+        this.mContext = mContext;
 
     }
-    public GalleryAdapter(Context mContext){
-        this.mContext = mContext;
 
-    }
     @Override
     public RecyclerView.ViewHolder createHeaderViewHolder(ViewGroup parent, int viewType) {
         return null;
@@ -52,10 +55,10 @@ public class GalleryAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem.
     @Override
     public void bindItemView(RecyclerView.ViewHolder holder, final int position) {
         final GalleryViewHolder galleryViewHolder = (GalleryViewHolder) holder;
-        mSlideShow = mNewsDigest.items.get(position).slideshow;
-        if(mSlideShow != null){
-            if(mNewsDigest.items.get(position).slideshow.photos.total != 0){
-                galleryViewHolder.url = mNewsDigest.items.get(position).slideshow.photos.elements.get(position).images.originalUrl;
+        slideShow = mSlideShow;
+        if (slideShow != null) {
+            if (slideShow.photos.total != 0) {
+                galleryViewHolder.url = slideShow.photos.elements.get(position).images.originalUrl;
                 Glide.with(galleryViewHolder.itemView.getContext())
                         .load(galleryViewHolder.url)
                         .crossFade()
@@ -76,7 +79,14 @@ public class GalleryAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem.
             }
         });
     }
-
+@Override
+public int getItemCount(){
+    if(mSlideShow.photos.elements.size() == 0 || mSlideShow.photos.elements.size() == 1){
+        return 0;
+    }else{
+        return mSlideShow.photos.elements.size();
+    }
+}
     @Override
     public void bindHeaderView(RecyclerView.ViewHolder holder, int position) {
 
@@ -88,9 +98,9 @@ public class GalleryAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem.
     }
 
     public void addItem(SlideItem slideItem) {
-        data.add(slideItem);
-        notifyDataSetChanged();
+        this.slideItem = slideItem;
     }
+
 
     public static class GalleryViewHolder extends RecyclerView.ViewHolder {
 

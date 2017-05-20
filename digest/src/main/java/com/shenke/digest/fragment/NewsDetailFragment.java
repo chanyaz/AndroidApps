@@ -134,13 +134,13 @@ public class NewsDetailFragment extends BaseFragment {
      * @return A new instance of fragment NewsDetailFragment.
      */
 
-    public static NewsDetailFragment newInstance(String uuid, int color, int index,NewsDigest mNewsDigest) {
+    public static NewsDetailFragment newInstance(String uuid, int color, int index, NewsDigest mNewsDigest) {
         NewsDetailFragment fragment = new NewsDetailFragment();
         Bundle args = new Bundle();
         args.putString(UUID, uuid);
         args.putInt(COLOR, color);
         args.putInt(INDEX, index);
-        args.putSerializable("NewsDigestData",mNewsDigest);
+        args.putSerializable("NewsDigestData", mNewsDigest);
         fragment.setArguments(args);
         LogUtil.d(TAG, "uuid:" + uuid);
         return fragment;
@@ -276,7 +276,7 @@ public class NewsDetailFragment extends BaseFragment {
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         gallery.setLayoutManager(linearLayoutManager);
         gallery.setItemViewCacheSize(2);
-        galleryAdapter = new GalleryAdapter(getContext(), mNewsDigest);
+        galleryAdapter = new GalleryAdapter(getContext(), mNewsDigest.items.get(index).slideshow);
         gallery.setAdapter(galleryAdapter);
         nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
@@ -367,7 +367,7 @@ public class NewsDetailFragment extends BaseFragment {
 
     private void initItem(NewsDigest mNewsDigest) {
 
-        if (mNewsDigest != null  && mNewsDigest.items.get(index).multiSummary!= null) {
+        if (mNewsDigest != null && mNewsDigest.items.get(index).multiSummary != null) {
 
             if (index != -1 && mNewsDigest.items.get(index).isChecked()) {
                 donutProgress.setVisibility(View.VISIBLE);
@@ -386,7 +386,7 @@ public class NewsDetailFragment extends BaseFragment {
             Glide.with(banner.getContext()).load(mNewsDigest.items.get(index).images.originalUrl).crossFade().into(banner);
             //title
             title.setText("" + mNewsDigest.items.get(index).title);
-           // title.setTag("" + itemRealm.getLink());
+            // title.setTag("" + itemRealm.getLink());
             title.setVisibility(View.VISIBLE);
 
             //quote
@@ -411,7 +411,7 @@ public class NewsDetailFragment extends BaseFragment {
 
             //slideshow
 
-            addSlideShow(mNewsDigest.items.get(index));
+            addSlideShow(mNewsDigest.items.get(index).slideshow);
 
             //videos
             addVideos(mNewsDigest.items.get(index));
@@ -420,7 +420,7 @@ public class NewsDetailFragment extends BaseFragment {
             addWiki(mNewsDigest.items.get(index));
 
             //tweet
-           // addTweet(mNewsDigest.items.get(index));
+            // addTweet(mNewsDigest.items.get(index));
             //reference
             addReference(mNewsDigest.items.get(index));
             line.setVisibility(View.VISIBLE);
@@ -440,7 +440,7 @@ public class NewsDetailFragment extends BaseFragment {
         }
     }
 
-   private void addReference(NewsDigest.NewsItem newsItem) {
+    private void addReference(NewsDigest.NewsItem newsItem) {
 
 
         List<NewsDigest.NewsItem.Source> sources = newsItem.sources;
@@ -713,7 +713,7 @@ public class NewsDetailFragment extends BaseFragment {
                 TextView searchTerms = $(wikiItemView, R.id.searchTerms);
                 StringBuilder sb = new StringBuilder();
                 for (NewsDigest.NewsItem.Wiki.Term term : wiki.searchTerms) {
-                   // sb.append(term.value).append("");
+                    // sb.append(term.value).append("");
                 }
 
                 searchTerms.setText("learn more:" + sb.toString());
@@ -854,7 +854,7 @@ public class NewsDetailFragment extends BaseFragment {
         }
     }
 
-    private void addQuote(NewsDigest.NewsItem newsItem ) {
+    private void addQuote(NewsDigest.NewsItem newsItem) {
         summary.removeAllViews();
         List<NewsDigest.NewsItem.Summary> summaries = newsItem.multiSummary;
         if (summaries != null && !summaries.isEmpty()) {
@@ -866,7 +866,7 @@ public class NewsDetailFragment extends BaseFragment {
 
                 ViewGroup quoteContainer = $(summaryItemView, R.id.quoteContainer);
                 textView.setText(item.text);
-                if (item.quote == null || item.quote.text== null) {
+                if (item.quote == null || item.quote.text == null) {
                     quoteContainer.removeAllViews();
                 } else {
                     NewsDigest.NewsItem.Summary.Quote quote = item.quote;
@@ -897,7 +897,7 @@ public class NewsDetailFragment extends BaseFragment {
                         LayoutInflater.from(longreads.getContext()).inflate(R.layout.item_topic_in_depth, longreads, false);
 
 
-               // Image image = longRead.getImages();
+                // Image image = longRead.getImages();
 
                 //String src = getImageSource(image);
                 String src = longRead.images.originalUrl;
@@ -1001,15 +1001,14 @@ public class NewsDetailFragment extends BaseFragment {
         }
     }
 
-    private void addSlideShow(NewsDigest.NewsItem newsItem) {
-        List<NewsDigest.NewsItem.SlideShow.Photos.Element> elements = newsItem.slideshow.photos.elements;
+    private void addSlideShow(NewsDigest.NewsItem.SlideShow slideShow) {
+        List<NewsDigest.NewsItem.SlideShow.Photos.Element> elements = slideShow.photos.elements;
         final ArrayList<SlideItem> slideItems = new ArrayList<SlideItem>();
         for (NewsDigest.NewsItem.SlideShow.Photos.Element element : elements) {
             SlideItem slideItem = new SlideItem();
             slideItem.caption = element.caption;
             slideItem.headline = element.headline;
             slideItem.provider_name = element.provider_name;
-           // slideItem.url = EntityHelper.getImageSrc(photo.getImages());
             slideItem.url = element.images.originalUrl;
             slideItems.add(slideItem);
             galleryAdapter.addItem(slideItem);
@@ -1021,7 +1020,6 @@ public class NewsDetailFragment extends BaseFragment {
         } else if (slideItems.size() == 1) {
             singleImage.setVisibility(View.VISIBLE);
             gallery.setVisibility(View.GONE);
-            //String src = EntityHelper.getImageSrc(photos.get(0).getImages());
             String src = elements.get(0).images.originalUrl;
             Glide.with(singleImage.getContext()).load(src).centerCrop().crossFade().into(singleImage);
             singleImage.setOnClickListener(new View.OnClickListener() {
@@ -1084,28 +1082,6 @@ public class NewsDetailFragment extends BaseFragment {
         }
         return null;
     }
-
-
-   /* private String getImageSource(Image image) {
-
-        String src = null;
-        if (image != null) {
-            src = image.getUrl();
-            RealmList<ImageAsset> imageAssets = image.getImage_assets();
-            for (ImageAsset imageAsset : imageAssets) {
-                if ("pc:size=square".equalsIgnoreCase(imageAsset.getTag()) || "pc:size=square_large".equalsIgnoreCase(imageAsset.getTag())) {
-                    src = imageAsset.getUrl();
-                    break;
-
-                }
-                src = imageAsset.getUrl();
-            }
-
-        }
-        return src;
-
-    }*/
-
 
     @Override
     public void onDestroy() {

@@ -138,6 +138,7 @@ public class NewsDetailActivity extends AppCompatActivity {
                     Bundle bundle = new Bundle();
                    // bundle.putParcelableArrayList("data", detailItemArrayList);
                     bundle.putSerializable("NewsDigestData",mNewsDigest);
+                    bundle.putInt("INDEX",position);
                     fragment.setArguments(bundle);
                     return fragment;
                 }
