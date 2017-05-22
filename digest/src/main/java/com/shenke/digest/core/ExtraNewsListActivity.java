@@ -87,11 +87,11 @@ public class ExtraNewsListActivity extends BaseActivity {
         } else {
             fetchDataByNetWork(observer);
         }
-    }
+}
     private void fetchDataByNetWork(Observer<NewsDigest> observer) {
         int create_time = 0;
         String timezone = "8";
-        String date = "2017-05-19";
+        String date = "2017-05-21";
         String lang = "en-AA";
         String region_edition = "AA";
         int digest_edition = 0;

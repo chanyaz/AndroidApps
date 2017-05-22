@@ -109,7 +109,7 @@ public class NewsDigest implements Serializable {
     }
 
     @SerializedName("edition")
-    public String edition;
+    public int edition;
     @SerializedName("items")
     public List<NewsItem> items = new ArrayList<>();
 

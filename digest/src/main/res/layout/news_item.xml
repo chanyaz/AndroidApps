@@ -17,7 +17,7 @@
             android:scaleType="centerCrop" />
 
         <ImageView
-
+            android:id="@+id/triangle_background"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_gravity="bottom"
@@ -29,6 +29,7 @@
 
 
     <RelativeLayout
+
         android:id="@+id/rl_news_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

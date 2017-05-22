@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -94,6 +96,11 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
 
         if (newsItem != null) {
 
+            if(mNewsDigest.edition == 1){
+                holder.rl_news_list.setBackgroundResource(R.color.black);
+                holder.title.setTextColor(Color.WHITE);
+                holder.triangle_background.setBackgroundResource(R.mipmap.evening_triangle_background);
+            }
             if (position == 0) {
                 holder.imgArea.setVisibility(View.VISIBLE);
                 holder.img.setVisibility(View.VISIBLE);
@@ -283,6 +290,18 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
         final int readColor = holder.revealView.getContext().getResources().getColor(R.color.read_color);
         Typeface typeface = Typeface.createFromAsset(holder.itemView.getContext().getAssets(), "fonts/Roboto-Thin.ttf");
         Typeface ty = Typeface.createFromAsset(holder.itemView.getContext().getAssets(), "fonts/Roboto-Light.ttf");
+        if(mNewsDigest.edition == 1){
+            holder.ll_newslist_footer.setBackgroundResource(R.color.black);
+            holder.urd.setTextColor(Color.BLACK);
+            holder.read.setTextColor(Color.BLACK);
+            holder.bigTitle.setTextColor(Color.BLACK);
+            holder.textView.setTextColor(Color.BLACK);
+            holder.foot_view.setBackgroundResource(R.color.countdown_text_evening_light);
+            holder.toggleButton.setTextColor(Color.WHITE);
+            Drawable downDrawable =   holder.toggleButton.getContext().getResources().getDrawable(R.mipmap.extranews_arrow_down_w);
+            downDrawable.setBounds(0, 0, downDrawable.getMinimumWidth(), downDrawable.getMinimumHeight());
+            holder.toggleButton.setCompoundDrawables(null, null, null, downDrawable);
+        }
         holder.bigTitle.setTypeface(typeface);
         holder.smallTitle.setTypeface(typeface);
         holder.urd.setTypeface(ty);
@@ -413,6 +432,8 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
         final View sectionArea;
         final TextView date;
         final TextView section;
+        final ImageView triangle_background;
+        final RelativeLayout rl_news_list;
         //public NewsDigest.NewsItem newsItem;
 
         public ViewHolder(View itemView) {
@@ -429,6 +450,8 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
             sectionArea = itemView.findViewById(R.id.sectionArea);
             date = (TextView) itemView.findViewById(R.id.date);
             section = (TextView) itemView.findViewById(R.id.section);
+            triangle_background = (ImageView) itemView.findViewById(R.id.triangle_background);
+            rl_news_list = (RelativeLayout) itemView.findViewById(R.id.rl_news_list);
         }
 
     }
@@ -444,7 +467,9 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
         final View doYouKnow;
         final TextView toggleButton;
         final TextView urd;
-
+        final TextView read;
+        final LinearLayout ll_newslist_footer;
+        final View foot_view;
         public FooterViewHolder(View itemView) {
             super(itemView);
             this.itemView = itemView;
@@ -457,7 +482,9 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
             this.doYouKnow = itemView.findViewById(R.id.know);
             this.toggleButton = (TextView) itemView.findViewById(R.id.toggleButton);
             this.urd = (TextView) itemView.findViewById(R.id.uread);
-
+            this.read = (TextView)itemView.findViewById(R.id.read );
+            this.ll_newslist_footer = (LinearLayout) itemView.findViewById(R.id.ll_newslist_footer);
+            this.foot_view = (View)itemView.findViewById(R.id.footer_view);
         }
     }
 

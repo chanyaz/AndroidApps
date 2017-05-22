@@ -1,6 +1,7 @@
 package com.shenke.digest.fragment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -12,6 +13,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.shenke.digest.R;
@@ -33,6 +36,7 @@ public class ExtraNewsListFragment extends BaseFragment {
 
     private Subscription subscription;
     private RecyclerView recyclerView;
+    private RelativeLayout rl_extra_newslist;
     private ExtraNewsAdapter adapter;
     private boolean allChecked;
     public static NewsDigest mNewsDigest;
@@ -55,21 +59,11 @@ public class ExtraNewsListFragment extends BaseFragment {
 
     @Override
     protected void initView(View rootView) {
+        rl_extra_newslist = (RelativeLayout) rootView.findViewById(R.id.rl_extra_newslist);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
 
 
         TextView back = (TextView) rootView.findViewById(R.id.back);
-        if (allChecked) {
-            back.setTextColor(android.graphics.Color.WHITE);
-            back.setBackgroundColor(getResources().getColor(R.color.read_color));
-            Drawable bottom = getResources().getDrawable(R.mipmap.extranews_arrow_up_w);
-            back.setCompoundDrawablesWithIntrinsicBounds(null, null, null, bottom);
-        } else {
-            back.setTextColor(android.graphics.Color.BLACK);
-            back.setBackgroundColor(android.graphics.Color.WHITE);
-            Drawable bottom = getResources().getDrawable(R.mipmap.extranews_arrow_up);
-            back.setCompoundDrawablesWithIntrinsicBounds(null, null, null, bottom);
-        }
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,9 +71,32 @@ public class ExtraNewsListFragment extends BaseFragment {
             }
         });
         View headerView = LayoutInflater.from(rootView.getContext()).inflate(R.layout.extra_news_header_view, recyclerView, false);
+        LinearLayout extra_header_view = (LinearLayout) headerView.findViewById(R.id.extra_header_view);
         TextView textView = (TextView) headerView.findViewById(R.id.extra);
         Typeface typeFaceLabel = Typeface.createFromAsset(getContext().getAssets(), "fonts/Roboto-Light.ttf");
         textView.setTypeface(typeFaceLabel);
+        if (allChecked) {
+            back.setTextColor(android.graphics.Color.WHITE);
+            back.setBackgroundColor(getResources().getColor(R.color.read_color));
+            Drawable bottom = getResources().getDrawable(R.mipmap.extranews_arrow_up_w);
+            back.setCompoundDrawablesWithIntrinsicBounds(null, null, null, bottom);
+        } else {
+            if (mNewsDigest.edition == 1){
+                rl_extra_newslist.setBackgroundResource(R.color.black);
+                recyclerView.setBackgroundResource(R.color.more_news_prompt_background_evening);
+               // back.setBackgroundResource(R.color.black);
+                back.setTextColor(Color.WHITE);
+                textView.setTextColor(Color.WHITE);
+                extra_header_view.setBackgroundResource(R.color.more_news_prompt_background_evening);
+                Drawable downDrawable =  getResources().getDrawable(R.mipmap.extranews_arrow_up_w);
+                downDrawable.setBounds(0, 0, downDrawable.getMinimumWidth(), downDrawable.getMinimumHeight());
+                back.setCompoundDrawables(null, null, null, downDrawable);
+            }else{
+                back.setTextColor(android.graphics.Color.BLACK);
+                back.setBackgroundColor(android.graphics.Color.WHITE);
+                Drawable bottom = getResources().getDrawable(R.mipmap.extranews_arrow_up);
+                back.setCompoundDrawablesWithIntrinsicBounds(null, null, null, bottom);}
+        }
         adapter = new ExtraNewsAdapter();
         adapter.setHeaderView(headerView);
         adapter.addItemClickListenr(new BaseRecyclerViewAdapter.OnItemClickListener() {
@@ -150,6 +167,9 @@ public class ExtraNewsListFragment extends BaseFragment {
             newsItem = mNewsDigest.items.get(position);
             if (newsItem != null) {
                 {
+                    if(mNewsDigest.edition == 1){
+                        holder.title.setTextColor(Color.WHITE);
+                    }
                     Typeface typeFaceLabel = Typeface.createFromAsset(holder.itemView.getContext().getAssets(), "fonts/Roboto-Bold.ttf");
                     holder.label.setTypeface(typeFaceLabel);
                     holder.label.setText(newsItem.categories.get(0).name);
