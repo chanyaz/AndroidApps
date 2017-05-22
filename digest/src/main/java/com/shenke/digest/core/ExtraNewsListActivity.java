@@ -26,11 +26,17 @@ public class ExtraNewsListActivity extends BaseActivity {
     private Observer<NewsDigest>observer;
     public Cache mCache;
     public boolean allChecked;
+    private int mdigest_edition;
+    private String mdate ;
+    private String mlang;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         StatusBarCompat.showSystemUI(this);
         setContentView(R.layout.extra_news_activity);
+        mdigest_edition = getIntent().getIntExtra("SECTION",0);
+        mdate = getIntent().getStringExtra("DATE");
+        mlang = getIntent().getStringExtra("LANGUAGE");
        allChecked = getIntent().getBooleanExtra(ALL_CHECKED, false);
         fetchData();
 
@@ -91,11 +97,13 @@ public class ExtraNewsListActivity extends BaseActivity {
     private void fetchDataByNetWork(Observer<NewsDigest> observer) {
         int create_time = 0;
         String timezone = "8";
-        String date = "2017-05-21";
-        String lang = "en-AA";
-        String region_edition = "AA";
-        int digest_edition = 0;
+        String date = mdate;
+        String lang = mlang;
+        String region_edition = lang.trim().substring(3, 5);
+        int digest_edition = mdigest_edition;
         String more_stories = "1";
+
+
         RetrofitSingleton.getApiService(this)
                 .GetDigestList(
                         create_time,timezone,date,lang, region_edition, digest_edition, more_stories

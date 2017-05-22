@@ -22,8 +22,9 @@ import android.widget.Toast;
 
 import com.shenke.digest.R;
 import com.shenke.digest.core.MyApplication;
-import com.shenke.digest.fragment.NewsListFragment;
+import com.shenke.digest.core.NewsListActivity;
 import com.shenke.digest.fragment.NewsDetailFragment;
+import com.shenke.digest.fragment.NewsListFragment;
 import com.shenke.digest.util.RxBus;
 import com.shenke.digest.view.BlurredView;
 import com.shenke.digest.view.LoadViewLayout;
@@ -286,6 +287,9 @@ public class SettingsDialog extends DialogFragment {
                                 mNoticeEditionListener.onItemclick(mEdition);
                             }
                             dismiss();
+                            final  Intent intent = new Intent(getContext(), NewsListActivity.class);
+                            intent.putExtra("LANGUAGE",integer);
+                            startActivity(intent);
                             Toast.makeText(getContext(), "功能暂未完成 ", Toast.LENGTH_SHORT).show();
 
                         }

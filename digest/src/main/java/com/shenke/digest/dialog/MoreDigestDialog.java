@@ -362,10 +362,12 @@ public class MoreDigestDialog extends DialogFragment {
                     if (mNoticeDialogListener != null) {
                         mNoticeDialogListener.onItemclick(SECTION_MORNING, str);//section、date
                     }
+
+                    dismiss();
+                    
                     intent.putExtra("SECTION",SECTION_MORNING);
                     intent.putExtra("DATE",str);
                     startActivity(intent);
-                    dismiss();
                 }
             });
             ImageView night = (ImageView) item.findViewById(R.id.night);

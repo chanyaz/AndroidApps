@@ -26,7 +26,10 @@ import com.shenke.digest.util.IntentUtil;
 import com.shenke.digest.util.LogUtil;
 import com.shenke.digest.util.StatusBarCompat;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import rx.Observable;
 import rx.Observer;
@@ -36,6 +39,9 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
+
+import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_EVENING;
+import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_MORNING;
 
 public class NewsListActivity extends BaseActivity implements DigestLoadDialog.OnNewsLoadInActivityListener {
     private static final String TAG = "NewsListActivity";
@@ -51,8 +57,10 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     private int mSection;
     private int mEdition;
     private String mDate;
-    private String lang;
-    String date = null;
+    private String mLang;
+    private String date = null;
+    private int digest_edition = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,11 +75,12 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         digestLoadDialog = new DigestLoadDialog();
         mSection = getIntent().getIntExtra("SECTION", 0);
         mDate = getIntent().getStringExtra("DATE");
+        mLang = LanguageEdtion(getIntent().getIntExtra("LANGUAGE",3));
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container, digestLoadDialog, "loading")
                 .commit();
-        fetchData();
+            fetchData();
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().build());
@@ -98,8 +107,9 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                 digestLoadDialog.onLoadSuccess();
                 NewsListFragment mNewsListFragment = new NewsListFragment();
                 Bundle bundle = new Bundle();
-                bundle.putString("DATE",date);
-                bundle.putInt("SENCTION",mSection);
+                bundle.putString("DATE", date);
+                bundle.putInt("SECTION", digest_edition);
+                bundle.putString("LANGUAGE", mLang);
                 bundle.putSerializable("NewsDigestData", mNewsDigest);
                 mNewsListFragment.setArguments(bundle);
                 getSupportFragmentManager()
@@ -140,25 +150,43 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     private void fetchDataByNetWork(Observer<NewsDigest> observer) {
         int create_time = 0;
         String timezone = "8";
-
-        if (mDate != null) {//Thu 05/18/2017 16:15:41 周四 May Thursday
+        String lang = "";
+        if (mLang == null){
+            lang = "en-AA";
+        }else{
+            lang = mLang;
+        }
+        String region_edition = lang.trim().substring(3, 5);
+        String more_stories = "0";
+        if (mDate != null) {
             date = mDate.trim().substring(10, 14) + "-" + mDate.trim().substring(4, 6) + "-" + mDate.trim().substring(7, 9);
 
         } else {
             final String str = Helper.format(new Date());
-            // date = "2017-05-19";
             date = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
         }
-        String lang = "en-AA";
-        String region_edition = lang.trim().substring(3, 5);
 
-        int digest_edition = 0;
+
         if (mSection == 1) {
             digest_edition = 1;
         } else {
-            digest_edition = 0;
+            try {
+                GregorianCalendar g = new GregorianCalendar();
+                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+                String ymd = sdf1.format(g.getTime());
+                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date morning = sdf2.parse(ymd + " 08:00:00");
+                Date evening = sdf2.parse(ymd + " 18:00:00");
+                Date present = g.getTime();
+                if (present.before(morning) || present.after(evening)) {
+                    digest_edition = SECTION_EVENING;
+                } else {
+                    digest_edition = SECTION_MORNING;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
-        String more_stories = "0";
         RetrofitSingleton.getApiService(this)
                 .GetDigestList(
                         create_time, timezone, date, lang, region_edition, digest_edition, more_stories
@@ -286,7 +314,19 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
 
 
     }
-
+public String LanguageEdtion(int language){
+    String mlang = "";
+    if(language == 0){
+        mlang = "en-CA";
+    }else if(language == 1){
+        mlang = "en-UK";
+    }else if(language == 2){
+        mlang = "en-US";
+    }else{
+        mlang = "en-AA";
+    }
+    return mlang;
+}
 
     @Override
     public void onLoad() {
@@ -299,7 +339,6 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
             digestLoadDialog.onLoadError();
         }
     }
-
 
     public class MyReceiver extends BroadcastReceiver {
         public static final String ACTION_TASK_COUNT = "com.shenke.digest.core.action.TASK_COUNT";

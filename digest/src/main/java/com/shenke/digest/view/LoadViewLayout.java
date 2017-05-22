@@ -69,6 +69,7 @@ public class LoadViewLayout extends FrameLayout {
 
     private void initChildView(Context context) {
         childView = LayoutInflater.from(context).inflate(R.layout.loading_digest_view, this);
+      //  TextView tv_no_connection = (TextView) childView.findViewById(R.id.tv_no_connection);
         error = childView.findViewById(R.id.error);
         error.setVisibility(VISIBLE);
         gridView = (ErrorGridView) childView.findViewById(R.id.gvExclamation);

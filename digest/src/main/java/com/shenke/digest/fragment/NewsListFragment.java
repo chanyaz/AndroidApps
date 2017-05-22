@@ -50,20 +50,23 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
     private ImageButton menu;
     private boolean initFooterView = false;
     private ArrayList<NewsDigest.NewsItem> list = new ArrayList<NewsDigest.NewsItem>();
+    private int digest_edition;
     private int mSection;
     private int mEdition;
+    private String date;
     private String mDate;
+    private String lang;
     public static Bitmap bitmap;
     public NewsDigest mNewsDigest;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSection = getArguments().getInt("SENCTION",0);
-        final String str = Helper.format(new Date());
-        // date = "2017-05-19";
-       String date = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
-        mDate = getArguments().getString("DATE",date);
+        digest_edition = getArguments().getInt("SECTION",0);
+        String str = Helper.format(new Date());
+        String datestr = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
+        date = getArguments().getString("DATE",datestr);
+        lang = getArguments().getString("LANGUAGE","en-AA");
         mNewsDigest = (NewsDigest) getArguments().getSerializable("NewsDigestData");
     }
 
@@ -273,8 +276,9 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
      */
     public void extraNews() {
         Intent intent = new Intent(getContext(), ExtraNewsListActivity.class);
-        intent.putExtra("SECTION",mSection);
-        intent.putExtra("DATE",mDate);
+        intent.putExtra("SECTION",digest_edition);
+        intent.putExtra("DATE",date);
+        intent.putExtra("LANGUAGE",lang);
         intent.putExtra(ExtraNewsListActivity.ALL_CHECKED, adapter.isAllChecked());
         startActivity(intent);
         getActivity().overridePendingTransition(R.anim.move_in, R.anim.move_out);

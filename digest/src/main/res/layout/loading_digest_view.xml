@@ -48,6 +48,7 @@
             android:textSize="@dimen/error_reload_button_text_size" />
 
         <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/tv_no_connection"
             android:layout_width="match_parent"
             android:layout_height="@dimen/error_footnote_height"
             android:layout_alignParentBottom="true"
