@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,15 +27,9 @@ import com.shenke.digest.R;
 import com.shenke.digest.dialog.MoreDigestDialog;
 import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.util.DateUtil;
-import com.shenke.digest.util.Helper;
 import com.shenke.digest.view.CircleLayout;
 import com.shenke.digest.view.CircularRevealView;
 import com.shenke.digest.view.DonutProgress;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_EVENING;
 import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_MORNING;
@@ -100,6 +93,9 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
                 holder.rl_news_list.setBackgroundResource(R.color.black);
                 holder.title.setTextColor(Color.WHITE);
                 holder.triangle_background.setBackgroundResource(R.mipmap.evening_triangle_background);
+                section = SECTION_EVENING;
+            }else{
+                section = SECTION_MORNING;
             }
             if (position == 0) {
                 holder.imgArea.setVisibility(View.VISIBLE);
@@ -117,52 +113,17 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
                 }else{
                     ed = mNewsDigest.regionEdition;
                 }
-                if (!TextUtils.isEmpty(date) && date.length() > 32) {
-                    String month = DateUtil.MonthFormat(date.substring(27, 31).trim());
-                    holder.date.setText(month + " " + date.substring(7, 9));
+                holder.date.setText(DateUtil.MonthFormat(mNewsDigest.date.substring(5,7).trim()) + " " + mNewsDigest.date.substring(8,10).trim());
+                try {
+                    String str = DateUtil.DayforWeek(mNewsDigest.date);
 
-                    String sec = date.substring(31) +
-                            (section == SECTION_MORNING ? " morning" : " evening")
-                            + " | " + ed;
-                    holder.section.setText(sec);
-
-                } else {
-                    /**默认*/
-                    Date date = DateUtil.getPresentDate();
-                    final String str = Helper.format(date);
-                    String month = DateUtil.MonthFormat(str.substring(27, 31).trim());
-                    holder.date.setText(month + " " + str.substring(7, 9));
-                    try {
-                        GregorianCalendar g = new GregorianCalendar();
-                        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-                        String ymd = sdf1.format(g.getTime());
-                        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        /**
-                         *   此处可自定义每天起始时间
-                         */
-                        Date morning = sdf2.parse(ymd + " 08:00:00");
-                        Date evening = sdf2.parse(ymd + " 18:00:00");
-                        Date present = g.getTime();
-                        if (present.before(morning) || present.after(evening)) {
-                            section = SECTION_EVENING;
-                            String sec = str.substring(31) +
-                                    (section == SECTION_MORNING ? " morning" : " evening")
-                                    + " | " + ed;
-                            holder.section.setText(sec);
-
-                        } else {
-                            section = SECTION_MORNING;
-                            String sec = str.substring(31) +
-                                    (section == SECTION_MORNING ? " morning" : " evening")
-                                    + " | " + ed;
-                            holder.section.setText(sec);
-
-                        }
-                    } catch (ParseException e) {
-
-                        e.printStackTrace();
-                    }
+                    holder.section.setText(DateUtil.DayforWeek(mNewsDigest.date)+(section == SECTION_MORNING ? " morning" : " evening")
+                            + " | " + ed);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+
+
             } else {
                 holder.imgArea.setVisibility(View.GONE);
                 holder.img.setVisibility(View.GONE);

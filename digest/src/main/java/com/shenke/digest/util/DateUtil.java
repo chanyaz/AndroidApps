@@ -12,7 +12,7 @@ public class DateUtil {
     public static final int SECTION_EVENING_TODAY = 2;
     public static final int SECTION_EVENING_YESTERDAY = 3;
     //public static final int  SECTION_MORNING_YESTERDAY = 3;
-    public static String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    public static String[] months = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
     public static String[] month = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 
     public static Date getPreDay(Date presentDate) {
@@ -88,31 +88,44 @@ public class DateUtil {
         }
         return string;
     }
+
     /**
-     *  if (string.equals("Jan")) {
-     string = "January";
-     }else if(string.equals("Feb")){
-     string = "February";
-     }else if(string.equals("Mar")){
-     string = "March";
-     }else if(string.equals("Apr")){
-     string = "April";
-     }else if(string.equals("May")){
-     string = "May";
-     }else if(string.equals("Jun")){
-     string = "June";
-     }else if(string.equals("Jul")){
-     string = "July";
-     }else if(string.equals("Aug")){
-     string = "August";
-     }else if(string.equals("Sep")){
-     string = "September";
-     }else if(string.equals("Oct")){
-     string = "October";
-     }else if(string.equals("Nov")){
-     string = "November";
-     }else if(string.equals("Dec")){
-     string = "December";
-     }
+     * 判断当前日期是星期几
+     *
+     * @param pTime 要判断的时间
+     * @return dayForWeek 判断结果
+     * @Exception 发生异常
      */
+    public static String DayforWeek(String pTime) throws Exception{
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar c = Calendar.getInstance();
+        c.setTime(format.parse(pTime));
+        int dayForWeek = 0;
+        String week = "";
+        dayForWeek = c.get(Calendar.DAY_OF_WEEK);
+        switch (dayForWeek) {
+            case 1:
+                week = "Sunday";
+                break;
+            case 2:
+                week = "Monday";
+                break;
+            case 3:
+                week = "Tuesday";
+                break;
+            case 4:
+                week = "Wednesday";
+                break;
+            case 5:
+                week = "Thurday";
+                break;
+            case 6:
+                week = "Friday";
+                break;
+            case 7:
+                week = "Saturday";
+                break;
+        }
+        return week;
+    }
 }
