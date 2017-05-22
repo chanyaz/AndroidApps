@@ -1,4 +1,4 @@
-package com.shenke.digest.dialog;
+package com.shenke.digest.core;
 
 
 import android.content.Intent;

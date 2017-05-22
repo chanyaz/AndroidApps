@@ -21,12 +21,12 @@ public class GalleryAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem.
     public Context mContext;
     public static NewsDigest.NewsItem.SlideShow mSlideShow;
     public NewsDigest.NewsItem.SlideShow slideShow;
-    private List<SlideItem> data = new ArrayList<SlideItem>();
+    private List<SlideItem> slideItems = new ArrayList<SlideItem>();
     public SlideItem slideItem;
 
-    public GalleryAdapter(Context mContext, NewsDigest.NewsItem.SlideShow mSlideShow) {
+    public GalleryAdapter(Context mContext, ArrayList<SlideItem> slideItems) {
         this.mContext = mContext;
-        this.mSlideShow = mSlideShow;
+        this.slideItems = slideItems;
     }
 
     public GalleryAdapter(Context mContext) {
@@ -55,10 +55,10 @@ public class GalleryAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem.
     @Override
     public void bindItemView(RecyclerView.ViewHolder holder, final int position) {
         final GalleryViewHolder galleryViewHolder = (GalleryViewHolder) holder;
-        slideShow = mSlideShow;
-        if (slideShow != null) {
-            if (slideShow.photos.total != 0) {
-                galleryViewHolder.url = slideShow.photos.elements.get(position).images.originalUrl;
+        //slideShow = mSlideShow;
+        if (slideItems != null) {
+            if (slideItems.size() != 0) {
+                galleryViewHolder.url = slideItems.get(position).url;
                 Glide.with(galleryViewHolder.itemView.getContext())
                         .load(galleryViewHolder.url)
                         .crossFade()
@@ -81,10 +81,10 @@ public class GalleryAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem.
     }
 @Override
 public int getItemCount(){
-    if(mSlideShow.photos.elements.size() == 0 || mSlideShow.photos.elements.size() == 1){
+    if(slideItems.size() == 0 || slideItems.size() == 1){
         return 0;
     }else{
-        return mSlideShow.photos.elements.size();
+        return slideItems.size();
     }
 }
     @Override

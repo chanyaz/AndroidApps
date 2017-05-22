@@ -72,7 +72,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".dialog.SlideShowActivity"
+            android:name=".core.SlideShowActivity"
             android:configChanges="locale"
             android:label="@string/title_activity_slide_show"
             android:theme="@style/AppTheme" />

@@ -50,7 +50,7 @@ import com.shenke.digest.core.MediaPlayerActivity;
 import com.shenke.digest.core.NewsDetailActivity;
 import com.shenke.digest.dialog.SettingsDialog;
 import com.shenke.digest.dialog.ShareDialog;
-import com.shenke.digest.dialog.SlideShowActivity;
+import com.shenke.digest.core.SlideShowActivity;
 import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.entity.SlideItem;
 import com.shenke.digest.util.DimensionUtil;
@@ -276,8 +276,6 @@ public class NewsDetailFragment extends BaseFragment {
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         gallery.setLayoutManager(linearLayoutManager);
         gallery.setItemViewCacheSize(2);
-        galleryAdapter = new GalleryAdapter(getContext(), mNewsDigest.items.get(index).slideshow);
-        gallery.setAdapter(galleryAdapter);
         nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
@@ -1004,6 +1002,7 @@ public class NewsDetailFragment extends BaseFragment {
     private void addSlideShow(NewsDigest.NewsItem.SlideShow slideShow) {
         List<NewsDigest.NewsItem.SlideShow.Photos.Element> elements = slideShow.photos.elements;
         final ArrayList<SlideItem> slideItems = new ArrayList<SlideItem>();
+
         for (NewsDigest.NewsItem.SlideShow.Photos.Element element : elements) {
             SlideItem slideItem = new SlideItem();
             slideItem.caption = element.caption;
@@ -1011,7 +1010,6 @@ public class NewsDetailFragment extends BaseFragment {
             slideItem.provider_name = element.provider_name;
             slideItem.url = element.images.originalUrl;
             slideItems.add(slideItem);
-            galleryAdapter.addItem(slideItem);
 
         }
         if (slideItems.isEmpty()) {
@@ -1035,6 +1033,8 @@ public class NewsDetailFragment extends BaseFragment {
         } else {
             singleImage.setVisibility(View.GONE);
             gallery.setVisibility(View.VISIBLE);
+            galleryAdapter = new GalleryAdapter(getContext(), slideItems);
+            gallery.setAdapter(galleryAdapter);
             galleryAdapter.addItemClickListenr(new BaseRecyclerViewAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(RecyclerView.ViewHolder holder, int position) {

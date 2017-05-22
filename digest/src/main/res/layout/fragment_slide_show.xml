@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
-    tools:context="com.shenke.digest.dialog.SlideShowActivity$PlaceholderFragment">
+    tools:context="com.shenke.digest.core.SlideShowActivity$PlaceholderFragment">
 
     <uk.co.senab.photoview.PhotoView
         android:id="@+id/photoView"

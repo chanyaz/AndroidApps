@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/black"
     android:clipToPadding="true"
-    tools:context="com.shenke.digest.dialog.SlideShowActivity">
+    tools:context="com.shenke.digest.core.SlideShowActivity">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/container"
