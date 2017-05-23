@@ -73,14 +73,14 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         registerReceiver(myReceiver, intentFilter);
         subscriptionInstall = checkInstall();
         digestLoadDialog = new DigestLoadDialog();
-        mSection = getIntent().getIntExtra("SECTION", 0);
+        mSection = getIntent().getIntExtra("SECTION", 2);
         mDate = getIntent().getStringExtra("DATE");
-        mLang = LanguageEdtion(getIntent().getIntExtra("LANGUAGE",3));
+        mLang = LanguageEdtion(getIntent().getIntExtra("LANGUAGE", 3));
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container, digestLoadDialog, "loading")
                 .commit();
-            fetchData();
+        fetchData();
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().build());
@@ -151,9 +151,9 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         int create_time = 0;
         String timezone = "8";
         String lang = "";
-        if (mLang == null){
+        if (mLang == null) {
             lang = "en-AA";
-        }else{
+        } else {
             lang = mLang;
         }
         String region_edition = lang.trim().substring(3, 5);
@@ -169,6 +169,8 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
 
         if (mSection == 1) {
             digest_edition = 1;
+        } else if (mSection == 0) {
+            digest_edition = 0;
         } else {
             try {
                 GregorianCalendar g = new GregorianCalendar();
@@ -314,19 +316,20 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
 
 
     }
-public String LanguageEdtion(int language){
-    String mlang = "";
-    if(language == 0){
-        mlang = "en-CA";
-    }else if(language == 1){
-        mlang = "en-UK";
-    }else if(language == 2){
-        mlang = "en-US";
-    }else{
-        mlang = "en-AA";
+
+    public String LanguageEdtion(int language) {
+        String mlang = "";
+        if (language == 0) {
+            mlang = "en-CA";
+        } else if (language == 1) {
+            mlang = "en-UK";
+        } else if (language == 2) {
+            mlang = "en-US";
+        } else {
+            mlang = "en-AA";
+        }
+        return mlang;
     }
-    return mlang;
-}
 
     @Override
     public void onLoad() {

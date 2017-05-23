@@ -31,6 +31,12 @@ import com.shenke.digest.view.CircleLayout;
 import com.shenke.digest.view.CircularRevealView;
 import com.shenke.digest.view.DonutProgress;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_EVENING;
 import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_MORNING;
 
@@ -43,7 +49,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
     private boolean allChecked;
     public Context mContext;
     public static NewsDigest mNewsDigest;
-    public  NewsDigest.NewsItem newsItem;
+    public NewsDigest.NewsItem newsItem;
     private OnItemClickListener onItemClickListener;
     private FragmentManager fm;
     private final String TAG = "NewsAdapter";
@@ -53,7 +59,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
         this.onItemClickListener = onItemClickListener;
     }
 
-    public NewsAdapter(Context mContext,NewsDigest mNewsDigest) {
+    public NewsAdapter(Context mContext, NewsDigest mNewsDigest) {
         this.mContext = mContext;
         this.mNewsDigest = mNewsDigest;
     }
@@ -82,19 +88,20 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
 
         return new ViewHolder(view);
     }
+
     @Override
     public void bindItemView(RecyclerView.ViewHolder srcHolder1, final int position) {
         ViewHolder holder = (ViewHolder) srcHolder1;
-         newsItem = mNewsDigest.items.get(position);
+        newsItem = mNewsDigest.items.get(position);
 
         if (newsItem != null) {
 
-            if(mNewsDigest.edition == 1){
+            if (mNewsDigest.edition == 1) {
                 holder.rl_news_list.setBackgroundResource(R.color.black);
                 holder.title.setTextColor(Color.WHITE);
                 holder.triangle_background.setBackgroundResource(R.mipmap.evening_triangle_background);
                 section = SECTION_EVENING;
-            }else{
+            } else {
                 section = SECTION_MORNING;
             }
             if (position == 0) {
@@ -108,16 +115,16 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
                 String ed;
                 if (mNewsDigest.regionEdition.equals("AA")) {
                     ed = "Intl.";
-                } else if(mNewsDigest.regionEdition.equals("CA")){
+                } else if (mNewsDigest.regionEdition.equals("CA")) {
                     ed = "Canada";
-                }else{
+                } else {
                     ed = mNewsDigest.regionEdition;
                 }
-                holder.date.setText(DateUtil.MonthFormat(mNewsDigest.date.substring(5,7).trim()) + " " + mNewsDigest.date.substring(8,10).trim());
+                holder.date.setText(DateUtil.MonthFormat(mNewsDigest.date.substring(5, 7).trim()) + " " + mNewsDigest.date.substring(8, 10).trim());
                 try {
                     String str = DateUtil.DayforWeek(mNewsDigest.date);
 
-                    holder.section.setText(DateUtil.DayforWeek(mNewsDigest.date)+(section == SECTION_MORNING ? " morning" : " evening")
+                    holder.section.setText(DateUtil.DayforWeek(mNewsDigest.date) + (section == SECTION_MORNING ? " morning" : " evening")
                             + " | " + ed);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -168,7 +175,33 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
             //press "Yahoo News"
             Typeface typeFacePress = Typeface.createFromAsset(holder.view.getContext().getAssets(), "fonts/Roboto-Light.ttf");
             holder.sources.setTypeface(typeFacePress);
-            holder.sources.setText(newsItem.sources.get(0).publisher);
+            if (newsItem.sources.size() == 0) {
+                holder.sources.setVisibility(View.INVISIBLE);
+            } else if (newsItem.sources.size() == 1) {
+                holder.sources.setText(newsItem.sources.get(0).publisher);
+            } else if (newsItem.sources.size() >= 2) {
+                ArrayList<String> publishers = new ArrayList<String>();
+                for (int i = 0; i < newsItem.sources.size(); i++) {
+                    publishers.add(newsItem.sources.get(i).publisher);
+                }
+                //  不改变顺序去重
+                Set set = new HashSet();
+                List newList = new ArrayList();
+                for (Iterator iter = publishers.iterator(); iter.hasNext(); )
+                {
+                    Object element = iter.next();
+                    if (set.add(element)) newList.add(element);
+                }
+                publishers.clear();
+                publishers.addAll(newList);
+                if(publishers.size() == 1){
+                    holder.sources.setText(publishers.get(0));
+                }else if(publishers.size() == 2){
+                    holder.sources.setText(publishers.get(0) + ","+ publishers.get(1));
+                }else if(publishers.size() > 2){
+                    holder.sources.setText(publishers.get(0) + ","+ publishers.get(1) + " + "+(publishers.size() - 2)+" more" );
+                }
+            }
             final ViewHolder holder1 = holder;
             final int position1 = position;
             holder.view.setOnClickListener(new View.OnClickListener() {
@@ -212,25 +245,25 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
                 holder.view.setBackground(stateListDrawable);
             }
             if (newsItem.order != null) {
-                if (!newsItem.order.contains("wiki")) {
+                if (!(newsItem.wikis.size()>0)) {
                     holder.images.findViewById(R.id.wiki).setVisibility(View.GONE);
                 }
-                if (!newsItem.order.contains("location")) {
+                if (!(newsItem.locations.size()>0)) {
                     holder.images.findViewById(R.id.map).setVisibility(View.GONE);
                 }
-                if (!newsItem.order.contains("video")) {
+                if (!(newsItem.videos.size()>0)) {
                     holder.images.findViewById(R.id.video).setVisibility(View.GONE);
                 }
-                if (!newsItem.order.contains("slideshow")) {
+                if (!(newsItem.slideshow.photos.elements.size()>0)) {
                     holder.images.findViewById(R.id.images).setVisibility(View.GONE);
                 }
-                if (!newsItem.order.contains("statDetail")) {
+                if (!(newsItem.stats.size()>0)) {
                     holder.images.findViewById(R.id.stats).setVisibility(View.GONE);
                 }
-                if (!newsItem.order.contains("infograph")) {
+                if (!(newsItem.statDetail.size()>0)) {
                     holder.images.findViewById(R.id.diagram).setVisibility(View.GONE);
                 }
-                if (!newsItem.order.contains("tweetKeyword")) {
+                if (!(newsItem.tweetKeywords.size()>0)) {
                     holder.images.findViewById(R.id.twitter).setVisibility(View.GONE);
                 }
             }
@@ -251,7 +284,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
         final int readColor = holder.revealView.getContext().getResources().getColor(R.color.read_color);
         Typeface typeface = Typeface.createFromAsset(holder.itemView.getContext().getAssets(), "fonts/Roboto-Thin.ttf");
         Typeface ty = Typeface.createFromAsset(holder.itemView.getContext().getAssets(), "fonts/Roboto-Light.ttf");
-        if(mNewsDigest.edition == 1){
+        if (mNewsDigest.edition == 1) {
             holder.ll_newslist_footer.setBackgroundResource(R.color.black);
             holder.urd.setTextColor(Color.BLACK);
             holder.read.setTextColor(Color.BLACK);
@@ -259,7 +292,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
             holder.textView.setTextColor(Color.BLACK);
             holder.foot_view.setBackgroundResource(R.color.countdown_text_evening_light);
             holder.toggleButton.setTextColor(Color.WHITE);
-            Drawable downDrawable =   holder.toggleButton.getContext().getResources().getDrawable(R.mipmap.extranews_arrow_down_w);
+            Drawable downDrawable = holder.toggleButton.getContext().getResources().getDrawable(R.mipmap.extranews_arrow_down_w);
             downDrawable.setBounds(0, 0, downDrawable.getMinimumWidth(), downDrawable.getMinimumHeight());
             holder.toggleButton.setCompoundDrawables(null, null, null, downDrawable);
         }
@@ -267,7 +300,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
         holder.smallTitle.setTypeface(typeface);
         holder.urd.setTypeface(ty);
         holder.textView.setTypeface(ty);
-       // final int count = getAllItems().size();
+        // final int count = getAllItems().size();
         final int count = mNewsDigest.items.size();
         holder.textView.setText(holder.circleLayout.getActiveCount() + " of " + count);
 
@@ -280,7 +313,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
             }
 
             for (int i = 0; i < count; i++) {
-              if (mNewsDigest.items.get(i).isChecked()) {
+                if (mNewsDigest.items.get(i).isChecked()) {
                     holder.circleLayout.activeItem(i);
                 }
             }
@@ -365,7 +398,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
     }
 
     public void activationItem(int index) {
-       getItem(index).setChecked(true);
+        getItem(index).setChecked(true);
         notifyDataSetChanged();
     }
 
@@ -431,6 +464,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
         final TextView read;
         final LinearLayout ll_newslist_footer;
         final View foot_view;
+
         public FooterViewHolder(View itemView) {
             super(itemView);
             this.itemView = itemView;
@@ -443,9 +477,9 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
             this.doYouKnow = itemView.findViewById(R.id.know);
             this.toggleButton = (TextView) itemView.findViewById(R.id.toggleButton);
             this.urd = (TextView) itemView.findViewById(R.id.uread);
-            this.read = (TextView)itemView.findViewById(R.id.read );
+            this.read = (TextView) itemView.findViewById(R.id.read);
             this.ll_newslist_footer = (LinearLayout) itemView.findViewById(R.id.ll_newslist_footer);
-            this.foot_view = (View)itemView.findViewById(R.id.footer_view);
+            this.foot_view = (View) itemView.findViewById(R.id.footer_view);
         }
     }
 
