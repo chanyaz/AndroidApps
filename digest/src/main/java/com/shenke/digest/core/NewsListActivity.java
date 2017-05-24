@@ -162,8 +162,8 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
             date = mDate.trim().substring(10, 14) + "-" + mDate.trim().substring(4, 6) + "-" + mDate.trim().substring(7, 9);
 
         } else {
-            final String str = Helper.format(new Date());
-            date = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
+            final String nowtime = Helper.getGlobalTime(lang);
+            date = nowtime.trim().substring(0,9);
         }
 
 

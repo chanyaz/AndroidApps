@@ -44,13 +44,14 @@ import com.google.android.exoplayer.util.Util;
 import com.shenke.digest.R;
 import com.shenke.digest.adapter.BaseRecyclerViewAdapter;
 import com.shenke.digest.adapter.GalleryAdapter;
+import com.shenke.digest.adapter.NewsAdapter;
 import com.shenke.digest.core.ExtraNewsListActivity;
 import com.shenke.digest.core.LocationActivity;
 import com.shenke.digest.core.MediaPlayerActivity;
 import com.shenke.digest.core.NewsDetailActivity;
+import com.shenke.digest.core.SlideShowActivity;
 import com.shenke.digest.dialog.SettingsDialog;
 import com.shenke.digest.dialog.ShareDialog;
-import com.shenke.digest.core.SlideShowActivity;
 import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.entity.SlideItem;
 import com.shenke.digest.util.DimensionUtil;
@@ -181,8 +182,8 @@ public class NewsDetailFragment extends BaseFragment {
                 ShareDialog shareDialog = new ShareDialog();
                 Bundle bundle = new Bundle();
                 bundle.putString(ShareDialog.TITLE, title.getText().toString());
-                bundle.putString(ShareDialog.LINK, title.getTag().toString());
-                bundle.putString(ShareDialog.SOURCE, mNewsDigest.items.get(index).sources.get(0).publisher);
+                bundle.putString(ShareDialog.LINK, mNewsDigest.items.get(index).webpageUrl);
+                bundle.putString(ShareDialog.SOURCE, NewsAdapter.newssource);
                 shareDialog.setArguments(bundle);
                 shareDialog.show(getChildFragmentManager(), "share");
             }
@@ -602,7 +603,7 @@ public class NewsDetailFragment extends BaseFragment {
         }
     }
 
-  /*  private void addTweet(NewsDigest.NewsItem newsItem) {
+ /*private void addTweet(NewsDigest.NewsItem newsItem) {
         tweets.removeAllViews();
         NewsDigest.NewsItem.TweetKeyword tweetRealm = newsItem.tweetKeywords;
         if (tweetRealm != null && tweetRealm.getTweets() != null
