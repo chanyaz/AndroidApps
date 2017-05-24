@@ -29,7 +29,6 @@ import com.shenke.digest.util.StatusBarCompat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 import rx.Observable;
 import rx.Observer;
@@ -153,8 +152,10 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         String lang = "";
         if (mLang == null) {
             lang = "en-AA";
-        } else {
-            lang = mLang;
+        } else if(mLang == "en-UK"){
+            lang = "en-GB";
+        }else{
+            lang = "en-AA";
         }
         String region_edition = lang.trim().substring(3, 5);
         String more_stories = "0";
@@ -173,13 +174,12 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
             digest_edition = 0;
         } else {
             try {
-                GregorianCalendar g = new GregorianCalendar();
                 SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-                String ymd = sdf1.format(g.getTime());
                 SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String ymd = sdf1.format(sdf2.parse(Helper.getGlobalTime(lang)));
                 Date morning = sdf2.parse(ymd + " 08:00:00");
                 Date evening = sdf2.parse(ymd + " 18:00:00");
-                Date present = g.getTime();
+                Date present = sdf2.parse(Helper.getGlobalTime(lang));
                 if (present.before(morning) || present.after(evening)) {
                     digest_edition = SECTION_EVENING;
                 } else {

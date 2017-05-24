@@ -109,6 +109,8 @@ public static String newssource;
                     ed = "Intl.";
                 } else if (mNewsDigest.regionEdition.equals("CA")) {
                     ed = "Canada";
+                } else if (mNewsDigest.regionEdition.equals("GB")) {
+                    ed = "UK";
                 } else {
                     ed = mNewsDigest.regionEdition;
                 }
