@@ -28,7 +28,7 @@ public class NewsDetailActivity extends AppCompatActivity {
     public static final String INDEX = "index";
     public static final String DATA = "data";
     public static final String MORE = "more";
-    private ArrayList<NewsDigest> data = new ArrayList<NewsDigest>();
+    private ArrayList<NewsDigest.NewsItem> data = new ArrayList<NewsDigest.NewsItem>();
     private ViewPager viewPager;
     private NewsDetailAdapter adapter;
     private boolean more;
@@ -162,7 +162,7 @@ public class NewsDetailActivity extends AppCompatActivity {
 
     public void updateIndex(int index) {
         if (data != null && !data.isEmpty() && index >= 0 && index < data.size()) {
-           //data.get(index).checked = true;
+           data.get(index).checked = true;
         }
 
     }

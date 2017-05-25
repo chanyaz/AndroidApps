@@ -36,7 +36,7 @@ public class EditionDialog extends DialogFragment implements View.OnClickListene
     public static final String SECTION_SELECTED = "sectionSelected";
     public static final String DATE_SELECTED = "dateSelected";
     public static final int EDITION_CA = 0;
-    public static final int EDITION_UK = 1;
+    public static final int EDITION_GB = 1;
     public static final int EDITION_US = 2;
     public static final int EDITION_INT = 3;
     private int mEdition;
@@ -150,7 +150,7 @@ public class EditionDialog extends DialogFragment implements View.OnClickListene
                 resetIcon(edition = EDITION_INT);
                 break;
             case R.id.uk:
-                resetIcon(edition = EDITION_UK);
+                resetIcon(edition = EDITION_GB);
                 break;
             case R.id.ca:
                 resetIcon(edition = EDITION_CA);
@@ -232,7 +232,7 @@ public class EditionDialog extends DialogFragment implements View.OnClickListene
 
     private void resetIcon(int edition) {
         reset();
-        if (edition == EDITION_UK) {
+        if (edition == EDITION_GB) {
 
             ukIcon.setVisibility(View.VISIBLE);
 

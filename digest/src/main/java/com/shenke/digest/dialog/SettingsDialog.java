@@ -304,7 +304,7 @@ public class SettingsDialog extends DialogFragment {
 
             tvArea.setText("International");
 
-        } else if (edition == EditionDialog.EDITION_UK) {
+        } else if (edition == EditionDialog.EDITION_GB) {
 
             tvArea.setText("United Kingdom");
 

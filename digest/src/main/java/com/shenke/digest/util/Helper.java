@@ -74,10 +74,10 @@ public class Helper {
 
     public static String getTimeZone(String country) {
         String mTimeZone = "GMT";
-        if (country == "en-UK" || country == "en-GB") {
+        if (country == "en-GB") {
             mTimeZone = "GMT+1";
         } else if (country == "en-US") {
-            mTimeZone = "GMT-1";
+            mTimeZone = "GMT-4";
         } else if (country == "en-CA") {
             mTimeZone = "GMT-8";
         } else if (country == "en-AA") {

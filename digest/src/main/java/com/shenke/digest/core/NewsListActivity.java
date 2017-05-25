@@ -192,8 +192,6 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         String lang = "";
         if (mLang == null) {
             lang = "en-AA";
-        } else if (mLang == "en-UK") {
-            lang = "en-GB";
         } else {
             lang = mLang;
         }
@@ -357,7 +355,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         if (language == 0) {
             mlang = "en-CA";
         } else if (language == 1) {
-            mlang = "en-UK";
+            mlang = "en-GB";
         } else if (language == 2) {
             mlang = "en-US";
         } else {
