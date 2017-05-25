@@ -98,6 +98,7 @@ public class ExtraNewsListActivity extends BaseActivity {
         int create_time = 0;
         String timezone = "8";
         String date = mdate;
+        String lang = "";
        if (mlang == "en-UK") {
             lang = "en-GB";
         }else{
