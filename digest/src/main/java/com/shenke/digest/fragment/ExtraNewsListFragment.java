@@ -105,8 +105,7 @@ public class ExtraNewsListFragment extends BaseFragment {
                 Intent intent = new Intent(getContext(), NewsDetailActivity.class);
                 intent.putExtra(NewsDetailActivity.INDEX, position);
                 LogUtil.d(TAG, "position:" + position);
-                intent.putExtra(NewsDetailActivity.MORE, false);
-                //intent.putParcelableArrayListExtra(NewsDetailActivity.DATA, list);
+                intent.putExtra(NewsDetailActivity.MORE, true);
                 intent.putExtra(NewsDetailActivity.DATA,mNewsDigest);
                 startActivity(intent);
             }

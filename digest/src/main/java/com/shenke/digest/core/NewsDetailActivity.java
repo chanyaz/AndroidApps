@@ -45,7 +45,6 @@ public class NewsDetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
         rxBus = new RxBus();
         index = intent.getIntExtra(INDEX, 0);
-        // data = intent.getParcelableArrayListExtra(DATA);
         mNewsDigest = (NewsDigest) intent.getSerializableExtra(DATA);
         more = intent.getBooleanExtra(MORE, false);
         viewPager = (ViewPager) findViewById(R.id.viewPager);
@@ -136,7 +135,6 @@ public class NewsDetailActivity extends AppCompatActivity {
                 } else {
                     Fragment fragment = new ExtraFragment();
                     Bundle bundle = new Bundle();
-                   // bundle.putParcelableArrayList("data", detailItemArrayList);
                     bundle.putSerializable("NewsDigestData",mNewsDigest);
                     bundle.putInt("INDEX",position);
                     fragment.setArguments(bundle);

@@ -11,7 +11,6 @@ public class DateUtil {
     public static final int SECTION_MORNING_TODAY = 1;
     public static final int SECTION_EVENING_TODAY = 2;
     public static final int SECTION_EVENING_YESTERDAY = 3;
-    //public static final int  SECTION_MORNING_YESTERDAY = 3;
     public static String[] months = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
     public static String[] month = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 

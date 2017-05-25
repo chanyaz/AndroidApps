@@ -1,6 +1,9 @@
 package com.shenke.digest.fragment;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,6 +14,7 @@ import android.widget.TextView;
 
 import com.shenke.digest.R;
 import com.shenke.digest.core.NewsDetailActivity;
+import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.util.LogUtil;
 import com.shenke.digest.view.CircleLayout;
 import com.shenke.digest.view.CircularRevealView;
@@ -20,6 +24,8 @@ import java.util.ArrayList;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+
+import static com.shenke.digest.core.NewsDetailActivity.INDEX;
 
 
 public class ExtraFragment extends BaseFragment {
@@ -32,9 +38,9 @@ public class ExtraFragment extends BaseFragment {
     private LinearLayout know;
     private TextView bigTitle;
     private TextView smallTitle;
-
+    private NewsDigest mNewsDigest;
     private boolean allChecked;
-
+   private int index;
     private Subscription subscription;
     private Handler mHandler;
 
@@ -45,7 +51,8 @@ public class ExtraFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        mNewsDigest = (NewsDigest) getArguments().getSerializable("NewsDigestData");
+        index = getArguments().getInt(INDEX);
     }
 
     @Override
@@ -73,7 +80,7 @@ public class ExtraFragment extends BaseFragment {
         bigTitle.setTypeface(typeface);
         bigTitle.setText("Did you know?");
         smallTitle.setTypeface(typeface);
-        //   smallTitle.setText(NewsListActivity.bonus_text);
+        smallTitle.setText(mNewsDigest.bonus.get(0).text);
         read = $(rootView, R.id.read);
         know = $(rootView, R.id.know);
         TextView urd = $(rootView, R.id.uread);
@@ -81,20 +88,20 @@ public class ExtraFragment extends BaseFragment {
         urd.setTypeface(ty);
         read.setTypeface(ty);
         read.setText("");
-      /*  if (detailItemArrayList != null && detailItemArrayList.size() > 0) {
-            read.setText(circleLayout.getActiveCount() + " of " + detailItemArrayList.size());
-            for (int i = 0; i < detailItemArrayList.size(); i++) {
-                int activeColor = detailItemArrayList.get(i).color;
+       if (mNewsDigest.items != null && mNewsDigest.items.size() > 0) {
+            read.setText(circleLayout.getActiveCount() + " of " + mNewsDigest.items.size());
+            for (int i = 0; i < mNewsDigest.items.size(); i++) {
+                int activeColor = android.graphics.Color.parseColor(mNewsDigest.items.get(i).colors.get(0).hexcode);
                 circleLayout.addItem("" + (i + 1), activeColor);
             }
-            for (int i = 0; i < detailItemArrayList.size(); i++) {
-                if (detailItemArrayList.get(i).checked && !circleLayout.isItemActive(i)) {
+            for (int i = 0; i < mNewsDigest.items.size(); i++) {
+                if (mNewsDigest.items.get(i).checked && !circleLayout.isItemActive(i)) {
                     circleLayout.activeItem(i);
-                    read.setText(circleLayout.getActiveCount() + " of " + detailItemArrayList.size());
+                    read.setText(circleLayout.getActiveCount() + " of " + mNewsDigest.items.size());
                 }
             }
 
-            if (circleLayout.getActiveCount() == detailItemArrayList.size()) {
+            if (circleLayout.getActiveCount() == mNewsDigest.items.size()) {
                 toggleButton.setTextColor(android.graphics.Color.WHITE);
                 readIndicator.setVisibility(View.GONE);
                 circleLayout.setVisibility(View.GONE);
@@ -158,7 +165,7 @@ public class ExtraFragment extends BaseFragment {
             }
         }
         initHandler();
-        subscription = update();*/
+        subscription = update();
     }
 
     @Override
@@ -177,7 +184,7 @@ public class ExtraFragment extends BaseFragment {
                         case 0x110:
                             int index = (int) msg.obj;
                             circleLayout.activeItem(index);
-                         //   read.setText(circleLayout.getActiveCount() + " of " + detailItemArrayList.size());
+                           read.setText(circleLayout.getActiveCount() + " of " + mNewsDigest.items.size());
                             break;
                         default:
                             break;
@@ -211,13 +218,13 @@ public class ExtraFragment extends BaseFragment {
                         @Override
                         public void onNext(ArrayList arrayList) {
                             if (arrayList != null && !allChecked) {
-                              //  detailItemArrayList = arrayList;
-                               /* for (int i = 0; i < detailItemArrayList.size(); i++) {
-                                    if (detailItemArrayList.get(i).checked && !circleLayout.isItemActive(i)) {
+                                mNewsDigest.items = arrayList;
+                               for (int i = 0; i < mNewsDigest.items.size(); i++) {
+                                    if (mNewsDigest.items.get(i).checked && !circleLayout.isItemActive(i)) {
                                         Message msg = mHandler.obtainMessage(0x110, i);
                                         mHandler.sendMessageDelayed(msg, 500);
                                     }
-                                }*/
+                                }
                             }
                         }
                     });

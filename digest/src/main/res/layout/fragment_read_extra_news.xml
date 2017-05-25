@@ -84,7 +84,7 @@
         android:gravity="center"
         android:paddingBottom="5dp"
         android:text="Read more news"
-        android:textColor="@color/green" />
+        android:textColor="@color/bonus_read_more_news_text_color_evening" />
 
     <View
         android:layout_width="match_parent"
