@@ -49,18 +49,9 @@ public class Helper {
                 .valueOf(days[day - 1] + " " + myFmt1.format(date) + " " + months[month] + " " + daysFull[day - 1]);
 
     }
-    public static String getGlobalTime(String country){
-        String mTimeZone = "GMT";
-        if(country == "en-UK"){
-            mTimeZone ="GMT+1";
-        }else if(country == "en-US"){
-            mTimeZone ="GMT-1";
-        } else if(country == "en-CA"){
-            mTimeZone ="GMT-8";
-        }
-        else if(country == "en-AA"){
-            mTimeZone ="GMT+8";
-        }
+
+    public static String getGlobalTime(String country) {
+        String mTimeZone = getTimeZone(country);
         Calendar calendar = Calendar.getInstance();
         Calendar ukTime = new GregorianCalendar(TimeZone.getTimeZone(mTimeZone));
         ukTime.setTimeInMillis(calendar.getTimeInMillis());
@@ -70,9 +61,28 @@ public class Helper {
         int hour = ukTime.get(Calendar.HOUR_OF_DAY);
         int mini = ukTime.get(Calendar.MINUTE);
         int second = ukTime.get(Calendar.SECOND);
-        Date date1 = new GregorianCalendar(TimeZone.getTimeZone(mTimeZone)).getTime();
-        String nowtime = year+"-"+(month+1)+"-"+date+" "+hour+":"+mini+":"+second;
-        System.out.println(year+"-"+(month+1)+"-"+date+" "+hour+":"+mini+":"+second);
+        String mMonth;
+        if ((month + 1) < 10) {
+            mMonth = "0" + String.valueOf(month + 1);
+        } else {
+            mMonth = String.valueOf(month + 1);
+        }
+        String nowtime = year + "-" + mMonth + "-" + date + " " + hour + ":" + mini + ":" + second;
+        System.out.println(year + "-" + mMonth + "-" + date + " " + hour + ":" + mini + ":" + second);
         return nowtime;
+    }
+
+    public static String getTimeZone(String country) {
+        String mTimeZone = "GMT";
+        if (country == "en-UK" || country == "en-GB") {
+            mTimeZone = "GMT+1";
+        } else if (country == "en-US") {
+            mTimeZone = "GMT-1";
+        } else if (country == "en-CA") {
+            mTimeZone = "GMT-8";
+        } else if (country == "en-AA") {
+            mTimeZone = "GMT+8";
+        }
+        return mTimeZone;
     }
 }

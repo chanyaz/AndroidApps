@@ -21,6 +21,7 @@ import com.shenke.digest.entity.Cache;
 import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.fragment.NewsListFragment;
 import com.shenke.digest.http.RetrofitSingleton;
+import com.shenke.digest.util.DateUtil;
 import com.shenke.digest.util.Helper;
 import com.shenke.digest.util.IntentUtil;
 import com.shenke.digest.util.LogUtil;
@@ -29,6 +30,8 @@ import com.shenke.digest.util.StatusBarCompat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import rx.Observable;
 import rx.Observer;
@@ -142,53 +145,19 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
             fetchDataByNetWork(observer);
         }
     }
-
     /**
      * 网络获取并存入缓存，再从缓存中取出
      */
     private void fetchDataByNetWork(Observer<NewsDigest> observer) {
-        int create_time = 0;
-        String timezone = "8";
-        String lang = "";
-        if (mLang == null) {
-            lang = "en-AA";
-        } else if(mLang == "en-UK"){
-            lang = "en-GB";
-        }else{
-            lang = "en-AA";
-        }
-        String region_edition = lang.trim().substring(3, 5);
-        String more_stories = "0";
-        if (mDate != null) {
-            date = mDate.trim().substring(10, 14) + "-" + mDate.trim().substring(4, 6) + "-" + mDate.trim().substring(7, 9);
+        Map<String,String > parameters = getParameters();
+       int create_time = Integer.valueOf( parameters.get("CREAT_ETIME"));
+        String timezone = parameters.get("TIMEZONE");
+        String date = parameters.get("DATE");
+        String lang = parameters.get("LANGUAGE");
+        String region_edition = parameters.get("REGION_EDITION");
+        int digest_edition = Integer.valueOf( parameters.get("DIGEST_EDITION"));
+        String more_stories = parameters.get("MORE_STORY");
 
-        } else {
-            final String nowtime = Helper.getGlobalTime(lang);
-            date = nowtime.trim().substring(0,9);
-        }
-
-
-        if (mSection == 1) {
-            digest_edition = 1;
-        } else if (mSection == 0) {
-            digest_edition = 0;
-        } else {
-            try {
-                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String ymd = sdf1.format(sdf2.parse(Helper.getGlobalTime(lang)));
-                Date morning = sdf2.parse(ymd + " 08:00:00");
-                Date evening = sdf2.parse(ymd + " 18:00:00");
-                Date present = sdf2.parse(Helper.getGlobalTime(lang));
-                if (present.before(morning) || present.after(evening)) {
-                    digest_edition = SECTION_EVENING;
-                } else {
-                    digest_edition = SECTION_MORNING;
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
         RetrofitSingleton.getApiService(this)
                 .GetDigestList(
                         create_time, timezone, date, lang, region_edition, digest_edition, more_stories
@@ -217,7 +186,73 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                 .subscribe(observer);
 
     }
+    private  Map<String,String > getParameters(){
+        Map<String,String > parameters = new HashMap<String ,String >();
+        int create_time = 0;
+        String lang = "";
+        if (mLang == null) {
+            lang = "en-AA";
+        } else if (mLang == "en-UK") {
+            lang = "en-GB";
+        } else {
+            lang = mLang;
+        }
+        String timezone = Helper.getTimeZone(lang).trim().substring(3);
+        String region_edition = lang.trim().substring(3, 5);
+        String more_stories = "0";
+        if (mDate != null) {
+            date = mDate.trim().substring(10, 14) + "-" + mDate.trim().substring(4, 6) + "-" + mDate.trim().substring(7, 9);
 
+        } else {
+            final String nowtime = Helper.getGlobalTime(lang);
+            try {  SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String ymd = sdf1.format(sdf2.parse(Helper.getGlobalTime(lang)));
+                Date morning = sdf2.parse(ymd + " 08:00:00");
+                Date night = sdf2.parse(ymd + " 00:00:00");
+                Date present = sdf2.parse(Helper.getGlobalTime(lang));
+                if (present.before(morning) && present.after(night)) {
+                    String str =  Helper.format(DateUtil.getPreDay(new Date())) ;
+                    date = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
+                }else{
+                    date = nowtime.trim().substring(0, 10);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        if (mSection == 1) {
+            digest_edition = 1;
+        } else if (mSection == 0) {
+            digest_edition = 0;
+        } else {
+            try {
+                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String ymd = sdf1.format(sdf2.parse(Helper.getGlobalTime(lang)));
+                Date morning = sdf2.parse(ymd + " 08:00:00");
+                Date evening = sdf2.parse(ymd + " 18:00:00");
+                Date present = sdf2.parse(Helper.getGlobalTime(lang));
+                if (present.before(morning) || present.after(evening)) {
+                    digest_edition = SECTION_EVENING;
+                } else {
+                    digest_edition = SECTION_MORNING;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        parameters.put("CREAT_ETIME",String.valueOf(create_time));
+        parameters.put("TIMEZONE",timezone);
+        parameters.put("DATE",date);
+        parameters.put("LANGUAGE",lang);
+        parameters.put("REGION_EDITION",region_edition);
+        parameters.put("DIGEST_EDITION",String.valueOf(digest_edition));
+        parameters.put("MORE_STORY",more_stories);
+        return parameters;
+    }
     private Subscription checkInstall() {
 
         return rx.Observable
@@ -368,6 +403,4 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
             }
         }
     }
-
-
 }
