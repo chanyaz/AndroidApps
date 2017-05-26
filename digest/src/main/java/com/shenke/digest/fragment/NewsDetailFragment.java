@@ -44,7 +44,6 @@ import com.google.android.exoplayer.util.Util;
 import com.shenke.digest.R;
 import com.shenke.digest.adapter.BaseRecyclerViewAdapter;
 import com.shenke.digest.adapter.GalleryAdapter;
-import com.shenke.digest.adapter.NewsAdapter;
 import com.shenke.digest.core.ExtraNewsListActivity;
 import com.shenke.digest.core.LocationActivity;
 import com.shenke.digest.core.MediaPlayerActivity;
@@ -78,12 +77,13 @@ public class NewsDetailFragment extends BaseFragment {
     private static final String UUID = "uuid";
     private static final String COLOR = "color";
     private static final String INDEX = "index";
+    private static final String SOURCE = "source";
     private Subscription subscription;
     private Subscription event;
     private String uuid;
     private int color;
     private int index;
-
+    private String newssource;
 
     private ImageButton back;
     private ImageButton share;
@@ -135,12 +135,13 @@ public class NewsDetailFragment extends BaseFragment {
      * @return A new instance of fragment NewsDetailFragment.
      */
 
-    public static NewsDetailFragment newInstance(String uuid, int color, int index, NewsDigest mNewsDigest) {
+    public static NewsDetailFragment newInstance(String uuid, int color, int index, String source,NewsDigest mNewsDigest) {
         NewsDetailFragment fragment = new NewsDetailFragment();
         Bundle args = new Bundle();
         args.putString(UUID, uuid);
         args.putInt(COLOR, color);
         args.putInt(INDEX, index);
+        args.putString(SOURCE,source);
         args.putSerializable("NewsDigestData", mNewsDigest);
         fragment.setArguments(args);
         LogUtil.d(TAG, "uuid:" + uuid);
@@ -155,6 +156,7 @@ public class NewsDetailFragment extends BaseFragment {
             uuid = getArguments().getString(UUID);
             color = getArguments().getInt(COLOR);
             index = getArguments().getInt(INDEX);
+            newssource = getArguments().getString(SOURCE,"Yahoo News Digest");
             mNewsDigest = (NewsDigest) getArguments().getSerializable("NewsDigestData");
         }
 
@@ -183,7 +185,7 @@ public class NewsDetailFragment extends BaseFragment {
                 Bundle bundle = new Bundle();
                 bundle.putString(ShareDialog.TITLE, title.getText().toString());
                 bundle.putString(ShareDialog.LINK, mNewsDigest.items.get(index).webpageUrl);
-                bundle.putString(ShareDialog.SOURCE, NewsAdapter.newssource);
+                bundle.putString(ShareDialog.SOURCE, newssource);
                 shareDialog.setArguments(bundle);
                 shareDialog.show(getChildFragmentManager(), "share");
             }

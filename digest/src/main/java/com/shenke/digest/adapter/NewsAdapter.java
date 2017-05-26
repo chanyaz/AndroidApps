@@ -54,12 +54,12 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
     private FragmentManager fm;
     private final String TAG = "NewsAdapter";
     public static Bitmap bitmap;
-public static String newssource;
+    public static  String newssource;
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
-    public NewsAdapter(Context mContext, NewsDigest mNewsDigest) {
+    public NewsAdapter(Context mContext, NewsDigest mNewsDigest ) {
         this.mContext = mContext;
         this.mNewsDigest = mNewsDigest;
     }

@@ -175,6 +175,7 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
                 Intent intent = new Intent(rootView.getContext(), NewsDetailActivity.class);
                 intent.putExtra(NewsDetailActivity.INDEX, position);
                 intent.putExtra(NewsDetailActivity.MORE, true);
+                intent.putExtra(NewsDetailActivity.SOURCE,NewsAdapter.newssource);
                // intent.putParcelableArrayListExtra(NewsDetailActivity.DATA,  list);
                 intent.putExtra(NewsDetailActivity.DATA,mNewsDigest);
                 startActivityForResult(intent, 0x110);
@@ -219,6 +220,7 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
         bundle.putString("fragment", TAG);
         bundle.putString(MoreDigestDialog.DATE_SELECTED, mDate);
         bundle.putInt(MoreDigestDialog.SECTION_SELECTED, mSection);
+        bundle.putString(MoreDigestDialog.LANG_SELECTED,lang);
         moreDigestDialog.setArguments(bundle);
         moreDigestDialog.show(getChildFragmentManager(), "moreDigest");
     }

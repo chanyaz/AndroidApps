@@ -66,6 +66,8 @@ public class MoreDigestDialog extends DialogFragment {
     public static final int SECTION_MORNING = 0;
     public static final int SECTION_EVENING = 1;
     private int section;
+    private String mDate;
+    private String mLang;
     private int mHour;
     private int mMinute;
     private int mSecond;
@@ -73,6 +75,7 @@ public class MoreDigestDialog extends DialogFragment {
     private LinearLayout linearLayout;
     public static final String SECTION_SELECTED = EditionDialog.SECTION_SELECTED;
     public static final String DATE_SELECTED = EditionDialog.DATE_SELECTED;
+    public static final String LANG_SELECTED = "LANGUAGE_SELECTED";
     private NoticeDialogListener mNoticeDialogListener;
     private BlurredView iv_background;
     private Bitmap bitmap;
@@ -91,6 +94,10 @@ public class MoreDigestDialog extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        section = getArguments().getInt(SECTION_SELECTED,0);
+        mLang = getArguments().getString(LANG_SELECTED,"en-AA");
+        mDate = getArguments().getString(DATE_SELECTED,Helper.getGlobalTime(mLang).trim().substring(0, 10));
+
     }
 
 

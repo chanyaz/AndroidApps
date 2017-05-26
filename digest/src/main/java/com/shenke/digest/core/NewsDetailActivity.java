@@ -34,6 +34,7 @@ public class NewsDetailActivity extends AppCompatActivity {
     private NewsDetailAdapter adapter;
     private boolean more;
     private int index;
+    private String source;
     private RxBus rxBus;
     private int currentIndex = -1;
     public NewsDigest mNewsDigest;
@@ -48,8 +49,9 @@ public class NewsDetailActivity extends AppCompatActivity {
         index = intent.getIntExtra(INDEX, 0);
         mNewsDigest = (NewsDigest) intent.getSerializableExtra(DATA);
         more = intent.getBooleanExtra(MORE, false);
+        source = intent.getStringExtra(SOURCE);
         viewPager = (ViewPager) findViewById(R.id.viewPager);
-        adapter = new NewsDetailAdapter(getSupportFragmentManager(), mNewsDigest, more);
+        adapter = new NewsDetailAdapter(getSupportFragmentManager(), mNewsDigest, more,source);
         viewPager.setAdapter(adapter);
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         viewPager.setCurrentItem(index);
@@ -116,22 +118,23 @@ public class NewsDetailActivity extends AppCompatActivity {
     public static class NewsDetailAdapter extends FragmentPagerAdapter {
        private NewsDigest mNewsDigest;
         private boolean more;
-
-        public NewsDetailAdapter(FragmentManager fm, NewsDigest mNewsDigest, boolean more) {
+        private String source;
+        public NewsDetailAdapter(FragmentManager fm, NewsDigest mNewsDigest, boolean more,String source) {
             super(fm);
           this.mNewsDigest = mNewsDigest;
             this.more = more;
+            this.source = source;
         }
 
         @Override
         public Fragment getItem(int position) {
             if (!more && mNewsDigest != null && !mNewsDigest.items.isEmpty()) {
                 NewsDigest.NewsItem newsItem = mNewsDigest.items.get(position);
-                return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), -1,mNewsDigest);
+                return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), -1,source,mNewsDigest);
             } else if (more && mNewsDigest != null && !mNewsDigest.items.isEmpty()) {
                 if (position < getCount() - 1) {
                     NewsDigest.NewsItem newsItem= mNewsDigest.items.get(position);
-                    return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), position,mNewsDigest);
+                    return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), position,source,mNewsDigest);
 
                 } else {
                     Fragment fragment = new ExtraFragment();
