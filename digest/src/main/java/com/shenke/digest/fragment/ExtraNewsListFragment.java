@@ -25,10 +25,12 @@ import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.util.LogUtil;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import rx.Subscription;
-
-
 
 
 public class ExtraNewsListFragment extends BaseFragment {
@@ -42,7 +44,7 @@ public class ExtraNewsListFragment extends BaseFragment {
     public static NewsDigest mNewsDigest;
     private ArrayList<NewsDigest.NewsItem> list = new ArrayList<NewsDigest.NewsItem>();
     public NewsDigest.NewsItem newsItem;
-
+    public  String newssource;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,6 +108,7 @@ public class ExtraNewsListFragment extends BaseFragment {
                 intent.putExtra(NewsDetailActivity.INDEX, position);
                 LogUtil.d(TAG, "position:" + position);
                 intent.putExtra(NewsDetailActivity.MORE, true);
+                intent.putExtra(NewsDetailActivity.SOURCE,newssource);
                 intent.putExtra(NewsDetailActivity.DATA,mNewsDigest);
                 startActivity(intent);
             }
@@ -179,7 +182,35 @@ public class ExtraNewsListFragment extends BaseFragment {
                     //press
                     Typeface typeFacePress = Typeface.createFromAsset(holder.itemView.getContext().getAssets(), "fonts/Roboto-Light.ttf");
                     holder.sources.setTypeface(typeFacePress);
-                    holder.sources.setText(newsItem.sources.get(0).publisher);
+                    holder.sources.setTypeface(typeFacePress);
+                    if (newsItem.sources.size() == 0) {
+                        holder.sources.setVisibility(View.INVISIBLE);
+                    } else if (newsItem.sources.size() == 1) {
+                        holder.sources.setText(newsItem.sources.get(0).publisher);
+                    } else if (newsItem.sources.size() >= 2) {
+                        ArrayList<String> publishers = new ArrayList<String>();
+                        for (int i = 0; i < newsItem.sources.size(); i++) {
+                            publishers.add(newsItem.sources.get(i).publisher);
+                        }
+                        //  不改变顺序去重
+                        Set set = new HashSet();
+                        List newList = new ArrayList();
+                        for (Iterator iter = publishers.iterator(); iter.hasNext(); )
+                        {
+                            Object element = iter.next();
+                            if (set.add(element)) newList.add(element);
+                        }
+                        publishers.clear();
+                        publishers.addAll(newList);
+                        if(publishers.size() == 1){
+                            holder.sources.setText(publishers.get(0));
+                        }else if(publishers.size() == 2){
+                            holder.sources.setText(publishers.get(0) + ","+ publishers.get(1));
+                        }else if(publishers.size() > 2){
+                            holder.sources.setText(publishers.get(0) + ","+ publishers.get(1) + " + "+(publishers.size() - 2)+" more" );
+                        }
+                    }
+                    newssource = holder.sources.getText().toString();
                     holder.label.setTextColor(android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode));
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {

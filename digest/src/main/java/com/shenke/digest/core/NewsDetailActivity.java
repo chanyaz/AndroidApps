@@ -28,6 +28,7 @@ public class NewsDetailActivity extends AppCompatActivity {
     public static final String INDEX = "index";
     public static final String DATA = "data";
     public static final String MORE = "more";
+    public static final String SOURCE = "source";
     private ArrayList<NewsDigest.NewsItem> data = new ArrayList<NewsDigest.NewsItem>();
     private ViewPager viewPager;
     private NewsDetailAdapter adapter;

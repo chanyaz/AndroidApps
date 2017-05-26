@@ -1,6 +1,7 @@
 package com.shenke.digest.dialog;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
@@ -19,9 +20,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.shenke.digest.R;
-import com.shenke.digest.util.IntentUtil;
 import com.shenke.digest.adapter.BaseRecyclerViewAdapter;
+import com.shenke.digest.util.IntentUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
@@ -41,7 +43,7 @@ public class ShareDialog extends DialogFragment {
     private RecyclerView recyclerView;
     private AppInfoAdapter appInfoAdapter;
     private String shareContent;
-
+    private List<ResolveInfo> list = new ArrayList<>();
     public ShareDialog() {
     }
 
@@ -72,12 +74,16 @@ public class ShareDialog extends DialogFragment {
         tvPress.setTypeface(typefaceLight);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(rootView.getContext(), 3));
-        appInfoAdapter = new AppInfoAdapter();
+        appInfoAdapter = new AppInfoAdapter(getContext(),list);
         View headerView = LayoutInflater.from(rootView.getContext()).inflate(R.layout.place_holder, recyclerView, false);
         appInfoAdapter.setHeaderView(headerView);
         recyclerView.setAdapter(appInfoAdapter);
         tvTitle.setText("" + title);
-        tvPress.setText("" + source);
+        if(source == ""){
+            tvPress.setVisibility(View.INVISIBLE);
+        }else{
+            tvPress.setText("" + source);
+        }
         shareContent = title + " via Digest News\t\t\n" + link + "\t\n get the app and the day's need to know news. https://github.com/nanfangjiamu/Cloud9";
         loadList(shareContent);
     }
@@ -96,7 +102,7 @@ public class ShareDialog extends DialogFragment {
         return Observable.create(new Observable.OnSubscribe<ResolveInfo>() {
             @Override
             public void call(Subscriber<? super ResolveInfo> subscriber) {
-                List<ResolveInfo> list = queryApps(msg);
+                 list = queryApps(msg);
                 if (list != null && !list.isEmpty()) {
                     for (ResolveInfo resolveInfo : list) {
                         subscriber.onNext(resolveInfo);
@@ -144,7 +150,12 @@ public class ShareDialog extends DialogFragment {
     }
 
     public class AppInfoAdapter extends BaseRecyclerViewAdapter<ResolveInfo> {
-
+        public Context mContext;
+        public List<ResolveInfo> resolveInfo = new ArrayList<>();
+        public AppInfoAdapter(Context mContext,List<ResolveInfo> resolveInfo){
+            this.mContext = mContext;
+            this.resolveInfo = resolveInfo;
+       }
         @Override
         public RecyclerView.ViewHolder createHeaderViewHolder(ViewGroup parent, int viewType) {
             return new HeaderFooterViewHolder(getHeaderView());
@@ -165,11 +176,7 @@ public class ShareDialog extends DialogFragment {
         @Override
         public void bindItemView(RecyclerView.ViewHolder src, int position) {
             final ResolveInfoHolder holder = (ResolveInfoHolder) src;
-            holder.resolveInfo = getItem(position);
-            // holder.textView.setText("" + holder.resolveInfo.);
-            // holder.resolveInfo.
-
-            //  holder.resolveInfo.activityInfo.loadIcon(holder.icon.getContext().getPackageManager());
+            holder.resolveInfo = list.get(position);
             loadIcon(holder.resolveInfo, holder.icon);
             loadLabel(holder.resolveInfo, holder.textView);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -193,7 +200,6 @@ public class ShareDialog extends DialogFragment {
 
                 }
             });
-            // holder.textView.setText(holder.resolveInfo.loadLabel(holder.textView.getContext().getPackageManager()));
         }
 
         @Override
@@ -205,7 +211,11 @@ public class ShareDialog extends DialogFragment {
         public void bindFooterView(RecyclerView.ViewHolder holder, int position) {
 
         }
+        @Override
+        public int getItemCount(){
 
+            return list.size();
+        }
         public class ResolveInfoHolder extends RecyclerView.ViewHolder {
             final View itemView;
             final TextView textView;
