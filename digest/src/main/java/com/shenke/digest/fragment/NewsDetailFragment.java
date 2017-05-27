@@ -135,12 +135,13 @@ public class NewsDetailFragment extends BaseFragment {
      * @return A new instance of fragment NewsDetailFragment.
      */
 
-    public static NewsDetailFragment newInstance(String uuid, int color, int index, String source,NewsDigest mNewsDigest) {
+    public static NewsDetailFragment newInstance(String uuid, int color, int index,boolean checked,String source,NewsDigest mNewsDigest) {
         NewsDetailFragment fragment = new NewsDetailFragment();
         Bundle args = new Bundle();
         args.putString(UUID, uuid);
         args.putInt(COLOR, color);
         args.putInt(INDEX, index);
+        args.putBoolean("CHECKED",checked);
         args.putString(SOURCE,source);
         args.putSerializable("NewsDigestData", mNewsDigest);
         fragment.setArguments(args);
@@ -158,6 +159,7 @@ public class NewsDetailFragment extends BaseFragment {
             index = getArguments().getInt(INDEX);
             newssource = getArguments().getString(SOURCE,"Yahoo News Digest");
             mNewsDigest = (NewsDigest) getArguments().getSerializable("NewsDigestData");
+            mNewsDigest.items.get(index).checked = getArguments().getBoolean("CHECKED",true);
         }
 
     }
@@ -230,7 +232,9 @@ public class NewsDetailFragment extends BaseFragment {
         functionBar = $(rootView, R.id.functionBar);
         banner = $(rootView, R.id.banner);
         donutProgress = $(rootView, R.id.index);
-        if (index == -1) {
+        if(mNewsDigest.more_stories == "1"){
+            donutProgress.setVisibility(View.GONE);
+        }else if (index == -1  ) {
             donutProgress.setVisibility(View.GONE);
         } else {
             donutProgress.setText("" + (index + 1));

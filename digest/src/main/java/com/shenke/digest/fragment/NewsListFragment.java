@@ -171,14 +171,14 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
         adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(NewsAdapter.ViewHolder holder, int position) {
-
+                mNewsDigest.items.get(position).checked = true;
                 Intent intent = new Intent(rootView.getContext(), NewsDetailActivity.class);
                 intent.putExtra(NewsDetailActivity.INDEX, position);
                 intent.putExtra(NewsDetailActivity.MORE, true);
                 intent.putExtra(NewsDetailActivity.SOURCE,NewsAdapter.newssource);
                // intent.putParcelableArrayListExtra(NewsDetailActivity.DATA,  list);
                 intent.putExtra(NewsDetailActivity.DATA,mNewsDigest);
-                startActivityForResult(intent, 0x110);
+                startActivityForResult(intent, 0x111);
 
             }
         });
@@ -341,13 +341,15 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0x110 && resultCode == 0x110) {
-            recyclerView.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    extraNews();
-                }
-            }, 300);
+        switch (resultCode){
+            case 0x110:
+                recyclerView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        extraNews();
+                    }
+                }, 300);
+                break;
         }
     }
 

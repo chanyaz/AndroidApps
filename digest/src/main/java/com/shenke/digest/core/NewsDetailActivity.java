@@ -55,21 +55,23 @@ public class NewsDetailActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         viewPager.setCurrentItem(index);
-
+        data.addAll(mNewsDigest.items);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             //int preIndex = -1;
 
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            public void onPageScrolled(final int position, float positionOffset, int positionOffsetPixels) {
                 // LogUtil.e(TAG, "onPageScrolled position:" + position + ";positionOffset:" + positionOffset);
                 if (currentIndex != position) {
                     currentIndex = position;
+
                     rxBus.post(Integer.valueOf(currentIndex));
                     if (currentIndex == adapter.getCount() - 1 && more) {
                         viewPager.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 // rxBus.post(data);
+
                             }
                         }, 1000);
                     }
@@ -80,7 +82,7 @@ public class NewsDetailActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-
+                mNewsDigest.items.get(index).checked = true;
             }
 
             @Override
@@ -130,11 +132,11 @@ public class NewsDetailActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             if (!more && mNewsDigest != null && !mNewsDigest.items.isEmpty()) {
                 NewsDigest.NewsItem newsItem = mNewsDigest.items.get(position);
-                return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), -1,source,mNewsDigest);
+                return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), -1,true,source,mNewsDigest);
             } else if (more && mNewsDigest != null && !mNewsDigest.items.isEmpty()) {
                 if (position < getCount() - 1) {
                     NewsDigest.NewsItem newsItem= mNewsDigest.items.get(position);
-                    return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), position,source,mNewsDigest);
+                    return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), position,true,source,mNewsDigest);
 
                 } else {
                     Fragment fragment = new ExtraFragment();
@@ -182,4 +184,5 @@ public class NewsDetailActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
     }
+
 }

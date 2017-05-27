@@ -80,7 +80,7 @@ public class ExtraFragment extends BaseFragment {
         bigTitle.setTypeface(typeface);
         bigTitle.setText("Did you know?");
         smallTitle.setTypeface(typeface);
-        smallTitle.setText(mNewsDigest.bonus.get(0).text);
+        smallTitle.setText("\""+mNewsDigest.bonus.get(0).text+"\""+"\n"+"\n"+mNewsDigest.bonus.get(0).source);
         read = $(rootView, R.id.read);
         know = $(rootView, R.id.know);
         TextView urd = $(rootView, R.id.uread);
