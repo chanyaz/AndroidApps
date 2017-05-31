@@ -76,7 +76,6 @@ public class MoreDigestDialog extends DialogFragment {
     public static final String SECTION_SELECTED = EditionDialog.SECTION_SELECTED;
     public static final String DATE_SELECTED = EditionDialog.DATE_SELECTED;
     public static final String LANG_SELECTED = "LANGUAGE_SELECTED";
-    private NoticeDialogListener mNoticeDialogListener;
     private BlurredView iv_background;
     private Bitmap bitmap;
 
@@ -84,9 +83,6 @@ public class MoreDigestDialog extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (getParentFragment() instanceof NewsListFragment) {
-            mNoticeDialogListener = (NoticeDialogListener) getParentFragment();
-        }
     }
 
 
@@ -94,9 +90,9 @@ public class MoreDigestDialog extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        section = getArguments().getInt(SECTION_SELECTED,0);
-        mLang = getArguments().getString(LANG_SELECTED,"en-AA");
-        mDate = getArguments().getString(DATE_SELECTED,Helper.getGlobalTime(mLang).trim().substring(0, 10));
+        section = getArguments().getInt(SECTION_SELECTED, 0);
+        mLang = getArguments().getString(LANG_SELECTED, "en-AA");
+        mDate = getArguments().getString(DATE_SELECTED, Helper.getGlobalTime(mLang).trim().substring(0, 10));
 
     }
 
@@ -181,7 +177,7 @@ public class MoreDigestDialog extends DialogFragment {
                         try {
                             SharedPreferences spf = getContext().getSharedPreferences(PREFS_NAME, 0);
                             int selectedSection = spf.getInt(SECTION_SELECTED, newsSection);
-                            String dateSection = spf.getString(DATE_SELECTED, Helper.format(new Date()));
+                            String dateSection = spf.getString(DATE_SELECTED, Helper.getGlobalTime(mLang).trim());
                             Map<String, String> map = new HashMap<String, String>();
                             map.put(SECTION_SELECTED, String.valueOf(selectedSection));
                             map.put(DATE_SELECTED, dateSection);
@@ -212,7 +208,6 @@ public class MoreDigestDialog extends DialogFragment {
                     }
                 });
     }
-
 
     private void progressAnimation() {
         next.setVisibility(View.VISIBLE);
@@ -277,6 +272,7 @@ public class MoreDigestDialog extends DialogFragment {
             subscription.unsubscribe();
         }
         subscription = getSelected(section);
+
         donutProgress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -296,6 +292,11 @@ public class MoreDigestDialog extends DialogFragment {
         return String.valueOf(value);
     }
 
+    /**
+     * 倒计时动画
+     *
+     * @return
+     */
     public DeltaValue calculateProgress() {
 
         DeltaValue deltaValue = new DeltaValue();
@@ -346,6 +347,11 @@ public class MoreDigestDialog extends DialogFragment {
         return deltaValue;
     }
 
+    /**
+     * 选择日期和版本
+     *
+     * @param map
+     */
     private void initChooseItem(Map<String, String> map) {
         LogUtil.d(TAG, "initChooseItem" + map);
         linearLayout.removeAllViews();
@@ -360,20 +366,14 @@ public class MoreDigestDialog extends DialogFragment {
             newsDay.setText(str.substring(0, 3));
             ImageView daytime = (ImageView) item.findViewById(R.id.daytime);
             daytime.setTag(str);
-           final  Intent intent = new Intent(getContext(), NewsListActivity.class);
+            final Intent intent = new Intent(getContext(), NewsListActivity.class);
             daytime.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-
-                    if (mNoticeDialogListener != null) {
-                        mNoticeDialogListener.onItemclick(SECTION_MORNING, str);//section、date
-                    }
-
                     dismiss();
-                    
-                    intent.putExtra("SECTION",SECTION_MORNING);
-                    intent.putExtra("DATE",str);
+                    getActivity().finish();
+                    intent.putExtra("SECTION", SECTION_MORNING);
+                    intent.putExtra("DATE", str);
                     startActivity(intent);
                 }
             });
@@ -382,13 +382,9 @@ public class MoreDigestDialog extends DialogFragment {
             night.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-                    if (mNoticeDialogListener != null) {
-                        mNoticeDialogListener.onItemclick(SECTION_EVENING, str);
-
-                    }
-                    intent.putExtra("SECTION",SECTION_EVENING);
-                    intent.putExtra("DATE",str);
+                    getActivity().finish();
+                    intent.putExtra("SECTION", SECTION_EVENING);
+                    intent.putExtra("DATE", str);
                     startActivity(intent);
                     dismiss();
                 }
@@ -502,42 +498,5 @@ public class MoreDigestDialog extends DialogFragment {
         public int minute;
         public int second;
         public int progress;
-
-        public int getHour() {
-            return hour;
-        }
-
-        public void setHour(int hour) {
-            this.hour = hour;
-        }
-
-        public int getMinute() {
-            return minute;
-        }
-
-        public void setMinute(int minute) {
-            this.minute = minute;
-        }
-
-        public int getSecond() {
-            return second;
-        }
-
-        public void setSecond(int second) {
-            this.second = second;
-        }
-
-        public int getProgress() {
-            return progress;
-        }
-
-        public void setProgress(int progress) {
-            this.progress = progress;
-        }
     }
-
-    public interface NoticeDialogListener {
-        void onItemclick(int section, String date);
-    }
-
 }

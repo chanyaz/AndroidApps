@@ -18,7 +18,6 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.shenke.digest.R;
 import com.shenke.digest.core.MyApplication;
@@ -53,14 +52,10 @@ public class SettingsDialog extends DialogFragment {
     private int mEdition = 0;
     private BlurredView iv_background;
     private Bitmap bitmap;
-    private NoticeEditionListener mNoticeEditionListener;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (getParentFragment() instanceof NewsListFragment) {
-            mNoticeEditionListener = (NoticeEditionListener) getParentFragment();
-        }
     }
 
     @Override
@@ -283,14 +278,11 @@ public class SettingsDialog extends DialogFragment {
                         initArea(edition);
                         if (edition != mEdition) {
                             mEdition = edition;
-                            if (mNoticeEditionListener != null) {
-                                mNoticeEditionListener.onItemclick(mEdition);
-                            }
                             dismiss();
-                            final  Intent intent = new Intent(getContext(), NewsListActivity.class);
-                            intent.putExtra("LANGUAGE",integer);
+                            getActivity().finish();
+                            Intent intent = new Intent(getContext(), NewsListActivity.class);
+                            intent.putExtra("LANGUAGE", integer);
                             startActivity(intent);
-                            Toast.makeText(getContext(), "功能暂未完成 ", Toast.LENGTH_SHORT).show();
 
                         }
                     }
@@ -328,7 +320,4 @@ public class SettingsDialog extends DialogFragment {
         }
     }
 
-    public interface NoticeEditionListener {
-        void onItemclick(int language);
-    }
 }

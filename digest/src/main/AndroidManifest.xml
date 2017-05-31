@@ -22,10 +22,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data
-            android:name="com.amap.api.v2.apikey"
-            android:value="f337d990cd617b1d268e4913a968e9a2" />
-        <service android:name="com.amap.api.location.APSService" />
-        <meta-data
             android:name="com.shenke.digest.util.MyGlideModule"
             android:value="GlideModule" />
 
@@ -76,10 +72,6 @@
             android:configChanges="locale"
             android:label="@string/title_activity_slide_show"
             android:theme="@style/AppTheme" />
-
-        <service
-            android:name=".service.BatchLoadNewsIntentService"
-            android:exported="false" />
 
         <activity
             android:name=".core.LocationActivity"

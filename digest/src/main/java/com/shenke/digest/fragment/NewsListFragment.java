@@ -34,18 +34,15 @@ import java.util.Map;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_MORNING;
 
-public class NewsListFragment extends BaseFragment implements MoreDigestDialog.NoticeDialogListener, SettingsDialog.NoticeEditionListener {
+public class NewsListFragment extends BaseFragment {
     private final String TAG = "NewsListFragment";
     private NewsAdapter adapter;
     private Cache mCache;
-    private Subscription subscription;
     private RecyclerView recyclerView;
     private ImageButton menu;
     private boolean initFooterView = false;
@@ -68,6 +65,8 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
         date = getArguments().getString("DATE",datestr);
         lang = getArguments().getString("LANGUAGE","en-AA");
         mNewsDigest = (NewsDigest) getArguments().getSerializable("NewsDigestData");
+        mSection = digest_edition;
+        mDate = date;
     }
 
     private void getConfg() {
@@ -291,50 +290,6 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (subscription != null) {
-            subscription.unsubscribe();
-        }
-    }
-
-    /**
-     * 监听MoreDigest中的选择
-     *
-     * @param section
-     * @param date
-     */
-    @Override
-    public void onItemclick(int section, String date) {
-        mSection = section;
-        mDate = date;
-        Observable
-                .create(new Observable.OnSubscribe<Boolean>() {
-                    @Override
-                    public void call(Subscriber<? super Boolean> subscriber) {
-                        try {
-                            SharedPreferences settings = getActivity().getSharedPreferences(EditionDialog.PREFS_NAME, 0);
-                            SharedPreferences.Editor editor = settings.edit();
-                            editor.putInt(EditionDialog.SECTION_SELECTED, mSection);
-                            editor.putString(EditionDialog.DATE_SELECTED, mDate);
-                            subscriber.onNext(editor.commit());
-                            subscriber.onCompleted();
-                        } catch (Exception e) {
-                            subscriber.onError(e);
-                        }
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Boolean>() {
-                    @Override
-                    public void call(Boolean aBoolean) {
-                        if (aBoolean) {
-                            adapter.resetArea(mEdition, mSection, mDate);
-                            Toast.makeText(getContext(), "ok", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(getContext(), "fail", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
 
     }
 
@@ -353,37 +308,4 @@ public class NewsListFragment extends BaseFragment implements MoreDigestDialog.N
         }
     }
 
-    @Override
-    public void onItemclick(int language) {
-        mEdition = language;
-
-        Observable
-                .create(new Observable.OnSubscribe<Boolean>() {
-                    @Override
-                    public void call(Subscriber<? super Boolean> subscriber) {
-                        try {
-                            SharedPreferences settings = getActivity().getSharedPreferences(EditionDialog.PREFS_NAME, 0);
-                            SharedPreferences.Editor editor = settings.edit();
-                            editor.putInt(EditionDialog.EDITION, mEdition);
-                            subscriber.onNext(editor.commit());
-                            subscriber.onCompleted();
-                        } catch (Exception e) {
-                            subscriber.onError(e);
-                        }
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Boolean>() {
-                    @Override
-                    public void call(Boolean aBoolean) {
-                        if (aBoolean) {
-                            adapter.resetArea(mEdition, mSection, mDate);
-                            Toast.makeText(getContext(), "ok", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(getContext(), "fail", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }
 }
