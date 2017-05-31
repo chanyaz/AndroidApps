@@ -47,7 +47,6 @@ import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_MORNING;
 
 public class NewsListActivity extends BaseActivity implements DigestLoadDialog.OnNewsLoadInActivityListener {
     private static final String TAG = "NewsListActivity";
-    private Subscription subscription;
     private Subscription subscriptionInstall;
     private Subscription subscriptionSave;
     private DigestLoadDialog digestLoadDialog;
@@ -249,6 +248,10 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         parameters.put("REGION_EDITION",region_edition);
         parameters.put("DIGEST_EDITION",String.valueOf(digest_edition));
         parameters.put("MORE_STORY",more_stories);
+       /* SharedPreferences pre_settings = getSharedPreferences("PREFERENCES_SETTINS", 0);
+        SharedPreferences.Editor editor = pre_settings.edit();
+        editor.putStringSet("PARAMETRES",new HashSet<String>(parameters.values()));
+       editor.commit();*/
         return parameters;
     }
     private Subscription checkInstall() {
@@ -321,7 +324,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        // digestLoadDialog.onLoadError();
+                         digestLoadDialog.onLoadError();
 
                     }
 
@@ -335,9 +338,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
 
     @Override
     protected void onDestroy() {
-        if (subscription != null) {
-            subscription.unsubscribe();
-        }
+
         if (subscriptionInstall != null) {
             subscriptionInstall.unsubscribe();
         }
@@ -367,9 +368,6 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     @Override
     public void onLoad() {
         if (IntentUtil.isNetworkConnected(NewsListActivity.this)) {
-            if (subscription != null) {
-                subscription.unsubscribe();
-            }
             fetchData();
         } else {
             digestLoadDialog.onLoadError();
