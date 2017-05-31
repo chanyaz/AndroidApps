@@ -29,11 +29,14 @@ import android.widget.Toast;
 import com.shenke.digest.R;
 import com.shenke.digest.dialog.MoreDigestDialog;
 import com.shenke.digest.dialog.SettingsDialog;
+import com.shenke.digest.util.IntentUtil;
+
 
 public class LoadViewLayout extends FrameLayout {
     private final String TAG = "LoadViewLayout";
     private View childView;
     private View error;
+    private TextView tv_no_connection;
     private ErrorGridView gridView;
     private Button reload;
     private LoadingView loadingView;
@@ -69,8 +72,8 @@ public class LoadViewLayout extends FrameLayout {
 
     private void initChildView(Context context) {
         childView = LayoutInflater.from(context).inflate(R.layout.loading_digest_view, this);
-      //  TextView tv_no_connection = (TextView) childView.findViewById(R.id.tv_no_connection);
         error = childView.findViewById(R.id.error);
+         tv_no_connection = (TextView) childView.findViewById(R.id.tv_no_connection);
         error.setVisibility(VISIBLE);
         gridView = (ErrorGridView) childView.findViewById(R.id.gvExclamation);
         gridView.setAdapter(new GridAdapter());
@@ -249,7 +252,7 @@ public class LoadViewLayout extends FrameLayout {
                 loadingView.setVisibility(GONE);
                 float cx = getMeasuredWidth() / 2;
                 float cy = getMeasuredHeight() / 2;
-                simpleRippleView.reveal(cx, cy, 30, 400, Color.WHITE, new AnimatorListenerAdapter() {
+                simpleRippleView.reveal(cx, cy, 30, 400, Color.parseColor("#ffeeece2"), new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationStart(Animator animation) {
                         super.onAnimationStart(animation);
@@ -273,45 +276,86 @@ public class LoadViewLayout extends FrameLayout {
     }
 
     public void onLoadError(final Throwable e) {
+        if (IntentUtil.isNetworkConnected(getContext())) {
+            loadingView.setVisibility(VISIBLE);
 
-        loadingView.setVisibility(VISIBLE);
+            loadingView.setState(LoadingView.STATE_RADICAL);
+            loadingView.setOnLoadingAnimationListener(new LoadingView.OnLoadingAnimationListener() {
+                @Override
+                public void onLoading() {
 
-        loadingView.setState(LoadingView.STATE_RADICAL);
-        loadingView.setOnLoadingAnimationListener(new LoadingView.OnLoadingAnimationListener() {
-            @Override
-            public void onLoading() {
+                }
 
-            }
+                @Override
+                public void onLoadEnd() {
+                    loadingView.setVisibility(GONE);
+                    error.setVisibility(VISIBLE);
+                    tv_no_connection.setVisibility(GONE);
+                    menu.setVisibility(VISIBLE);
+                    float cx = getMeasuredWidth() / 2;
+                    float cy = getMeasuredHeight() / 2;
+                    simpleRippleView.reveal(cx, cy, 30, 400, Color.parseColor("#ffeeece2"), new AnimatorListenerAdapter() {
 
-            @Override
-            public void onLoadEnd() {
-                loadingView.setVisibility(GONE);
-                error.setVisibility(VISIBLE);
-                menu.setVisibility(VISIBLE);
-                float cx = getMeasuredWidth() / 2;
-                float cy = getMeasuredHeight() / 2;
-                simpleRippleView.reveal(cx, cy, 30, 400, Color.WHITE, new AnimatorListenerAdapter() {
-
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        super.onAnimationStart(animation);
-                        simpleRippleView.setVisibility(VISIBLE);
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        simpleRippleView.setVisibility(GONE);
-                        if (onLoadNewsListener != null) {
-                            onLoadNewsListener.onLoadError(e);
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            super.onAnimationStart(animation);
+                            simpleRippleView.setVisibility(VISIBLE);
                         }
-                    }
-                });
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            simpleRippleView.setVisibility(GONE);
+                            if (onLoadNewsListener != null) {
+                                onLoadNewsListener.onLoadError(e);
+                            }
+                        }
+                    });
 
 
-            }
-        });
+                }
+            });
 
+        }else {
+
+            loadingView.setVisibility(VISIBLE);
+
+            loadingView.setState(LoadingView.STATE_RADICAL);
+            loadingView.setOnLoadingAnimationListener(new LoadingView.OnLoadingAnimationListener() {
+                @Override
+                public void onLoading() {
+
+                }
+
+                @Override
+                public void onLoadEnd() {
+                    loadingView.setVisibility(GONE);
+                    error.setVisibility(VISIBLE);
+                    menu.setVisibility(VISIBLE);
+                    float cx = getMeasuredWidth() / 2;
+                    float cy = getMeasuredHeight() / 2;
+                    simpleRippleView.reveal(cx, cy, 30, 400, Color.parseColor("#ffeeece2"), new AnimatorListenerAdapter() {
+
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            super.onAnimationStart(animation);
+                            simpleRippleView.setVisibility(VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            simpleRippleView.setVisibility(GONE);
+                            if (onLoadNewsListener != null) {
+                                onLoadNewsListener.onLoadError(e);
+                            }
+                        }
+                    });
+
+
+                }
+            });
+        }
 
     }
 
