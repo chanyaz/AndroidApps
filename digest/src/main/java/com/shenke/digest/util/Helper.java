@@ -67,8 +67,32 @@ public class Helper {
         } else {
             mMonth = String.valueOf(month + 1);
         }
-        String nowtime = year + "-" + mMonth + "-" + date + " " + hour + ":" + mini + ":" + second;
-        System.out.println(year + "-" + mMonth + "-" + date + " " + hour + ":" + mini + ":" + second);
+        String mDate;
+        if(date<10){
+            mDate =  "0" + String.valueOf(date);
+        }else{
+            mDate = String.valueOf(date);
+        }
+        String mHour;
+        if(hour<10){
+            mHour =  "0" + String.valueOf(hour);
+        }else{
+            mHour = String.valueOf(hour);
+        }
+        String mMini;
+        if(mini<10){
+            mMini =  "0" + String.valueOf(mini);
+        }else{
+            mMini = String.valueOf(mini);
+        }
+        String mSecond;
+        if(second<10){
+            mSecond =  "0" + String.valueOf(second);
+        }else{
+            mSecond = String.valueOf(second);
+        }
+        String nowtime = year + "-" + mMonth + "-" + mDate + " " + mHour + ":" + mMini + ":" + mSecond;
+        System.out.println(year + "-" + mMonth + "-" + mDate + " " + mHour + ":" + mMini + ":" + mSecond);
         return nowtime;
     }
 

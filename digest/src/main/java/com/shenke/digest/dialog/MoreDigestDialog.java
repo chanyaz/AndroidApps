@@ -49,6 +49,8 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static com.shenke.digest.core.NewsListActivity.PREFERENCES_SETTINS;
+
 /**
  * 根据时间选择MoreDigest
  */
@@ -75,7 +77,7 @@ public class MoreDigestDialog extends DialogFragment {
     private LinearLayout linearLayout;
     public static final String SECTION_SELECTED = EditionDialog.SECTION_SELECTED;
     public static final String DATE_SELECTED = EditionDialog.DATE_SELECTED;
-    public static final String LANG_SELECTED = "LANGUAGE_SELECTED";
+    public static final String LANG_SELECTED = "LANGUAG";
     private BlurredView iv_background;
     private Bitmap bitmap;
 
@@ -90,9 +92,10 @@ public class MoreDigestDialog extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        section = getArguments().getInt(SECTION_SELECTED, 0);
-        mLang = getArguments().getString(LANG_SELECTED, "en-AA");
-        mDate = getArguments().getString(DATE_SELECTED, Helper.getGlobalTime(mLang).trim().substring(0, 10));
+        SharedPreferences pre_settings = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
+        section = pre_settings.getInt("DIGEST_EDITION", 0);
+        mLang = pre_settings.getString("LANGUAGE", "en-AA");
+        mDate =pre_settings.getString("DATE", Helper.getGlobalTime(mLang).trim().substring(0, 10));
 
     }
 
@@ -175,9 +178,9 @@ public class MoreDigestDialog extends DialogFragment {
                     @Override
                     public void call(Subscriber<? super Map<String, String>> subscriber) {
                         try {
-                            SharedPreferences spf = getContext().getSharedPreferences(PREFS_NAME, 0);
-                            int selectedSection = spf.getInt(SECTION_SELECTED, newsSection);
-                            String dateSection = spf.getString(DATE_SELECTED, Helper.getGlobalTime(mLang).trim());
+                            SharedPreferences spf = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
+                            int selectedSection = spf.getInt("DIGEST_EDITION", newsSection);
+                            String dateSection = spf.getString("DATE",Helper.getGlobalTime(mLang).trim().substring(0, 10));
                             Map<String, String> map = new HashMap<String, String>();
                             map.put(SECTION_SELECTED, String.valueOf(selectedSection));
                             map.put(DATE_SELECTED, dateSection);

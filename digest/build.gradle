@@ -25,7 +25,11 @@ android {
     productFlavors {
     }
 }
-
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
@@ -33,7 +37,6 @@ dependencies {
     compile 'com.android.support:design:25.0.0'
     compile 'com.android.support:support-v4:25.0.0'
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
-
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'io.reactivex:rxjava:1.1.6'
     compile 'com.google.code.gson:gson:2.6.2'
@@ -46,4 +49,5 @@ dependencies {
     compile 'com.github.bumptech.glide:okhttp3-integration:1.4.0@aar'
     compile 'com.github.chrisbanes.photoview:library:1.2.4'
     compile 'com.google.android.exoplayer:exoplayer:r1.5.7'
+    compile name: 'YoumiSdk_v7.4.0_2017-05-18', ext: 'aar'
 }

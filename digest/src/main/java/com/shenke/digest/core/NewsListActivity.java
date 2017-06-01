@@ -61,6 +61,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     private String mLang;
     private String date = null;
     private int digest_edition = 0;
+    public static String PREFERENCES_SETTINS = "PREFERENCES_SETTINS";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,17 +145,18 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
             fetchDataByNetWork(observer);
         }
     }
+
     /**
      * 网络获取并存入缓存，再从缓存中取出
      */
     private void fetchDataByNetWork(Observer<NewsDigest> observer) {
-        Map<String,String > parameters = getParameters();
-       int create_time = Integer.valueOf( parameters.get("CREAT_ETIME"));
+        Map<String, String> parameters = getParameters();
+        int create_time = Integer.valueOf(parameters.get("CREAT_ETIME"));
         String timezone = parameters.get("TIMEZONE");
         String date = parameters.get("DATE");
         String lang = parameters.get("LANGUAGE");
         String region_edition = parameters.get("REGION_EDITION");
-        int digest_edition = Integer.valueOf( parameters.get("DIGEST_EDITION"));
+        int digest_edition = Integer.valueOf(parameters.get("DIGEST_EDITION"));
         String more_stories = parameters.get("MORE_STORY");
 
         RetrofitSingleton.getApiService(this)
@@ -185,8 +187,9 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                 .subscribe(observer);
 
     }
-    private  Map<String,String > getParameters(){
-        Map<String,String > parameters = new HashMap<String ,String >();
+
+    private Map<String, String> getParameters() {
+        Map<String, String> parameters = new HashMap<String, String>();
         int create_time = 0;
         String lang = "";
         if (mLang == null) {
@@ -202,16 +205,17 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
 
         } else {
             final String nowtime = Helper.getGlobalTime(lang);
-            try {  SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
                 SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String ymd = sdf1.format(sdf2.parse(Helper.getGlobalTime(lang)));
                 Date morning = sdf2.parse(ymd + " 08:00:00");
                 Date night = sdf2.parse(ymd + " 00:00:00");
                 Date present = sdf2.parse(Helper.getGlobalTime(lang));
                 if (present.before(morning) && present.after(night)) {
-                    String str =  Helper.format(DateUtil.getPreDay(new Date())) ;
+                    String str = Helper.format(DateUtil.getPreDay(new Date()));
                     date = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
-                }else{
+                } else {
                     date = nowtime.trim().substring(0, 10);
                 }
             } catch (ParseException e) {
@@ -241,19 +245,22 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                 e.printStackTrace();
             }
         }
-        parameters.put("CREAT_ETIME",String.valueOf(create_time));
-        parameters.put("TIMEZONE",timezone);
-        parameters.put("DATE",date);
-        parameters.put("LANGUAGE",lang);
-        parameters.put("REGION_EDITION",region_edition);
-        parameters.put("DIGEST_EDITION",String.valueOf(digest_edition));
-        parameters.put("MORE_STORY",more_stories);
-       /* SharedPreferences pre_settings = getSharedPreferences("PREFERENCES_SETTINS", 0);
+        parameters.put("CREAT_ETIME", String.valueOf(create_time));
+        parameters.put("TIMEZONE", timezone);
+        parameters.put("DATE", date);
+        parameters.put("LANGUAGE", lang);
+        parameters.put("REGION_EDITION", region_edition);
+        parameters.put("DIGEST_EDITION", String.valueOf(digest_edition));
+        parameters.put("MORE_STORY", more_stories);
+        SharedPreferences pre_settings = getSharedPreferences(PREFERENCES_SETTINS, 0);
         SharedPreferences.Editor editor = pre_settings.edit();
-        editor.putStringSet("PARAMETRES",new HashSet<String>(parameters.values()));
-       editor.commit();*/
+        editor.putString("DATE", date);
+        editor.putString("LANGUAGE", lang);
+        editor.putInt("DIGEST_EDITION", digest_edition);
+        editor.commit();
         return parameters;
     }
+
     private Subscription checkInstall() {
 
         return rx.Observable
@@ -324,7 +331,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                         digestLoadDialog.onLoadError();
+                        digestLoadDialog.onLoadError();
 
                     }
 
