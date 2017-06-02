@@ -9,6 +9,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/digest" />
+            <option value="$PROJECT_DIR$/translatedemo" />
+            <option value="$PROJECT_DIR$/youdaotrans" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
