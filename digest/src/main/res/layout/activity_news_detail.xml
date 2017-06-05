@@ -13,17 +13,5 @@
 
     </android.support.v4.view.ViewPager>
 
-    <Button
-        android:layout_margin="16dp"
-        android:layout_gravity="bottom|right"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@mipmap/countdown_day_background_pressed"
-        android:textColor="@color/extra_news_end_view"
-        android:text="@string/Translate"
-        android:textSize="14sp"
-        android:textAllCaps="false"
-        />
-
 </FrameLayout>
 

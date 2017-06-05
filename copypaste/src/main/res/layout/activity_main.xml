@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f1f1f1"
+    android:clipToPadding="true"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_copy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:textIsSelectable="true"
+        android:text="现在只是在文本输入任何文字复制字段，然后选择复制文本按钮" />
+
+    <EditText
+        android:id="@+id/et_paste"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200dp" />
+</LinearLayout>
