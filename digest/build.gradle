@@ -10,6 +10,7 @@ android {
         versionName "1.0"
         renderscriptTargetApi 19
         renderscriptSupportModeEnabled true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             abiFilters "x86", "armeabi-v7a"
         }
@@ -53,4 +54,6 @@ dependencies {
     compile 'com.github.chrisbanes.photoview:library:1.2.4'
     compile 'com.google.android.exoplayer:exoplayer:r1.5.7'
     compile name: 'YoumiSdk_v7.4.0_2017-05-18', ext: 'aar'
+    compile files('libs/YoudaoBase-1.0.0.jar')
+    compile files('libs/YoudaoTranslateOnline-1.0.0.jar')
 }

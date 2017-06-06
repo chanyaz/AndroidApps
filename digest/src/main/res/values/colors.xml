@@ -5,6 +5,8 @@
     <color name="colorPrimary">@android:color/white</color>
     <!--<color name="colorPrimaryDark">#303F9F</color>-->
     <color name="colorAccent">#FF4081</color>
+    <color name="bg_list_item_press">#f0f0f0</color>
+    <color name="bg_list_item">#fff</color>
     <color name="skip_gray">#a7a0a0</color>
     <color name="micro_text_light">#262626</color>
     <color name="micro_text_light_tran">#64000000</color>

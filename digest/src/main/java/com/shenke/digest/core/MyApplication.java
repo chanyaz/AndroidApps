@@ -12,7 +12,6 @@ public class MyApplication extends Application {
     public static MyApplication INSTANCE;
     public static String cacheDir = "";
     public static Context mAppContext = null;
-
     @Override
     public void onCreate() {
         super.onCreate();

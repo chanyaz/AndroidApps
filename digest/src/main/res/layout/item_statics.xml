@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="ISIS militants"
+        android:textIsSelectable="true"
         android:textSize="18sp"
         android:textColor="@android:color/holo_red_light" />
 
@@ -39,6 +40,7 @@
     <TextView
         android:id="@+id/statDetailDescription"
         android:layout_width="match_parent"
+        android:textIsSelectable="true"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:text="The Kurdistan Region Security Council said at least 25 Islamic State vehicles had been destroyed. At least 10 peshmerga also died in the fighting, according to a Kurdish official."

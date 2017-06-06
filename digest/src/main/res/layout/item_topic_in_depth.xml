@@ -37,6 +37,7 @@
             <TextView
                 android:id="@+id/longreadTitle"
                 android:layout_width="match_parent"
+                android:textIsSelectable="true"
                 android:layout_height="wrap_content"
                 android:text="U.S. death in iraq hightlights enduring ISIS war debate"
                 android:textColor="@android:color/holo_red_light"
@@ -58,6 +59,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
+        android:textIsSelectable="true"
         android:text="The White House is wrestling with renewed questions about the likely scope and duration of the conflict."
         android:textColor="@android:color/black"
         android:textSize="16sp" />

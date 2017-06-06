@@ -111,6 +111,25 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_provider" />
         </provider >
+        <!--Translate-->
+        <activity
+            android:name="com.shenke.digest.translate.TranslateActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:theme="@style/YouDaoTranslateStyle" >
+        </activity>
+
+
+
+        <activity
+            android:name="com.shenke.digest.translate.TranslateDetailActivity"
+            android:theme="@style/YouDaoTranslateStyle" >
+        </activity>
+
+
+        <activity
+            android:name="com.shenke.digest.translate.MyBrowser"
+            android:theme="@style/YouDaoTranslateStyle" >
+        </activity>
 
     </application>
 

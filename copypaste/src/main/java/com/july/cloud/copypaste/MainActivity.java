@@ -3,6 +3,7 @@ package com.july.cloud.copypaste;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -135,9 +136,13 @@ public class MainActivity extends AppCompatActivity {
                 if (actionMode != null) {
                     return false;
                 }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-               actionMode = startActionMode(callback, ActionMode.TYPE_FLOATING);
-                //actionMode = startActionMode(callback);
+                    actionMode = startActionMode(callback, ActionMode.TYPE_FLOATING);
+                }else{
+
+                    actionMode = startActionMode(callback);
+                }
 
                 return true;
             }

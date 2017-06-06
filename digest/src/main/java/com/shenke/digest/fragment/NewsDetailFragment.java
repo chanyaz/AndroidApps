@@ -1,6 +1,9 @@
 package com.shenke.digest.fragment;
 
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -19,7 +22,9 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,6 +58,7 @@ import com.shenke.digest.dialog.SettingsDialog;
 import com.shenke.digest.dialog.ShareDialog;
 import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.entity.SlideItem;
+import com.shenke.digest.translate.TranslateActivity;
 import com.shenke.digest.util.DimensionUtil;
 import com.shenke.digest.util.LogUtil;
 import com.shenke.digest.util.ReferenceUtil;
@@ -122,6 +128,11 @@ public class NewsDetailFragment extends BaseFragment {
     public static Bitmap bitmap;
     public NewsDigest mNewsDigest;
 
+    private ActionMode actionMode;
+    private ActionMode.Callback callback;
+    private List<Integer> menuIds = new ArrayList<>();
+    private ClipboardManager cmb;
+    public static CharSequence Translate_word;
     public NewsDetailFragment() {
     }
 
@@ -210,6 +221,10 @@ public class NewsDetailFragment extends BaseFragment {
                         switch (item.getItemId()) {
                             case R.id.send_feedback:
                                 sendEmail();
+                                return true;
+                            case R.id.quick_search_word:
+                                Intent intent = new Intent(getContext(), TranslateActivity.class);
+                                startActivity(intent);
                                 return true;
                             case R.id.settings:
                                 Bundle bundle = new Bundle();
@@ -306,10 +321,71 @@ public class NewsDetailFragment extends BaseFragment {
             }
         });
         initItem(mNewsDigest);
+
+        /****************************************************************/
+        menuIds.add(R.id.copy);
+        menuIds.add(R.id.translate);
+
+        cmb = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        callback = new ActionMode.Callback(){
+
+            @Override
+            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                MenuInflater inflater = actionMode.getMenuInflater();
+                inflater.inflate(R.menu.copy_trans_menu, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+                for (int i = 0; i < menu.size(); i++) {
+                    MenuItem item = menu.getItem(i);
+                    if (!menuIds.contains(item.getItemId()))
+                        item.setVisible(false);
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.copy:
+                        int min = 0;
+                        int max = title.getText().length();
+                        if (title.isFocused()) {
+                            final int start = title.getSelectionStart();
+                            final int end = title.getSelectionEnd();
+
+                            min = Math.max(0, Math.min(start, end));
+                            max = Math.max(0, Math.max(start, end));
+                        }
+
+                        cmb.setPrimaryClip(ClipData.newPlainText("paste_content", title.getText().subSequence(min, max)));
+
+                        actionMode.finish();
+                        return true;
+                    case R.id.translate:
+                        Intent intent= new Intent(getContext(),TranslateActivity.class);
+                        //Translate_word = cmb.getPrimaryClip().getItemAt(0).coerceToText(getContext());
+                        //cmb.getPrimaryClip().getItemAt(0).coerceToText(getContext());
+                        actionMode.finish();
+                        startActivity(intent);
+                        return true;
+                }
+            return false;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                actionMode = null;
+            }
+        };
+        title.setTextIsSelectable(true);
+        title.setCustomSelectionActionModeCallback(callback);
     }
 
-    private void sendEmail() {
 
+    private void sendEmail() {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:")); // only email apps should handle this
         String[] addresses = {"yifanfeng@outlook.com"};
