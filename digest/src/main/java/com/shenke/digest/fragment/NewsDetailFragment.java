@@ -1,9 +1,6 @@
 package com.shenke.digest.fragment;
 
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -22,9 +19,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -58,6 +53,8 @@ import com.shenke.digest.dialog.SettingsDialog;
 import com.shenke.digest.dialog.ShareDialog;
 import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.entity.SlideItem;
+import com.shenke.digest.selector.OnSelectListener;
+import com.shenke.digest.selector.SelectableTextHelper;
 import com.shenke.digest.translate.TranslateActivity;
 import com.shenke.digest.util.DimensionUtil;
 import com.shenke.digest.util.LogUtil;
@@ -127,12 +124,7 @@ public class NewsDetailFragment extends BaseFragment {
     private int distance;
     public static Bitmap bitmap;
     public NewsDigest mNewsDigest;
-
-    private ActionMode actionMode;
-    private ActionMode.Callback callback;
-    private List<Integer> menuIds = new ArrayList<>();
-    private ClipboardManager cmb;
-    public static CharSequence Translate_word;
+    private SelectableTextHelper mSelectableTextHelper;
     public NewsDetailFragment() {
     }
 
@@ -323,65 +315,7 @@ public class NewsDetailFragment extends BaseFragment {
         initItem(mNewsDigest);
 
         /****************************************************************/
-        menuIds.add(R.id.copy);
-        menuIds.add(R.id.translate);
-
-        cmb = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-        callback = new ActionMode.Callback(){
-
-            @Override
-            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-                MenuInflater inflater = actionMode.getMenuInflater();
-                inflater.inflate(R.menu.copy_trans_menu, menu);
-                return true;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
-                for (int i = 0; i < menu.size(); i++) {
-                    MenuItem item = menu.getItem(i);
-                    if (!menuIds.contains(item.getItemId()))
-                        item.setVisible(false);
-                }
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
-                    case R.id.copy:
-                        int min = 0;
-                        int max = title.getText().length();
-                        if (title.isFocused()) {
-                            final int start = title.getSelectionStart();
-                            final int end = title.getSelectionEnd();
-
-                            min = Math.max(0, Math.min(start, end));
-                            max = Math.max(0, Math.max(start, end));
-                        }
-
-                        cmb.setPrimaryClip(ClipData.newPlainText("paste_content", title.getText().subSequence(min, max)));
-
-                        actionMode.finish();
-                        return true;
-                    case R.id.translate:
-                        Intent intent= new Intent(getContext(),TranslateActivity.class);
-                        //Translate_word = cmb.getPrimaryClip().getItemAt(0).coerceToText(getContext());
-                        //cmb.getPrimaryClip().getItemAt(0).coerceToText(getContext());
-                        actionMode.finish();
-                        startActivity(intent);
-                        return true;
-                }
-            return false;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-                actionMode = null;
-            }
-        };
-        title.setTextIsSelectable(true);
-        title.setCustomSelectionActionModeCallback(callback);
+        addSelectableTextHelper(title);
     }
 
 
@@ -519,6 +453,19 @@ public class NewsDetailFragment extends BaseFragment {
         } else {
             error.setVisibility(View.VISIBLE);
         }
+    }
+    private void addSelectableTextHelper(TextView view){
+        mSelectableTextHelper = new SelectableTextHelper.Builder(view)
+                .setSelectedColor(getResources().getColor(R.color.selected_blue))
+                .setCursorHandleSizeInDp(20)
+                .setCursorHandleColor(getResources().getColor(R.color.cursor_handle_color))
+                .build();
+        mSelectableTextHelper.setSelectListener(new OnSelectListener() {
+            @Override
+            public void onTextSelected(CharSequence content) {
+
+            }
+        });
     }
 
     private void addReference(NewsDigest.NewsItem newsItem) {
@@ -915,7 +862,7 @@ public class NewsDetailFragment extends BaseFragment {
                 TextView statDetailTitle = $(staticItemView, R.id.statDetailTitle);
                 statDetailTitle.setText(stat.title.text);
                 statDetailTitle.setTextColor(color);
-
+                addSelectableTextHelper(statDetailTitle);//添加文字选择
 
                 TextView statDetailValue = $(staticItemView, R.id.statDetailValue);
                 statDetailValue.setText(stat.value.text);
@@ -929,7 +876,7 @@ public class NewsDetailFragment extends BaseFragment {
                 statDetailDescription.setText(stat.description.text);
                 statDetailDescription.setTypeface(typefaceLight);
                 statDetail.addView(staticItemView);
-
+                addSelectableTextHelper(statDetailDescription);//添加文字选择
             }
 
         }
@@ -944,7 +891,7 @@ public class NewsDetailFragment extends BaseFragment {
                         LayoutInflater.from(summary.getContext()).inflate(R.layout.item_summary, summary, false);
                 TextView textView = $(summaryItemView, R.id.summaryText);
                 textView.setTypeface(typefaceLight);
-
+                addSelectableTextHelper(textView);//添加文字选择
                 ViewGroup quoteContainer = $(summaryItemView, R.id.quoteContainer);
                 textView.setText(item.text);
                 if (item.quote == null || item.quote.text == null) {
@@ -955,10 +902,12 @@ public class NewsDetailFragment extends BaseFragment {
                     quoteSymbol.setTextColor(color);
                     TextView quoteText = $(quoteContainer, R.id.quoteText);
                     quoteText.setTextColor(color);
+                    addSelectableTextHelper(quoteText);//添加文字选择
                     // quoteText.setTypeface(typefaceLight);
                     quoteText.setText(quote.text);
                     TextView quoteSource = $(quoteContainer, R.id.quoteSource);
                     quoteSource.setText(quote.source);
+                    addSelectableTextHelper(quoteSource);//添加文字选择
                     //quoteSource.setTypeface(typefaceBold);
                     View verticalLine = $(quoteContainer, R.id.verticalLine);
                     verticalLine.setBackgroundColor(color);
@@ -993,7 +942,7 @@ public class NewsDetailFragment extends BaseFragment {
 
                 longreadTitle.setText(longRead.title);
                 longreadTitle.setTextColor(color);
-
+                addSelectableTextHelper(longreadTitle);//添加文字选择
                 TextView longreadPublisher = $(longReadItemView, R.id.longreadPublisher);
                 longreadPublisher.setText(longRead.publisher);
 
@@ -1001,6 +950,7 @@ public class NewsDetailFragment extends BaseFragment {
                 TextView longreadDescription = $(longReadItemView, R.id.longreadDescription);
                 longreadDescription.setText(longRead.description);
                 longreadDescription.setTypeface(typefaceLight);
+                addSelectableTextHelper(longreadDescription);//添加文字选择
                 if (!TextUtils.isEmpty(longRead.url)) {
                     final String depthUrl = longRead.url;
                     longReadItemView.setOnClickListener(new View.OnClickListener() {
@@ -1031,6 +981,7 @@ public class NewsDetailFragment extends BaseFragment {
                         LayoutInflater.from(locations.getContext()).inflate(R.layout.item_location, locations, false);
                 TextView caption = $(locationItemView, R.id.caption);
                 caption.setText(location.caption);
+                addSelectableTextHelper(caption);//添加文字选择
                 final double latitude = Double.valueOf(TextUtils.isEmpty(location.latitude) ? "0" : location.latitude);
                 final double longitude = Double.valueOf(TextUtils.isEmpty(location.longtitude) ? "0" : location.longtitude);
                 final int zoomLevel = Integer.valueOf(TextUtils.isEmpty(location.zoonLevel) ? "0" : location.zoonLevel);

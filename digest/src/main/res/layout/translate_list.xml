@@ -37,7 +37,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
                 android:gravity="center_vertical|right"
-                android:text="中文"
+                android:text="English"
                 android:textColor="#808080"
                 android:textSize="20sp" />
             
@@ -58,7 +58,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
                 android:gravity="center_vertical|right"
-                android:text="英文"
+                android:text="Chinese"
                 android:textColor="#808080"
                 android:textSize="20sp" />
         </LinearLayout>

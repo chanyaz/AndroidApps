@@ -530,5 +530,8 @@ at times you choose."</string>
     <string name="yssdk_trending_icon"> </string>
     <string name="yssdk_uparrow_icon"> </string>
     <string name="yssdk_videoicon"> </string>
-
+    <string name="copy">Copy</string>
+    <string name="select_all">Select All</string>
+    <string name="tv_dictionary">Dictionary</string>
+    <string name="tv_listen">Listen</string>
 </resources>

@@ -356,4 +356,7 @@
     <color name="circle4">#fdd101</color>
     <color name="circle5">#00c5fe</color>
     <color name="circle6">#00df98</color>
+    <color name="cursor_handle_color">#0d7aff</color>
+    <color name="selected_blue">#afe1f4</color>
+    <color name="text_dark">#454545</color>
 </resources>

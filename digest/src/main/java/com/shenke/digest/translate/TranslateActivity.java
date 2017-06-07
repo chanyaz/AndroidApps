@@ -68,10 +68,9 @@ public class TranslateActivity extends Activity {
 
         YouDaoApplication.init(TranslateActivity.this, "7515e9396679e78b");//应用ID
         fanyiInputText = (EditText) findViewById(R.id.fanyiInputText);
-       /* if(NewsDetailFragment.Translate_word != ""){
-            fanyiInputText.setText(NewsDetailFragment.Translate_word );
-            NewsDetailFragment.Translate_word  = "";
-        }*/
+
+
+        fanyiInputText.setText(getIntent().getStringExtra("TranslateData"));
         fanyiBtn = (TextView) findViewById(R.id.fanyiBtn);
 
         translateList = (ListView) findViewById(R.id.commentList);
@@ -133,7 +132,13 @@ public class TranslateActivity extends Activity {
 
     private void query() {
         String from = languageSelectFrom.getText().toString();
+        if(languageSelectFrom.getText().toString() == "English"){
+            from = "英文";
+        }
         String to = languageSelectTo.getText().toString();
+        if(languageSelectTo.getText().toString() == "Chinese"){
+            to = "中文";
+        }
         String input = fanyiInputText.getText().toString();
 
         Language langFrom = LanguageUtils.getLangByName(from);
