@@ -68,27 +68,27 @@ public class Helper {
             mMonth = String.valueOf(month + 1);
         }
         String mDate;
-        if(date<10){
-            mDate =  "0" + String.valueOf(date);
-        }else{
+        if (date < 10) {
+            mDate = "0" + String.valueOf(date);
+        } else {
             mDate = String.valueOf(date);
         }
         String mHour;
-        if(hour<10){
-            mHour =  "0" + String.valueOf(hour);
-        }else{
+        if (hour < 10) {
+            mHour = "0" + String.valueOf(hour);
+        } else {
             mHour = String.valueOf(hour);
         }
         String mMini;
-        if(mini<10){
-            mMini =  "0" + String.valueOf(mini);
-        }else{
+        if (mini < 10) {
+            mMini = "0" + String.valueOf(mini);
+        } else {
             mMini = String.valueOf(mini);
         }
         String mSecond;
-        if(second<10){
-            mSecond =  "0" + String.valueOf(second);
-        }else{
+        if (second < 10) {
+            mSecond = "0" + String.valueOf(second);
+        } else {
             mSecond = String.valueOf(second);
         }
         String nowtime = year + "-" + mMonth + "-" + mDate + " " + mHour + ":" + mMini + ":" + mSecond;
@@ -108,5 +108,30 @@ public class Helper {
             mTimeZone = "GMT+8";
         }
         return mTimeZone;
+    }
+
+    public static int getCacheSaveTime(String country, int digest_edition, String set_mornning_time, String set_evening_time) {
+        String mTimeZone = getTimeZone(country);
+        Calendar calendar = Calendar.getInstance();
+        Calendar ukTime = new GregorianCalendar(TimeZone.getTimeZone(mTimeZone));
+        ukTime.setTimeInMillis(calendar.getTimeInMillis());
+        int hour = ukTime.get(Calendar.HOUR_OF_DAY);
+        int mini = ukTime.get(Calendar.MINUTE);
+        int second = ukTime.get(Calendar.SECOND);
+        int cache_time = 0;
+        if (set_mornning_time == "") {
+            set_mornning_time = "8:00:00";
+        }
+        if (set_evening_time == "") {
+            set_evening_time = "18:00:00";
+        }
+        if (digest_edition == 0) {
+            //evening - nowtime
+           // -(hour*3600+mini*60+second);
+        } else if (digest_edition == 1) {
+            //morning - mowtime
+        }
+
+        return cache_time;
     }
 }

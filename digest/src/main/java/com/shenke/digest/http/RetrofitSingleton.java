@@ -5,9 +5,7 @@ package com.shenke.digest.http;
  */
 
 import android.content.Context;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -77,10 +75,10 @@ public class RetrofitSingleton {
     }
 
 
-    public static void disposeFailureInfo(Throwable t, Context context, View view) {
+    public static void disposeFailureInfo(Throwable t, Context context) {
         if (t.toString().contains("GaiException") || t.toString().contains("SocketTimeoutException") ||
                 t.toString().contains("UnknownHostException")) {
-            Snackbar.make(view, "网络不好", Snackbar.LENGTH_LONG).show();
+            Toast.makeText(context, "Error Network", Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
         }

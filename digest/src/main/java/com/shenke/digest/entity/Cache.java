@@ -49,7 +49,7 @@ public class Cache {
 
 
     public static Cache get(Context ctx) {
-        return get(ctx, "Data");
+        return get(ctx, "NewsCache");
     }
 
 
@@ -65,7 +65,7 @@ public class Cache {
 
 
     public static Cache get(Context ctx, long max_zise, int max_count) {
-        File f = new File(MyApplication.cacheDir, "Data");
+        File f = new File(MyApplication.cacheDir, "NewsCache");
         return get(f, max_zise, max_count);
     }
 

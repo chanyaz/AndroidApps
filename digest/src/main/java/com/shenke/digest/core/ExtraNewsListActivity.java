@@ -8,7 +8,6 @@ import android.util.Log;
 
 import com.shenke.digest.R;
 import com.shenke.digest.api.DigestApi;
-import com.shenke.digest.entity.Cache;
 import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.fragment.ExtraNewsListFragment;
 import com.shenke.digest.http.RetrofitSingleton;
@@ -24,7 +23,6 @@ import rx.schedulers.Schedulers;
 public class ExtraNewsListActivity extends BaseActivity {
     public static final String ALL_CHECKED = "all_checked";
     private Observer<NewsDigest>observer;
-    public Cache mCache;
     public boolean allChecked;
     private int mdigest_edition;
     private String mdate ;
@@ -83,7 +81,7 @@ public class ExtraNewsListActivity extends BaseActivity {
 
         NewsDigest mNewsDigest = null;
         try {
-            mNewsDigest = (NewsDigest) mCache.getAsObject("ExtraNewsDigestData");
+            mNewsDigest = (NewsDigest) aCache.getAsObject(mlang+"-ExtraNewsDigestData");
         } catch (Exception e) {
             Log.e("ExtraNewsDigestData", e.toString());
         }
@@ -127,7 +125,7 @@ public class ExtraNewsListActivity extends BaseActivity {
                     @Override
                     public void call(NewsDigest mNewsDigest) {
                         Log.i("ExtraNewsDigestData", mNewsDigest.toString());
-                        aCache.put("ExtraNewsDigestData", mNewsDigest, 3600);//默认一小时后缓存失效
+                        aCache.put(mlang+"-ExtraNewsDigestData", mNewsDigest, 3600);
                     }
                 })
                 .subscribe(observer);

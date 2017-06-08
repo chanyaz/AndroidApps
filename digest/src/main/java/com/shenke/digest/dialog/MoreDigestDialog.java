@@ -81,7 +81,6 @@ public class MoreDigestDialog extends DialogFragment {
     private BlurredView iv_background;
     private Bitmap bitmap;
 
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

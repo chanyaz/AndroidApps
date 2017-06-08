@@ -17,7 +17,6 @@ import com.shenke.digest.api.DigestApi;
 import com.shenke.digest.dialog.DigestLoadDialog;
 import com.shenke.digest.dialog.EditionDialog;
 import com.shenke.digest.dialog.ProductGuideDialog;
-import com.shenke.digest.entity.Cache;
 import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.fragment.NewsListFragment;
 import com.shenke.digest.http.RetrofitSingleton;
@@ -51,12 +50,10 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     private Subscription subscriptionSave;
     private DigestLoadDialog digestLoadDialog;
     private MyReceiver myReceiver;
-    private int taskCount;
+    private int taskCount = 0;
     public static Bitmap bitmap = null;
     private Observer<NewsDigest> observer;
-    public Cache mCache;
     private int mSection;
-    private int mEdition;
     private String mDate;
     private String mLang;
     private String date = null;
@@ -106,7 +103,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
             @Override
             public void onNext(NewsDigest mNewsDigest) {
                 Log.i("fetchData", "onNext");
-                digestLoadDialog.onLoadSuccess();
+               // digestLoadDialog.onLoadSuccess();
                 NewsListFragment mNewsListFragment = new NewsListFragment();
                 Bundle bundle = new Bundle();
                 bundle.putString("DATE", date);
@@ -133,7 +130,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
 
         NewsDigest mNewsDigest = null;
         try {
-            mNewsDigest = (NewsDigest) mCache.getAsObject("NewsDigestData");
+            mNewsDigest = (NewsDigest) aCache.getAsObject(mLang+"-NewsDigestData");
 
         } catch (Exception e) {
             Log.e("DigestNews", e.toString());
@@ -181,7 +178,8 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                     @Override
                     public void call(NewsDigest mNewsDigest) {
                         Log.i("NewsDigestData", mNewsDigest.toString());
-                        aCache.put("NewsDigestData", mNewsDigest, 3600);//默认一小时后缓存失效
+                        digestLoadDialog.onLoadSuccess();
+                        aCache.put(mLang+"-NewsDigestData", mNewsDigest,3600);//有新内容时缓存失效
                     }
                 })
                 .subscribe(observer);
