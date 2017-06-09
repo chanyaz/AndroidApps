@@ -110,6 +110,15 @@ public class Helper {
         return mTimeZone;
     }
 
+    /**
+     * 缓存保存时长
+     *
+     * @param country
+     * @param digest_edition
+     * @param set_mornning_time
+     * @param set_evening_time
+     * @return
+     */
     public static int getCacheSaveTime(String country, int digest_edition, String set_mornning_time, String set_evening_time) {
         String mTimeZone = getTimeZone(country);
         Calendar calendar = Calendar.getInstance();
@@ -120,18 +129,33 @@ public class Helper {
         int second = ukTime.get(Calendar.SECOND);
         int cache_time = 0;
         if (set_mornning_time == "") {
-            set_mornning_time = "8:00:00";
+            set_mornning_time = "08:00:00";//6-10
         }
         if (set_evening_time == "") {
-            set_evening_time = "18:00:00";
+            set_evening_time = "18:00:00";//18-22
         }
         if (digest_edition == 0) {
             //evening - nowtime
-           // -(hour*3600+mini*60+second);
+            int set_mini = Integer.valueOf(set_evening_time.substring(3, 5).trim());
+            int set_hour = Integer.valueOf(set_evening_time.substring(0, 2));
+            cache_time = (set_hour * 3600 + set_mini * 60) - (hour * 3600 + mini * 60 + second);
         } else if (digest_edition == 1) {
             //morning - mowtime
+            int mor_set_hou = 0;
+            int mor_set_min = 0;
+            if (set_mornning_time.substring(0, 1) == "0") {
+                mor_set_min = Integer.valueOf(set_mornning_time.substring(3, 5).trim());
+                mor_set_hou = Integer.valueOf(set_mornning_time.substring(1, 2).trim());
+            } else {
+                mor_set_hou = Integer.valueOf(set_mornning_time.substring(0, 2).trim());
+            }
+            int now_mor = mor_set_min * 60 + mor_set_hou * 3600;
+            if (17 < hour && hour <= 23) {
+                cache_time = now_mor + 24 * 3600 - (hour * 3600 + mini * 60 + second);
+            } else {
+                cache_time = now_mor - (hour * 3600 + mini * 60 + second);
+            }
         }
-
         return cache_time;
     }
 }

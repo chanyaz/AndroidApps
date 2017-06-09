@@ -11,6 +11,7 @@ import com.shenke.digest.api.DigestApi;
 import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.fragment.ExtraNewsListFragment;
 import com.shenke.digest.http.RetrofitSingleton;
+import com.shenke.digest.util.Helper;
 import com.shenke.digest.util.StatusBarCompat;
 
 import rx.Observable;
@@ -96,10 +97,10 @@ public class ExtraNewsListActivity extends BaseActivity {
         int create_time = 0;
         String timezone = "8";
         String date = mdate;
-        String lang = mlang;
+        final String lang = mlang;
 
         String region_edition = lang.trim().substring(3, 5);
-        int digest_edition = mdigest_edition;
+        final int digest_edition = mdigest_edition;
         String more_stories = "1";
 
 
@@ -125,7 +126,8 @@ public class ExtraNewsListActivity extends BaseActivity {
                     @Override
                     public void call(NewsDigest mNewsDigest) {
                         Log.i("ExtraNewsDigestData", mNewsDigest.toString());
-                        aCache.put(mlang+"-ExtraNewsDigestData-"+mdate, mNewsDigest, 3600);
+                        int cachetime = Helper.getCacheSaveTime(lang, digest_edition, "08:00:00", "18:00:00");
+                        aCache.put(mlang+"-ExtraNewsDigestData-"+mdate, mNewsDigest, cachetime);
                     }
                 })
                 .subscribe(observer);

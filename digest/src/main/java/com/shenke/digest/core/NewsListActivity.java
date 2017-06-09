@@ -152,9 +152,9 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         int create_time = Integer.valueOf(parameters.get("CREAT_ETIME"));
         String timezone = parameters.get("TIMEZONE");
         final String date = parameters.get("DATE");
-        String lang = parameters.get("LANGUAGE");
+        final String lang = parameters.get("LANGUAGE");
         String region_edition = parameters.get("REGION_EDITION");
-        int digest_edition = Integer.valueOf(parameters.get("DIGEST_EDITION"));
+        final int digest_edition = Integer.valueOf(parameters.get("DIGEST_EDITION"));
         String more_stories = parameters.get("MORE_STORY");
 
         RetrofitSingleton.getApiService(this)
@@ -180,7 +180,8 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                     public void call(NewsDigest mNewsDigest) {
                         Log.i("NewsDigestData", mNewsDigest.toString());
                         digestLoadDialog.onLoadSuccess();
-                        aCache.put(mLang + "-NewsDigestData-" + date, mNewsDigest, 3600);//有新内容时缓存失效
+                        int cachetime = Helper.getCacheSaveTime(lang, digest_edition, "08:00:00", "18:00:00");
+                        aCache.put(mLang + "-NewsDigestData-" + date, mNewsDigest, cachetime);//有新内容时缓存失效
                     }
                 })
                 .subscribe(observer);

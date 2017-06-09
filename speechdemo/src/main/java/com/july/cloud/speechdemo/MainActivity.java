@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
                 if(status == TextToSpeech.SUCCESS)
                 {
                     //设置使用美式英语朗读(虽然设置里有中文选项Locale.Chinese,但并不支持中文)
-                    int result = tts.setLanguage(Locale.US);
+                    int result = tts.setLanguage(Locale.UK);
                     tts.setSpeechRate(0.8f);
                     //如果不支持设置的语言
                     if(result != TextToSpeech.LANG_COUNTRY_AVAILABLE

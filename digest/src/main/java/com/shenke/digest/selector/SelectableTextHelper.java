@@ -154,7 +154,7 @@ public class SelectableTextHelper {
                     //如果不支持设置的语言
                     if (result != TextToSpeech.LANG_COUNTRY_AVAILABLE
                             && result != TextToSpeech.LANG_AVAILABLE) {
-                      // Toast.makeText(mContext, "TTS暂时不支持这种语言朗读", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(mContext, "TTS暂时不支持这种语言朗读", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
