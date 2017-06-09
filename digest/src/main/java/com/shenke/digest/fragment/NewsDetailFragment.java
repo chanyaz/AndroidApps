@@ -11,6 +11,7 @@ import android.graphics.drawable.shapes.OvalShape;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -55,7 +56,6 @@ import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.entity.SlideItem;
 import com.shenke.digest.selector.OnSelectListener;
 import com.shenke.digest.selector.SelectableTextHelper;
-import com.shenke.digest.translate.TranslateActivity;
 import com.shenke.digest.util.DimensionUtil;
 import com.shenke.digest.util.LogUtil;
 import com.shenke.digest.util.ReferenceUtil;
@@ -64,10 +64,13 @@ import com.shenke.digest.view.DonutProgress;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+
+import static com.shenke.digest.selector.SelectableTextHelper.tts;
 
 /**
  * A simple {@link BaseFragment} subclass.
@@ -125,6 +128,7 @@ public class NewsDetailFragment extends BaseFragment {
     public static Bitmap bitmap;
     public NewsDigest mNewsDigest;
     private SelectableTextHelper mSelectableTextHelper;
+
     public NewsDetailFragment() {
     }
 
@@ -164,7 +168,7 @@ public class NewsDetailFragment extends BaseFragment {
             mNewsDigest = (NewsDigest) getArguments().getSerializable("NewsDigestData");
             mNewsDigest.items.get(index).checked = getArguments().getBoolean("CHECKED", true);
         }
-
+        InitTtsEngine();
     }
 
 
@@ -214,9 +218,8 @@ public class NewsDetailFragment extends BaseFragment {
                             case R.id.send_feedback:
                                 sendEmail();
                                 return true;
-                            case R.id.quick_search_word:
-                                Intent intent = new Intent(getContext(), TranslateActivity.class);
-                                startActivity(intent);
+                            case R.id.listen:
+                                ListenDigest();
                                 return true;
                             case R.id.settings:
                                 Bundle bundle = new Bundle();
@@ -314,7 +317,6 @@ public class NewsDetailFragment extends BaseFragment {
         });
         initItem(mNewsDigest);
 
-        /****************************************************************/
         addSelectableTextHelper(title);
     }
 
@@ -334,6 +336,37 @@ public class NewsDetailFragment extends BaseFragment {
 
     }
 
+    private void ListenDigest() {
+        String speakUrl = title.getText().toString().trim();
+        if (tts.isSpeaking()) {
+            tts.stop();
+            tts.speak(speakUrl, TextToSpeech.QUEUE_ADD, null);
+        } else {
+            tts.speak(speakUrl, TextToSpeech.QUEUE_ADD, null);
+        }
+
+    }
+    /**
+     * 初始化语音引擎
+     */
+    private void InitTtsEngine() {
+        tts = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                //如果装载TTS引擎成功
+                if (status == TextToSpeech.SUCCESS) {
+                    //设置使用美式英语朗读(虽然设置里有中文选项Locale.Chinese,但并不支持中文)
+                    int result = tts.setLanguage(Locale.US);
+                    tts.setSpeechRate(0.8f);
+                    //如果不支持设置的语言
+                    if (result != TextToSpeech.LANG_COUNTRY_AVAILABLE
+                            && result != TextToSpeech.LANG_AVAILABLE) {
+                        // Toast.makeText(MainActivity.this, "TTS暂时不支持这种语言朗读", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+    }
     public void activeItem() {
 
         rx.Observable
@@ -454,10 +487,11 @@ public class NewsDetailFragment extends BaseFragment {
             error.setVisibility(View.VISIBLE);
         }
     }
-    private void addSelectableTextHelper(TextView view){
+
+    private void addSelectableTextHelper(TextView view) {
         mSelectableTextHelper = new SelectableTextHelper.Builder(view)
                 .setSelectedColor(getResources().getColor(R.color.selected_blue))
-                .setCursorHandleSizeInDp(20)
+                .setCursorHandleSizeInDp(24)
                 .setCursorHandleColor(getResources().getColor(R.color.cursor_handle_color))
                 .build();
         mSelectableTextHelper.setSelectListener(new OnSelectListener() {
@@ -1132,5 +1166,6 @@ public class NewsDetailFragment extends BaseFragment {
             event.unsubscribe();
             event = null;
         }
+        SelectableTextHelper.ShutSpeech();
     }
 }

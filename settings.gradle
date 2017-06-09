@@ -1,1 +1,1 @@
-include ':digest', ':youdaotrans', ':copypaste'
+include ':digest', ':youdaotrans', ':copypaste', ':speechdemo'

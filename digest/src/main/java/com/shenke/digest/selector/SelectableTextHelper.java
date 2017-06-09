@@ -7,11 +7,11 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Build;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.ColorInt;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.Spanned;
-import android.text.TextUtils;
 import android.text.style.BackgroundColorSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -23,9 +23,9 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.shenke.digest.R;
-import com.shenke.digest.translate.AudioMgr;
-import com.shenke.digest.translate.ToastUtils;
 import com.shenke.digest.translate.TranslateActivity;
+
+import java.util.Locale;
 
 
 public class SelectableTextHelper {
@@ -52,7 +52,7 @@ public class SelectableTextHelper {
     private BackgroundColorSpan mSpan;
     private boolean isHideWhenScroll;
     private boolean isHide = true;
-
+    public static TextToSpeech tts;
     private ViewTreeObserver.OnPreDrawListener mOnPreDrawListener;
     ViewTreeObserver.OnScrollChangedListener mOnScrollChangedListener;
 
@@ -135,6 +135,30 @@ public class SelectableTextHelper {
         mTextView.getViewTreeObserver().addOnScrollChangedListener(mOnScrollChangedListener);
 
         mOperateWindow = new OperateWindow(mContext);
+        InitTtsEngine();
+
+    }
+
+    /**
+     * 初始化语音引擎
+     */
+    private void InitTtsEngine() {
+        tts = new TextToSpeech(mContext, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                //如果装载TTS引擎成功
+                if (status == TextToSpeech.SUCCESS) {
+                    //设置使用美式英语朗读(虽然设置里有中文选项Locale.Chinese,但并不支持中文)
+                    int result = tts.setLanguage(Locale.US);
+                    tts.setSpeechRate(0.8f);
+                    //如果不支持设置的语言
+                    if (result != TextToSpeech.LANG_COUNTRY_AVAILABLE
+                            && result != TextToSpeech.LANG_AVAILABLE) {
+                      // Toast.makeText(mContext, "TTS暂时不支持这种语言朗读", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
     }
 
     private void postShowSelectView(int duration) {
@@ -331,23 +355,16 @@ public class SelectableTextHelper {
                         mSelectListener.onTextSelected(mSelectionInfo.mSelectionContent);
                     }
                     SelectableTextHelper.this.resetSelectionInfo();
-                    SelectableTextHelper.this.hideSelectView();
                     synchronized (this) {
                         String speakUrl = clip.getPrimaryClip().getItemAt(0).coerceToText(mContext).toString();
-                        if (!TextUtils.isEmpty(speakUrl)) {
-                            ToastUtils.show("正在发音");
-                            AudioMgr.startPlayVoice(speakUrl, new AudioMgr.SuccessListener() {
-                                @Override
-                                public void success() {
-
-                                }
-
-                                @Override
-                                public void playover() {
-                                }
-                            });
+                        if (tts.isSpeaking()) {
+                            tts.stop();
+                            tts.speak(speakUrl, TextToSpeech.QUEUE_ADD, null);
+                        } else {
+                            tts.speak(speakUrl, TextToSpeech.QUEUE_ADD, null);
                         }
                     }
+                    SelectableTextHelper.this.hideSelectView();
                 }
             });
         }
@@ -374,6 +391,51 @@ public class SelectableTextHelper {
 
         public boolean isShowing() {
             return mWindow.isShowing();
+        }
+    }
+
+    /**
+     * save recond file
+     *
+     * @param string
+     */
+    public void SaveSpeechRecond(String string) {
+        //将朗读文本的音频记录到指定文件
+        tts.synthesizeToFile(string, null, "/sdcard/sound.wav");
+    }
+
+    /**
+     * isSpeaking
+     *
+     * @return
+     */
+    public boolean IsSpeaking() {
+        if (tts != null) {
+            if (tts.isSpeaking()) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * shutdown
+     */
+    public static void ShutSpeech() {
+        if (tts != null) {
+            tts.shutdown();
+        }
+    }
+
+    /**
+     * stop
+     */
+    public void StopSpeech() {
+        if (tts != null) {
+            tts.stop();
         }
     }
 

@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/AndroidApps.iml" filepath="$PROJECT_DIR$/AndroidApps.iml" />
       <module fileurl="file://$PROJECT_DIR$/copypaste/copypaste.iml" filepath="$PROJECT_DIR$/copypaste/copypaste.iml" />
       <module fileurl="file://$PROJECT_DIR$/digest/digest.iml" filepath="$PROJECT_DIR$/digest/digest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/speechdemo/speechdemo.iml" filepath="$PROJECT_DIR$/speechdemo/speechdemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/youdaotrans/youdaotrans.iml" filepath="$PROJECT_DIR$/youdaotrans/youdaotrans.iml" />
     </modules>
   </component>

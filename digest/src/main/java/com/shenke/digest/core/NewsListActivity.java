@@ -56,7 +56,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     private int mSection;
     private String mDate;
     private String mLang;
-    private String date = null;
+    private String date;
     private int digest_edition = 0;
     public static String PREFERENCES_SETTINS = "PREFERENCES_SETTINS";
 
@@ -103,7 +103,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
             @Override
             public void onNext(NewsDigest mNewsDigest) {
                 Log.i("fetchData", "onNext");
-               // digestLoadDialog.onLoadSuccess();
+                // digestLoadDialog.onLoadSuccess();
                 NewsListFragment mNewsListFragment = new NewsListFragment();
                 Bundle bundle = new Bundle();
                 bundle.putString("DATE", date);
@@ -127,10 +127,11 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
      * 从本地緩存中获取
      */
     private void fetchDataByCache(Observer<NewsDigest> observer) {
-
         NewsDigest mNewsDigest = null;
+        Map<String, String> parameters = getParameters();
+        final String str = parameters.get("DATE");
         try {
-            mNewsDigest = (NewsDigest) aCache.getAsObject(mLang+"-NewsDigestData");
+            mNewsDigest = (NewsDigest) aCache.getAsObject(mLang + "-NewsDigestData-" + str);
 
         } catch (Exception e) {
             Log.e("DigestNews", e.toString());
@@ -150,7 +151,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         Map<String, String> parameters = getParameters();
         int create_time = Integer.valueOf(parameters.get("CREAT_ETIME"));
         String timezone = parameters.get("TIMEZONE");
-        String date = parameters.get("DATE");
+        final String date = parameters.get("DATE");
         String lang = parameters.get("LANGUAGE");
         String region_edition = parameters.get("REGION_EDITION");
         int digest_edition = Integer.valueOf(parameters.get("DIGEST_EDITION"));
@@ -179,7 +180,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                     public void call(NewsDigest mNewsDigest) {
                         Log.i("NewsDigestData", mNewsDigest.toString());
                         digestLoadDialog.onLoadSuccess();
-                        aCache.put(mLang+"-NewsDigestData", mNewsDigest,3600);//有新内容时缓存失效
+                        aCache.put(mLang + "-NewsDigestData-" + date, mNewsDigest, 3600);//有新内容时缓存失效
                     }
                 })
                 .subscribe(observer);

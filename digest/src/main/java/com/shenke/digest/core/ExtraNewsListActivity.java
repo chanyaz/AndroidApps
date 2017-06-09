@@ -81,7 +81,7 @@ public class ExtraNewsListActivity extends BaseActivity {
 
         NewsDigest mNewsDigest = null;
         try {
-            mNewsDigest = (NewsDigest) aCache.getAsObject(mlang+"-ExtraNewsDigestData");
+            mNewsDigest = (NewsDigest) aCache.getAsObject(mlang+"-ExtraNewsDigestData-"+mdate);
         } catch (Exception e) {
             Log.e("ExtraNewsDigestData", e.toString());
         }
@@ -125,7 +125,7 @@ public class ExtraNewsListActivity extends BaseActivity {
                     @Override
                     public void call(NewsDigest mNewsDigest) {
                         Log.i("ExtraNewsDigestData", mNewsDigest.toString());
-                        aCache.put(mlang+"-ExtraNewsDigestData", mNewsDigest, 3600);
+                        aCache.put(mlang+"-ExtraNewsDigestData-"+mdate, mNewsDigest, 3600);
                     }
                 })
                 .subscribe(observer);
