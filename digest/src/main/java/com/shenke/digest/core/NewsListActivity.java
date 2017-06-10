@@ -59,6 +59,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     private String date;
     private int digest_edition = 0;
     public static String PREFERENCES_SETTINS = "PREFERENCES_SETTINS";
+    private boolean first;//是否第一次打开APP
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +73,12 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         registerReceiver(myReceiver, intentFilter);
         subscriptionInstall = checkInstall();
         digestLoadDialog = new DigestLoadDialog();
-        mSection = getIntent().getIntExtra("SECTION", 2);
-        mDate = getIntent().getStringExtra("DATE");
-        mLang = LanguageEdtion(getIntent().getIntExtra("LANGUAGE", 3));
+        SharedPreferences p_settings = getSharedPreferences(PREFERENCES_SETTINS, 0);
+        String strdate = Helper.format(new Date());
+        String nowdate = strdate.trim().substring(10, 14) + "-" + strdate.trim().substring(4, 6) + "-" + strdate.trim().substring(7, 9);
+        mDate = p_settings.getString("DATE", nowdate);
+        mSection = p_settings.getInt("DIGEST_EDITION", 2);
+        mLang = p_settings.getString("LANGUAGE", LanguageEdtion(3));
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container, digestLoadDialog, "loading")
@@ -129,9 +133,11 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     private void fetchDataByCache(Observer<NewsDigest> observer) {
         NewsDigest mNewsDigest = null;
         Map<String, String> parameters = getParameters();
+        final String lang = parameters.get("LANGUAGE");
         final String str = parameters.get("DATE");
+        final String digest_edition = parameters.get("DIGEST_EDITION");
         try {
-            mNewsDigest = (NewsDigest) aCache.getAsObject(mLang + "-NewsDigestData-" + str);
+            mNewsDigest = (NewsDigest) aCache.getAsObject(lang + "-NewsDigestData-" + str + "-" + digest_edition);
 
         } catch (Exception e) {
             Log.e("DigestNews", e.toString());
@@ -156,7 +162,12 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         String region_edition = parameters.get("REGION_EDITION");
         final int digest_edition = Integer.valueOf(parameters.get("DIGEST_EDITION"));
         String more_stories = parameters.get("MORE_STORY");
-
+        SharedPreferences pre_settings = getSharedPreferences(PREFERENCES_SETTINS, 0);
+        SharedPreferences.Editor editor = pre_settings.edit();
+        editor.putString("DATE", date);
+        editor.putString("LANGUAGE", lang);
+        editor.putInt("DIGEST_EDITION", digest_edition);
+        editor.commit();
         RetrofitSingleton.getApiService(this)
                 .GetDigestList(
                         create_time, timezone, date, lang, region_edition, digest_edition, more_stories
@@ -181,7 +192,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                         Log.i("NewsDigestData", mNewsDigest.toString());
                         digestLoadDialog.onLoadSuccess();
                         int cachetime = Helper.getCacheSaveTime(lang, digest_edition, "08:00:00", "18:00:00");
-                        aCache.put(mLang + "-NewsDigestData-" + date, mNewsDigest, cachetime);//有新内容时缓存失效
+                        aCache.put(mLang + "-NewsDigestData-" + date + "-" + String.valueOf(digest_edition), mNewsDigest, cachetime);//有新内容时缓存失效
                     }
                 })
                 .subscribe(observer);
@@ -201,8 +212,8 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         String region_edition = lang.trim().substring(3, 5);
         String more_stories = "0";
         if (mDate != null) {
-            date = mDate.trim().substring(10, 14) + "-" + mDate.trim().substring(4, 6) + "-" + mDate.trim().substring(7, 9);
-
+            // date = mDate.trim().substring(10, 14) + "-" + mDate.trim().substring(4, 6) + "-" + mDate.trim().substring(7, 9);
+            date = mDate;
         } else {
             final String nowtime = Helper.getGlobalTime(lang);
             try {
@@ -252,12 +263,6 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         parameters.put("REGION_EDITION", region_edition);
         parameters.put("DIGEST_EDITION", String.valueOf(digest_edition));
         parameters.put("MORE_STORY", more_stories);
-        SharedPreferences pre_settings = getSharedPreferences(PREFERENCES_SETTINS, 0);
-        SharedPreferences.Editor editor = pre_settings.edit();
-        editor.putString("DATE", date);
-        editor.putString("LANGUAGE", lang);
-        editor.putInt("DIGEST_EDITION", digest_edition);
-        editor.commit();
         return parameters;
     }
 
@@ -270,7 +275,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                     public void call(Subscriber<? super Boolean> subscriber) {
                         try {
                             SharedPreferences settings = getSharedPreferences(EditionDialog.PREFS_NAME, 0);
-                            boolean first = settings.getBoolean(EditionDialog.OPENED, false);
+                            first = settings.getBoolean(EditionDialog.OPENED, false);
                             subscriber.onNext(first);
                             subscriber.onCompleted();
                         } catch (Exception e) {
@@ -358,7 +363,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
 
     }
 
-    public String LanguageEdtion(int language) {
+    public static String LanguageEdtion(int language) {
         String mlang = "";
         if (language == 0) {
             mlang = "en-CA";

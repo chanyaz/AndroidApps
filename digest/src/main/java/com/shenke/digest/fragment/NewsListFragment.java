@@ -20,6 +20,7 @@ import com.shenke.digest.R;
 import com.shenke.digest.adapter.NewsAdapter;
 import com.shenke.digest.core.ExtraNewsListActivity;
 import com.shenke.digest.core.NewsDetailActivity;
+import com.shenke.digest.core.NewsListActivity;
 import com.shenke.digest.dialog.EditionDialog;
 import com.shenke.digest.dialog.MoreDigestDialog;
 import com.shenke.digest.dialog.SettingsDialog;
@@ -37,7 +38,8 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_MORNING;
+import static com.shenke.digest.core.NewsListActivity.LanguageEdtion;
+import static com.shenke.digest.core.NewsListActivity.PREFERENCES_SETTINS;
 
 public class NewsListFragment extends BaseFragment {
     private final String TAG = "NewsListFragment";
@@ -59,14 +61,13 @@ public class NewsListFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        digest_edition = getArguments().getInt("SECTION",0);
-        String str = Helper.format(new Date());
-        String datestr = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
-        date = getArguments().getString("DATE",datestr);
-        lang = getArguments().getString("LANGUAGE","en-AA");
         mNewsDigest = (NewsDigest) getArguments().getSerializable("NewsDigestData");
-        mSection = digest_edition;
-        mDate = date;
+        SharedPreferences p_settings = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
+        String strdate = Helper.format(new Date());
+        String nowdate = strdate.trim().substring(10, 14) + "-" + strdate.trim().substring(4, 6) + "-" + strdate.trim().substring(7, 9);
+        mDate = p_settings.getString("DATE", nowdate);
+        mSection = p_settings.getInt("DIGEST_EDITION", 2);
+        lang = p_settings.getString("LANGUAGE", LanguageEdtion(3));
     }
 
     private void getConfg() {
@@ -75,14 +76,20 @@ public class NewsListFragment extends BaseFragment {
                     @Override
                     public void call(Subscriber<? super Map<String, String>> subscriber) {
                         try {
-                            SharedPreferences spf = getContext().getSharedPreferences(EditionDialog.PREFS_NAME, 0);
-                            int selectedSection = spf.getInt(EditionDialog.SECTION_SELECTED, SECTION_MORNING);
-                            String dateSection = spf.getString(EditionDialog.DATE_SELECTED, Helper.format(new Date()));
-                            int edition = spf.getInt(EditionDialog.EDITION, EditionDialog.EDITION_INT);
+                            SharedPreferences p_settings = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
+                            String strdate = Helper.format(new Date());
+                            String nowdate = strdate.trim().substring(10, 14) + "-" + strdate.trim().substring(4, 6) + "-" + strdate.trim().substring(7, 9);
+                            mDate = p_settings.getString("DATE", nowdate);
+                            mSection = p_settings.getInt("DIGEST_EDITION", 2);
+                            lang = p_settings.getString("LANGUAGE", NewsListActivity.LanguageEdtion(3));
+
                             Map<String, String> map = new HashMap<String, String>();
-                            map.put(EditionDialog.SECTION_SELECTED, String.valueOf(selectedSection));
-                            map.put(EditionDialog.DATE_SELECTED, dateSection);
-                            map.put(EditionDialog.EDITION, String.valueOf(edition));
+                            map.put(EditionDialog.SECTION_SELECTED, String.valueOf(mSection));
+                            map.put(EditionDialog.DATE_SELECTED, mDate);
+                            map.put(EditionDialog.EDITION, String.valueOf(lang));
+
+
+
                             subscriber.onNext(map);
                             subscriber.onCompleted();
                         } catch (Exception e) {
@@ -277,9 +284,6 @@ public class NewsListFragment extends BaseFragment {
      */
     public void extraNews() {
         Intent intent = new Intent(getContext(), ExtraNewsListActivity.class);
-        intent.putExtra("SECTION",digest_edition);
-        intent.putExtra("DATE",date);
-        intent.putExtra("LANGUAGE",lang);
         intent.putExtra(ExtraNewsListActivity.ALL_CHECKED, adapter.isAllChecked());
         startActivity(intent);
         getActivity().overridePendingTransition(R.anim.move_in, R.anim.move_out);

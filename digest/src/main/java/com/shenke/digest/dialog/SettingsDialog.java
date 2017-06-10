@@ -24,15 +24,25 @@ import com.shenke.digest.core.MyApplication;
 import com.shenke.digest.core.NewsListActivity;
 import com.shenke.digest.fragment.NewsDetailFragment;
 import com.shenke.digest.fragment.NewsListFragment;
+import com.shenke.digest.util.DateUtil;
+import com.shenke.digest.util.Helper;
 import com.shenke.digest.util.RxBus;
 import com.shenke.digest.view.BlurredView;
 import com.shenke.digest.view.LoadViewLayout;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
+import static com.shenke.digest.core.NewsListActivity.PREFERENCES_SETTINS;
+import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_EVENING;
+import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_MORNING;
 
 
 public class SettingsDialog extends DialogFragment {
@@ -281,7 +291,38 @@ public class SettingsDialog extends DialogFragment {
                             dismiss();
                             getActivity().finish();
                             Intent intent = new Intent(getContext(), NewsListActivity.class);
-                            intent.putExtra("LANGUAGE", integer);
+                            SharedPreferences pre_settings = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
+                            SharedPreferences.Editor editor = pre_settings.edit();
+                            String language =  NewsListActivity.LanguageEdtion(integer);
+                            editor.putString("LANGUAGE", language);
+                            final String nowtime = Helper.getGlobalTime(language);
+                            String nowdate = "";
+                            int digest_edition = 0;
+                            try {
+                                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+                                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                String ymd = sdf1.format(sdf2.parse(Helper.getGlobalTime(language)));
+                                Date morning = sdf2.parse(ymd + " 08:00:00");
+                                Date night = sdf2.parse(ymd + " 00:00:00");
+                                Date evening = sdf2.parse(ymd + " 18:00:00");
+                                Date present = sdf2.parse(Helper.getGlobalTime(language));
+                                if (present.before(morning) && present.after(night)) {
+                                    String str = Helper.format(DateUtil.getPreDay(new Date()));
+                                    nowdate = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
+                                } else {
+                                    nowdate = nowtime.trim().substring(0, 10);
+                                }
+                                if (present.before(morning) || present.after(evening)) {
+                                    digest_edition = SECTION_EVENING;
+                                } else {
+                                    digest_edition = SECTION_MORNING;
+                                }
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            editor.putString("DATE", nowdate);
+                            editor.putInt("DIGEST_EDITION", digest_edition);
+                            editor.commit();
                             startActivity(intent);
 
                         }
@@ -292,7 +333,7 @@ public class SettingsDialog extends DialogFragment {
 
     private void initArea(int edition) {
 
-       if (edition == EditionDialog.EDITION_INT) {
+        if (edition == EditionDialog.EDITION_INT) {
 
             tvArea.setText("International");
 

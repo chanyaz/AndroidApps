@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.shenke.digest.R;
+import com.shenke.digest.core.NewsListActivity;
 import com.shenke.digest.util.RxBus;
 
 import rx.Observable;
@@ -24,6 +25,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static com.shenke.digest.R.id.inIcon;
+import static com.shenke.digest.core.NewsListActivity.PREFERENCES_SETTINS;
 
 public class EditionDialog extends DialogFragment implements View.OnClickListener {
 
@@ -94,8 +96,9 @@ public class EditionDialog extends DialogFragment implements View.OnClickListene
                         @Override
                         public void call(Subscriber<? super Integer> subscriber) {
                             try {
-                                SharedPreferences settings = getActivity().getSharedPreferences(PREFS_NAME, 0);
-                                int edition = settings.getInt(EDITION, EDITION_INT);
+                                SharedPreferences p_settings = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
+                                String language = p_settings.getString("LANGUAGE", NewsListActivity.LanguageEdtion(3));
+                                int edition = Language2Edtion(language);
                                 subscriber.onNext(edition);
                                 subscriber.onCompleted();
                             } catch (Exception e) {
@@ -138,7 +141,17 @@ public class EditionDialog extends DialogFragment implements View.OnClickListene
         builder.setView(rootView);
         return builder.create();
     }
-
+    public static int Language2Edtion(String language) {
+        int mlang = 3;
+        if (language == "en-CA") {
+            mlang = 0;
+        } else if (language == "en-GB") {
+            mlang = 1;
+        } else if (language == "en-US") {
+            mlang = 2;
+        }
+        return mlang;
+    }
     @Override
     public void onClick(View v) {
         int edition = EDITION_INT;

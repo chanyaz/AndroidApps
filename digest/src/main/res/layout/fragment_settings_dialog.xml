@@ -79,15 +79,15 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:text="8:00 am / 8:00 pm"
-                    android:textColor="@color/gray"
-                    android:textSize="15sp" />
+                    android:textColor="@color/digest_edition_text_color"
+                    android:textSize="12sp" />
 
             </RelativeLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="@android:color/darker_gray" />
+                android:background="@color/digest_edition_text_color" />
 
             <RelativeLayout
                 android:id="@+id/edition"
@@ -116,14 +116,14 @@
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:text="English"
-                    android:textColor="@color/gray"
-                    android:textSize="15sp" />
+                    android:textColor="@color/digest_edition_text_color"
+                    android:textSize="12sp" />
             </RelativeLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="@android:color/darker_gray" />
+                android:background="@color/digest_edition_text_color" />
 
 
             <TextView
@@ -145,7 +145,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="@android:color/darker_gray" />
+                android:background="@color/digest_edition_text_color" />
 
             <TextView
                 android:id="@+id/rateApp"
@@ -166,7 +166,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="@android:color/darker_gray" />
+                android:background="@color/digest_edition_text_color" />
 
             <TextView
                 android:id="@+id/works"

@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -93,7 +92,6 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
     public void bindItemView(RecyclerView.ViewHolder srcHolder1, final int position) {
         ViewHolder holder = (ViewHolder) srcHolder1;
         newsItem = mNewsDigest.items.get(position);
-
         if (newsItem != null) {
 
             if (position == 0) {
@@ -135,9 +133,9 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
 
             }
             if (mNewsDigest.edition == 1) {
-                holder.rl_news_list.setBackgroundResource(R.color.black);
+               /* holder.rl_news_list.setBackgroundResource(R.color.black);
                 holder.title.setTextColor(Color.WHITE);
-                holder.triangle_background.setBackgroundResource(R.mipmap.evening_triangle_background);
+                holder.triangle_background.setBackgroundResource(R.mipmap.evening_triangle_background);*/
                 section = SECTION_EVENING;
             } else {
                 section = SECTION_MORNING;
@@ -287,7 +285,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
         final int readColor = holder.revealView.getContext().getResources().getColor(R.color.read_color);
         Typeface typeface = Typeface.createFromAsset(holder.itemView.getContext().getAssets(), "fonts/Roboto-Thin.ttf");
         Typeface ty = Typeface.createFromAsset(holder.itemView.getContext().getAssets(), "fonts/Roboto-Light.ttf");
-        if (mNewsDigest.edition == 1) {
+       /* if (mNewsDigest.edition == 1) {
             holder.ll_newslist_footer.setBackgroundResource(R.color.black);
             holder.urd.setTextColor(Color.BLACK);
             holder.read.setTextColor(Color.BLACK);
@@ -298,7 +296,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
             Drawable downDrawable = holder.toggleButton.getContext().getResources().getDrawable(R.mipmap.extranews_arrow_down_w);
             downDrawable.setBounds(0, 0, downDrawable.getMinimumWidth(), downDrawable.getMinimumHeight());
             holder.toggleButton.setCompoundDrawables(null, null, null, downDrawable);
-        }
+        }*/
         holder.bigTitle.setTypeface(typeface);
         holder.smallTitle.setTypeface(typeface);
         holder.urd.setTypeface(ty);

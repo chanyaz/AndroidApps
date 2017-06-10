@@ -22,6 +22,7 @@ import com.shenke.digest.R;
 import com.shenke.digest.util.IntentUtil;
 import com.shenke.digest.adapter.BaseRecyclerViewAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
@@ -34,6 +35,7 @@ public class ShareLogoDialog extends DialogFragment {
     private RecyclerView recyclerView;
     private AppInfoAdapter appInfoAdapter;
     private String shareContent;
+    private List<ResolveInfo> list = new ArrayList<ResolveInfo>();
 
     public ShareLogoDialog() {
     }
@@ -42,6 +44,7 @@ public class ShareLogoDialog extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+
     }
 
     @Nullable
@@ -81,7 +84,7 @@ public class ShareLogoDialog extends DialogFragment {
         return Observable.create(new Observable.OnSubscribe<ResolveInfo>() {
             @Override
             public void call(Subscriber<? super ResolveInfo> subscriber) {
-                List<ResolveInfo> list = queryApps(msg);
+                list = queryApps(msg);
                 if (list != null && !list.isEmpty()) {
                     for (ResolveInfo resolveInfo : list) {
                         subscriber.onNext(resolveInfo);
@@ -150,7 +153,7 @@ public class ShareLogoDialog extends DialogFragment {
         @Override
         public void bindItemView(RecyclerView.ViewHolder src, int position) {
             final ResolveInfoHolder holder = (ResolveInfoHolder) src;
-            holder.resolveInfo = getItem(position);
+            holder.resolveInfo = list.get(position);
             loadIcon(holder.resolveInfo, holder.icon);
             loadLabel(holder.resolveInfo, holder.textView);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -175,6 +178,15 @@ public class ShareLogoDialog extends DialogFragment {
                 }
             });
             // holder.textView.setText(holder.resolveInfo.loadLabel(holder.textView.getContext().getPackageManager()));
+        }
+
+        @Override
+        public int getItemCount() {
+            if (list.size() == 0) {
+                return 0;
+            } else {
+                return list.size();
+            }
         }
 
         @Override

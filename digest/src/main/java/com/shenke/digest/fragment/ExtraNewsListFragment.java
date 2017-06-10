@@ -83,7 +83,7 @@ public class ExtraNewsListFragment extends BaseFragment {
             Drawable bottom = getResources().getDrawable(R.mipmap.extranews_arrow_up_w);
             back.setCompoundDrawablesWithIntrinsicBounds(null, null, null, bottom);
         } else {
-            if (mNewsDigest.edition == 1){
+          /*  if (mNewsDigest.edition == 1){
                 rl_extra_newslist.setBackgroundResource(R.color.black);
                 recyclerView.setBackgroundResource(R.color.more_news_prompt_background_evening);
                // back.setBackgroundResource(R.color.black);
@@ -93,12 +93,12 @@ public class ExtraNewsListFragment extends BaseFragment {
                 Drawable downDrawable =  getResources().getDrawable(R.mipmap.extranews_arrow_up_w);
                 downDrawable.setBounds(0, 0, downDrawable.getMinimumWidth(), downDrawable.getMinimumHeight());
                 back.setCompoundDrawables(null, null, null, downDrawable);
-            }else{
+            }else{*/
                 back.setTextColor(android.graphics.Color.BLACK);
                 back.setBackgroundColor(android.graphics.Color.WHITE);
                 Drawable bottom = getResources().getDrawable(R.mipmap.extranews_arrow_up);
                 back.setCompoundDrawablesWithIntrinsicBounds(null, null, null, bottom);}
-        }
+      //  }
         adapter = new ExtraNewsAdapter();
         adapter.setHeaderView(headerView);
         adapter.addItemClickListenr(new BaseRecyclerViewAdapter.OnItemClickListener() {

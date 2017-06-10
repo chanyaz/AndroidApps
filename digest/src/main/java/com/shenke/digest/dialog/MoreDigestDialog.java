@@ -374,8 +374,12 @@ public class MoreDigestDialog extends DialogFragment {
                 public void onClick(View v) {
                     dismiss();
                     getActivity().finish();
-                    intent.putExtra("SECTION", SECTION_MORNING);
-                    intent.putExtra("DATE", str);
+                    SharedPreferences pre_settings = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
+                    SharedPreferences.Editor editor = pre_settings.edit();
+                    String nowdate = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
+                    editor.putString("DATE", nowdate);
+                    editor.putInt("DIGEST_EDITION", SECTION_MORNING);
+                    editor.commit();
                     startActivity(intent);
                 }
             });
@@ -385,8 +389,12 @@ public class MoreDigestDialog extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     getActivity().finish();
-                    intent.putExtra("SECTION", SECTION_EVENING);
-                    intent.putExtra("DATE", str);
+                    SharedPreferences pre_settings = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
+                    SharedPreferences.Editor editor = pre_settings.edit();
+                    String nowdate = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
+                    editor.putString("DATE", nowdate);
+                    editor.putInt("DIGEST_EDITION", SECTION_EVENING);
+                    editor.commit();
                     startActivity(intent);
                     dismiss();
                 }
