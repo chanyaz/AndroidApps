@@ -3,6 +3,7 @@ package com.shenke.digest.adapter;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -36,6 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import static com.shenke.digest.core.NewsListActivity.ITEM_IS_CHECKED;
 import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_EVENING;
 import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_MORNING;
 
@@ -46,6 +48,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
     private int section;
     private String date;
     private boolean allChecked;
+    private boolean isChecked;
     public Context mContext;
     public static NewsDigest mNewsDigest;
     public NewsDigest.NewsItem newsItem;
@@ -219,7 +222,9 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
 
             int stateColor = android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode);
             //index
-            if (newsItem.isChecked()) {
+            SharedPreferences item_isChecked =mContext.getSharedPreferences(ITEM_IS_CHECKED, 0);
+            isChecked = item_isChecked.getBoolean(newsItem.uuid,false);
+            if (isChecked) {
                 holder.donutProgress.setFinishedStrokeColor(stateColor);
                 holder.donutProgress.setUnfinishedStrokeColor(stateColor);
                 holder.donutProgress.setInnerBackgroundColor(stateColor);
@@ -399,7 +404,9 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
     }
 
     public void activationItem(int index) {
-        getItem(index).setChecked(true);
+        SharedPreferences item_isChecked =mContext.getSharedPreferences(ITEM_IS_CHECKED, 0);
+        isChecked = item_isChecked.getBoolean(newsItem.uuid,false);
+        getItem(index).setChecked(isChecked);
         notifyDataSetChanged();
     }
 

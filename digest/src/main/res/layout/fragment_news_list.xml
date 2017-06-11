@@ -14,6 +14,7 @@
         android:fitsSystemWindows="true"
         app:layoutManager="LinearLayoutManager"
         app:spanCount="1"
+
         tools:context=".NewsListFragment"
         tools:listitem="@layout/news_item">
 

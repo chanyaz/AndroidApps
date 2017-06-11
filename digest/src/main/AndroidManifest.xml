@@ -25,7 +25,7 @@
             android:name="com.shenke.digest.util.MyGlideModule"
             android:value="GlideModule" />
 
-       <!-- <activity
+        <activity
             android:name=".core.SplashActivity"
             android:configChanges="locale"
             android:label="@string/app_name"
@@ -36,18 +36,18 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>-->
+        </activity>
         <activity
             android:name=".core.NewsListActivity"
             android:configChanges="locale"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
+          <!--  <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
         <activity
             android:name=".core.NewsDetailActivity"

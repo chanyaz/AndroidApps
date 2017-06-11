@@ -56,7 +56,6 @@ import static com.shenke.digest.core.NewsListActivity.PREFERENCES_SETTINS;
  */
 public class MoreDigestDialog extends DialogFragment {
 
-    public static final String PREFS_NAME = EditionDialog.PREFS_NAME;
     private DonutProgress donutProgress;
     private ValueAnimator valueAnimator;
     private static final String TAG = "MoreDigestDialog";
@@ -177,12 +176,12 @@ public class MoreDigestDialog extends DialogFragment {
                     @Override
                     public void call(Subscriber<? super Map<String, String>> subscriber) {
                         try {
-                            SharedPreferences spf = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
+                           /* SharedPreferences spf = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
                             int selectedSection = spf.getInt("DIGEST_EDITION", newsSection);
-                            String dateSection = spf.getString("DATE",Helper.getGlobalTime(mLang).trim().substring(0, 10));
+                            String dateSection = spf.getString("DATE",Helper.getGlobalTime(mLang).trim().substring(0, 10));*/
                             Map<String, String> map = new HashMap<String, String>();
-                            map.put(SECTION_SELECTED, String.valueOf(selectedSection));
-                            map.put(DATE_SELECTED, dateSection);
+                            map.put(SECTION_SELECTED, String.valueOf(section));
+                            map.put(DATE_SELECTED, mDate);
                             subscriber.onNext(map);
                             subscriber.onCompleted();
                         } catch (Exception e) {

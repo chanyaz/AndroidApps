@@ -59,6 +59,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     private String date;
     private int digest_edition = 0;
     public static String PREFERENCES_SETTINS = "PREFERENCES_SETTINS";
+    public static String ITEM_IS_CHECKED = "IS_CHECKED";
     private boolean first;//是否第一次打开APP
 
     @Override

@@ -128,6 +128,8 @@ public class NewsDetailFragment extends BaseFragment {
     public static Bitmap bitmap;
     public NewsDigest mNewsDigest;
     private SelectableTextHelper mSelectableTextHelper;
+    private String speakContent = "";
+    private String SumAndQuoteText = "";
 
     public NewsDetailFragment() {
     }
@@ -337,15 +339,16 @@ public class NewsDetailFragment extends BaseFragment {
     }
 
     private void ListenDigest() {
-        String speakUrl = title.getText().toString().trim();
+        speakContent = title.getText().toString().trim() + SumAndQuoteText;
         if (tts.isSpeaking()) {
             tts.stop();
-            tts.speak(speakUrl, TextToSpeech.QUEUE_ADD, null);
+            tts.speak(speakContent, TextToSpeech.QUEUE_ADD, null);
         } else {
-            tts.speak(speakUrl, TextToSpeech.QUEUE_ADD, null);
+            tts.speak(speakContent, TextToSpeech.QUEUE_ADD, null);
         }
 
     }
+
     /**
      * 初始化语音引擎
      */
@@ -355,9 +358,12 @@ public class NewsDetailFragment extends BaseFragment {
             public void onInit(int status) {
                 //如果装载TTS引擎成功
                 if (status == TextToSpeech.SUCCESS) {
-                    //设置使用美式英语朗读(虽然设置里有中文选项Locale.Chinese,但并不支持中文)
+                    //设置使用美式英语朗读
                     int result = tts.setLanguage(Locale.US);
-                    tts.setSpeechRate(0.8f);
+                    tts.setSpeechRate(0.8f);//设置播放速率
+                    tts.setPitch(1.2f);//设置语音的声高
+                    //tts.setVoice();//设置文字语音转化的声音
+                    //setOnUtteranceProgressListener(UtteranceProgressListener listener)//设置监听播放进度的回调
                     //如果不支持设置的语言
                     if (result != TextToSpeech.LANG_COUNTRY_AVAILABLE
                             && result != TextToSpeech.LANG_AVAILABLE) {
@@ -367,6 +373,7 @@ public class NewsDetailFragment extends BaseFragment {
             }
         });
     }
+
     public void activeItem() {
 
         rx.Observable
@@ -374,6 +381,11 @@ public class NewsDetailFragment extends BaseFragment {
 
                     @Override
                     public void call(final Subscriber<? super Boolean> subscriber) {
+                       /* SharedPreferences item_isChecked = getContext().getSharedPreferences(ITEM_IS_CHECKED, 0);
+                        SharedPreferences.Editor editor = item_isChecked.edit();
+                        editor.putBoolean(mNewsDigest.items.get(index).uuid, true);
+                        subscriber.onNext(editor.commit());
+                        subscriber.onCompleted();*/
                         return;
                     }
                 })
@@ -436,7 +448,6 @@ public class NewsDetailFragment extends BaseFragment {
             title.setText("" + mNewsDigest.items.get(index).title);
             // title.setTag("" + itemRealm.getLink());
             title.setVisibility(View.VISIBLE);
-
             //quote
             addQuote(mNewsDigest.items.get(index));
 
@@ -489,10 +500,12 @@ public class NewsDetailFragment extends BaseFragment {
     }
 
     private void addSelectableTextHelper(TextView view) {
+        String selectcolor = mNewsDigest.items.get(index).colors.get(0).hexcode;
+        int colorrr = android.graphics.Color.parseColor("#44" + selectcolor.substring(1));
         mSelectableTextHelper = new SelectableTextHelper.Builder(view)
-                .setSelectedColor(getResources().getColor(R.color.selected_blue))
+                .setSelectedColor(colorrr)
                 .setCursorHandleSizeInDp(24)
-                .setCursorHandleColor(getResources().getColor(R.color.cursor_handle_color))
+                .setCursorHandleColor(color)//"#00B108"
                 .build();
         mSelectableTextHelper.setSelectListener(new OnSelectListener() {
             @Override
@@ -768,14 +781,14 @@ public class NewsDetailFragment extends BaseFragment {
                 TextView wikiText = $(wikiItemView, R.id.wikiText);
                 wikiText.setText("" + wiki.text);
                 wikiText.setTypeface(typefaceLight);
-
+                addSelectableTextHelper(wikiText);//添加文字选择
                 ImageView wikiSearch = $(wikiItemView, R.id.wikiSearch);
                 DrawableCompat.setTint(wikiSearch.getDrawable(), color);
 
                 TextView searchTerms = $(wikiItemView, R.id.searchTerms);
                 StringBuilder sb = new StringBuilder();
                 for (NewsDigest.NewsItem.Wiki.Term term : wiki.searchTerms) {
-                    // sb.append(term.value).append("");
+                     sb.append(term.term).append("");
                 }
 
                 searchTerms.setText("learn more:" + sb.toString());
@@ -919,6 +932,7 @@ public class NewsDetailFragment extends BaseFragment {
     private void addQuote(NewsDigest.NewsItem newsItem) {
         summary.removeAllViews();
         List<NewsDigest.NewsItem.Summary> summaries = newsItem.multiSummary;
+        String speakstr = "";
         if (summaries != null && !summaries.isEmpty()) {
             for (NewsDigest.NewsItem.Summary item : summaries) {
                 View summaryItemView =
@@ -929,6 +943,7 @@ public class NewsDetailFragment extends BaseFragment {
                 ViewGroup quoteContainer = $(summaryItemView, R.id.quoteContainer);
                 textView.setText(item.text);
                 if (item.quote == null || item.quote.text == null) {
+                    speakstr = speakstr + item.text;
                     quoteContainer.removeAllViews();
                 } else {
                     NewsDigest.NewsItem.Summary.Quote quote = item.quote;
@@ -945,7 +960,9 @@ public class NewsDetailFragment extends BaseFragment {
                     //quoteSource.setTypeface(typefaceBold);
                     View verticalLine = $(quoteContainer, R.id.verticalLine);
                     verticalLine.setBackgroundColor(color);
+                    speakstr = speakstr+ item.text + item.quote.text;
                 }
+                SumAndQuoteText = speakstr;
                 summary.addView(summaryItemView);
             }
         }

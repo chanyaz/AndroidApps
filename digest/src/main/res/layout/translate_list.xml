@@ -98,7 +98,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
             android:gravity="center_vertical|right"
-            android:text="查询"
+            android:text="Translate"
             android:textColor="#808080"
             android:textSize="20sp" />
 

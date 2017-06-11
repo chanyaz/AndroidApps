@@ -184,6 +184,10 @@ public class NewsListFragment extends BaseFragment {
                 intent.putExtra(NewsDetailActivity.SOURCE,NewsAdapter.newssource);
                // intent.putParcelableArrayListExtra(NewsDetailActivity.DATA,  list);
                 intent.putExtra(NewsDetailActivity.DATA,mNewsDigest);
+              /* SharedPreferences item_isChecked = getContext().getSharedPreferences(ITEM_IS_CHECKED, 0);
+                SharedPreferences.Editor editor = item_isChecked.edit();
+                editor.putBoolean(mNewsDigest.items.get(position).uuid, true);
+                editor.commit();*/
                 startActivityForResult(intent, 0x111);
 
             }
@@ -272,7 +276,6 @@ public class NewsListFragment extends BaseFragment {
 
     private void updateFooterView() {
         if (adapter != null) {
-
         } else {
 
         }

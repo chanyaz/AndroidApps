@@ -26,6 +26,8 @@ import com.youdao.sdk.ydtranslate.Translate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.shenke.digest.translate.TranslateAdapter.tts;
+
 /**
  * TODO: default from zh to en
  */
@@ -53,6 +55,7 @@ public class TranslateActivity extends Activity {
     TextView languageSelectTo;
 
     private Translator translator;
+    public static String SpeackContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,7 +178,8 @@ public class TranslateActivity extends Activity {
                 }, 100);
                 fanyiInputText.setText("");
                 if (!TextUtils.isEmpty(result.getResultSpeakUrl())) {
-                    playVoice(result.getResultSpeakUrl());
+                    SpeackContent = result.getResultSpeakUrl();
+                    //playVoice(result.getResultSpeakUrl());
                 }
 
             }
@@ -214,14 +218,12 @@ public class TranslateActivity extends Activity {
 
     }
 
-    public synchronized void playVoice(String speakUrl) {
-
+    public static  synchronized void playVoice(String speakUrl) {
         if (!TextUtils.isEmpty(speakUrl) && speakUrl.startsWith("http")) {
             ToastUtils.show("正在发音");
             AudioMgr.startPlayVoice(speakUrl, new AudioMgr.SuccessListener() {
                 @Override
                 public void success() {
-
                 }
 
                 @Override
@@ -229,6 +231,7 @@ public class TranslateActivity extends Activity {
                 }
             });
         }
+
     }
 
     public void postQuery(final Translate bean) {
@@ -243,6 +246,7 @@ public class TranslateActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        tts.shutdown();
     }
 
     @Override

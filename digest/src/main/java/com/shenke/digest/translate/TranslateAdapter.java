@@ -2,6 +2,7 @@ package com.shenke.digest.translate;
 
 import android.app.Activity;
 import android.content.Context;
+import android.speech.tts.TextToSpeech;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,140 +22,187 @@ import java.util.Locale;
 
 public class TranslateAdapter extends BaseAdapter {
 
-	private List<TranslateData> list;
+    private List<TranslateData> list;
 
-	private LayoutInflater inflater;
+    private LayoutInflater inflater;
 
-	private Context context;
+    private Context context;
+    public static TextToSpeech tts;
 
-	public TranslateAdapter(Context context, List<TranslateData> list) {
-		this.list = list;
-		inflater = LayoutInflater.from(context);
-		this.context = context;
-	}
+    public TranslateAdapter(Context context, List<TranslateData> list) {
+        this.list = list;
+        inflater = LayoutInflater.from(context);
+        this.context = context;
+    }
 
-	@Override
-	public int getCount() {
-		return list.size();
-	}
+    @Override
+    public int getCount() {
+        return list.size();
+    }
 
-	@Override
-	public Object getItem(int position) {
-		return list.get(position);
-	}
+    @Override
+    public Object getItem(int position) {
+        return list.get(position);
+    }
 
-	@Override
-	public long getItemId(int position) {
-		return position;
-	}
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
-	@Override
-	public int getViewTypeCount() {
-		return 1;
-	}
+    @Override
+    public int getViewTypeCount() {
+        return 1;
+    }
 
-	@Override
-	public int getItemViewType(int position) {
-		return 1;
-	}
+    @Override
+    public int getItemViewType(int position) {
+        return 1;
+    }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		final TranslateData bean = list.get(position);
-		ViewHolder holder = null;
-		if (convertView == null) {
-			holder = new ViewHolder();
-			convertView = inflater.inflate(R.layout.translate_item, parent,
-					false);
-			holder.commentItemImg = (ImageView) convertView
-					.findViewById(R.id.commentItemImg);
-			holder.commentItemTime = (TextView) convertView
-					.findViewById(R.id.commentItemTime);
-			holder.commentItemContent = (TextView) convertView
-					.findViewById(R.id.commentItemContent);
-			holder.mainimage = (ImageView) convertView
-					.findViewById(R.id.mainimage);
-			holder.readBtn = (ImageView) convertView.findViewById(R.id.readBtn);
-			holder.moreBtn = (ImageView) convertView.findViewById(R.id.more);
+    @Override
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        final TranslateData bean = list.get(position);
+        InitTtsEngine();
+        ViewHolder holder = null;
+        if (convertView == null) {
+            holder = new ViewHolder();
+            convertView = inflater.inflate(R.layout.translate_item, parent,
+                    false);
+            holder.commentItemImg = (ImageView) convertView
+                    .findViewById(R.id.commentItemImg);
+            holder.commentItemTime = (TextView) convertView
+                    .findViewById(R.id.commentItemTime);
+            holder.commentItemContent = (TextView) convertView
+                    .findViewById(R.id.commentItemContent);
+            holder.mainimage = (ImageView) convertView
+                    .findViewById(R.id.mainimage);
+            holder.readBtn = (ImageView) convertView.findViewById(R.id.readBtn);
+            holder.moreBtn = (ImageView) convertView.findViewById(R.id.more);
+            holder.read_source = (ImageView) convertView.findViewById(R.id.read_source);
+            holder.read_source.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ListenDigest(list.get(position).getQuery());
+                }
+            });
+            holder.readBtn.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (!tts.isSpeaking()) {
+                        TranslateActivity.playVoice(TranslateActivity.SpeackContent);
+                    }
+                }
+            });
+            holder.wordBtn = convertView.findViewById(R.id.wordBtn);
 
-			holder.wordBtn = convertView.findViewById(R.id.wordBtn);
+            holder.translateText = (TextView) convertView
+                    .findViewById(R.id.translateText);
 
-			holder.translateText = (TextView) convertView
-					.findViewById(R.id.translateText);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
 
-			convertView.setTag(holder);
-		} else {
-			holder = (ViewHolder) convertView.getTag();
-		}
+        String timeText = "";
+        long time = bean.getCreateTime();
+        Date d = new Date(time);
+        Date today = new Date();
+        if (TimeUtil.isTheDay(d, today)) {
+            long interval = today.getTime() - time;
+            if (interval / 3600000 > 0) {
+                timeText = interval / 3600000 + "hour ago";
+            } else {
+                timeText = "recently";
+            }
+        } else if (TimeUtil.isTheDay(time + 86400000, today)) {
+            timeText = "yesterday";
+        } else {
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd",
+                    Locale.ENGLISH);
+            timeText = format.format(d);
+        }
 
-		String timeText = "";
-		long time = bean.getCreateTime();
-		Date d = new Date(time);
-		Date today = new Date();
-		if (TimeUtil.isTheDay(d, today)) {
-			long interval = today.getTime() - time;
-			if (interval / 3600000 > 0) {
-				timeText = interval / 3600000 + "小时前";
-			} else {
-				timeText = "刚刚";
-			}
-		} else if (TimeUtil.isTheDay(time + 86400000, today)) {
-			timeText = "昨天";
-		} else {
-			DateFormat format = new SimpleDateFormat("yyyy-MM-dd",
-					Locale.ENGLISH);
-			timeText = format.format(d);
-		}
+        holder.commentItemTime.setText(timeText);
+        if (TextUtils.isEmpty(bean.getTranslate().getQuery())) {
+            holder.commentItemContent.setVisibility(View.GONE);
+        } else {
+            holder.commentItemContent.setVisibility(View.VISIBLE);
+            holder.commentItemContent.setText(bean.getQuery());
+        }
 
-		holder.commentItemTime.setText(timeText);
-		if (TextUtils.isEmpty(bean.getTranslate().getQuery())) {
-			holder.commentItemContent.setVisibility(View.GONE);
-		} else {
-			holder.commentItemContent.setVisibility(View.VISIBLE);
-			holder.commentItemContent.setText(bean.getQuery());
-		}
+        holder.mainimage.setVisibility(View.GONE);
+        if (convertView != null) {
+            convertView.setOnClickListener(new OnClickListener() {
 
-		holder.mainimage.setVisibility(View.GONE);
-		if (convertView != null) {
-			convertView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    TranslateDetailActivity.open((Activity) context, bean);
+                }
+            });
+        }
 
-				@Override
-				public void onClick(View v) {
-                     TranslateDetailActivity.open((Activity)context, bean);
-				}
-			});
-		}
+        try {
+            if (!TextUtils.isEmpty(bean.translates())) {
+                holder.translateText.setText(bean.translates());
+                holder.translateText.setVisibility(View.VISIBLE);
+            }
+        } catch (Exception e) {
 
-		try {
-			if (!TextUtils.isEmpty(bean.translates())) {
-				holder.translateText.setText(bean.translates());
-				holder.translateText.setVisibility(View.VISIBLE);
-			}
-		} catch (Exception e) {
+        }
 
-		}
+        return convertView;
+    }
 
-		return convertView;
-	}
+    private void ListenDigest(String speakContent) {
+        if (tts.isSpeaking()) {
+            tts.stop();
+            tts.speak(speakContent, TextToSpeech.QUEUE_ADD, null);
+        } else {
+            tts.speak(speakContent, TextToSpeech.QUEUE_ADD, null);
+        }
 
-	public synchronized void playVoice(String speakUrl) {
+    }
 
-	}
+    /**
+     * 初始化语音引擎
+     */
+    private void InitTtsEngine() {
+        tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                //如果装载TTS引擎成功
+                if (status == TextToSpeech.SUCCESS) {
+                    //设置使用美式英语朗读
+                    int result = tts.setLanguage(Locale.US);
+                    tts.setSpeechRate(0.8f);//设置播放速率
+                    tts.setPitch(1f);//设置语音的声高
+                    //tts.setVoice();//设置文字语音转化的声音
+                    //setOnUtteranceProgressListener(UtteranceProgressListener listener)//设置监听播放进度的回调
+                    //如果不支持设置的语言
+                    if (result != TextToSpeech.LANG_COUNTRY_AVAILABLE
+                            && result != TextToSpeech.LANG_AVAILABLE) {
+                        // Toast.makeText(MainActivity.this, "TTS暂时不支持这种语言朗读", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+    }
 
-	private final class ViewHolder {
+    private final class ViewHolder {
 
-		public TextView translateText;
+        public TextView translateText;
 
-		public ImageView commentItemImg; // 评论人图�?
+        public ImageView commentItemImg; // 评论人图�?
 
-		public TextView commentItemTime; // 评论时间
+        public TextView commentItemTime; // 评论时间
 
-		public TextView commentItemContent;
+        public TextView commentItemContent;
 
-		public ImageView mainimage;// 评论内容
+        public ImageView mainimage;// 评论内容
 
-		public ImageView readBtn, moreBtn;
+        public ImageView readBtn, moreBtn, read_source;
 
-		public View wordBtn;
-	}
+        public View wordBtn;
+    }
 }

@@ -1,7 +1,6 @@
 package com.shenke.digest.fragment;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -169,9 +168,9 @@ public class ExtraNewsListFragment extends BaseFragment {
             newsItem = mNewsDigest.items.get(position);
             if (newsItem != null) {
                 {
-                    if(mNewsDigest.edition == 1){
+                    /*if(mNewsDigest.edition == 1){
                         holder.title.setTextColor(Color.WHITE);
-                    }
+                    }*/
                     Typeface typeFaceLabel = Typeface.createFromAsset(holder.itemView.getContext().getAssets(), "fonts/Roboto-Bold.ttf");
                     holder.label.setTypeface(typeFaceLabel);
                     holder.label.setText(newsItem.categories.get(0).name);
