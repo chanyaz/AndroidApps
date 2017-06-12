@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="QuoteLayout">
+        <attr name="left_border_width" format="dimension" />
+        <attr name="left_border_color" format="color" />
+        <attr name="quote_text_size" format="dimension" />
+        <attr name="quote_text_color" format="color" />
+        <attr name="author_text_size" format="dimension" />
+        <attr name="author_text_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="DonutProgress">
+        <attr name="donut_progress" format="integer" />
+        <attr name="donut_max" format="integer" />
+        <attr name="donut_direction" format="enum">
+            <enum name="clockwise" value="0" />
+            <enum name="anticlockwise" value="1" />
+        </attr>
+        <attr name="donut_unfinished_color" format="color" />
+        <attr name="donut_finished_color" format="color" />
+
+        <attr name="donut_finished_stroke_width" format="dimension" />
+        <attr name="donut_unfinished_stroke_width" format="dimension" />
+
+        <attr name="donut_text_size" format="dimension" />
+        <attr name="donut_text_color" format="color" />
+
+        <attr name="donut_prefix_text" format="string" />
+        <attr name="donut_suffix_text" format="string" />
+        <attr name="donut_text" format="string" />
+
+        <attr name="donut_background_color" format="color" />
+
+        <attr name="donut_inner_bottom_text" format="string" />
+        <attr name="donut_inner_bottom_text_size" format="dimension" />
+        <attr name="donut_inner_bottom_text_color" format="color" />
+
+        <attr name="donut_circle_starting_degree" format="integer" />
+
+    </declare-styleable>
+
+    <!--
+     see  https://github.com/JakeWharton/ViewPagerIndicator/blob/master/library/res/values/vpi__attrs.xml
+    -->
+    <declare-styleable name="CirclePageIndicator">
+        <attr name="centered" format="boolean" />
+        <attr name="pageColor" format="color" />
+        <attr name="fillColor" format="color" />
+        <attr name="selectedColor" format="color" />
+        <attr name="unselectedColor" format="color" />
+        <attr name="strokeWidth" format="dimension" />
+        <attr name="strokeColor" format="color" />
+        <attr name="snap" format="boolean" />
+        <!-- Orientation of the indicator. -->
+        <attr name="orientation" format="enum">
+            <enum name="horizontal" value="0" />
+            <enum name="vertical" value="1" />
+        </attr>
+        <attr name="radius" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="TriangleViewLayout">
+        <attr name="triangleViewSolidColor" format="color" />
+        <attr name="triangleViewStrokeColor" format="color" />
+        <attr name="triangleViewStrokeWidth" format="dimension" />
+        <attr name="triangleViewType" format="enum">
+            <enum name="down" value="1" />
+            <enum name="up" value="0" />
+        </attr>
+    </declare-styleable>
+    <declare-styleable name="BlurredView">
+        <attr name="src" format="reference" />
+        <attr name="disableBlurred" format="boolean" />
+    </declare-styleable>
+</resources>

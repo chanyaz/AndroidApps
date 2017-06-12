@@ -23,7 +23,7 @@ import android.widget.TextView;
 
 public class SelectableTextHelper {
 
-    private final static int DEFAULT_SELECTION_LENGTH = 1;
+    private final static int DEFAULT_SELECTION_LENGTH = 5;
     private static final int DEFAULT_SHOW_DURATION = 100;
 
     private CursorHandle mStartHandle;

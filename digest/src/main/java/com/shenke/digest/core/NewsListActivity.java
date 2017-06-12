@@ -212,8 +212,8 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         String timezone = Helper.getTimeZone(lang).trim().substring(3);
         String region_edition = lang.trim().substring(3, 5);
         String more_stories = "0";
+
         if (mDate != null) {
-            // date = mDate.trim().substring(10, 14) + "-" + mDate.trim().substring(4, 6) + "-" + mDate.trim().substring(7, 9);
             date = mDate;
         } else {
             final String nowtime = Helper.getGlobalTime(lang);

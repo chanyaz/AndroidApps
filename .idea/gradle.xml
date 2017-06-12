@@ -9,6 +9,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/copypaste" />
+            <option value="$PROJECT_DIR$/countdowndemo" />
             <option value="$PROJECT_DIR$/digest" />
             <option value="$PROJECT_DIR$/speechdemo" />
             <option value="$PROJECT_DIR$/youdaotrans" />

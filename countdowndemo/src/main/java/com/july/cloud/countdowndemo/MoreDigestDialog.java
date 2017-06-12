@@ -1,4 +1,4 @@
-package com.shenke.digest.dialog;
+package com.july.cloud.countdowndemo;
 
 
 import android.animation.Animator;
@@ -7,9 +7,6 @@ import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,17 +22,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.shenke.digest.R;
-import com.shenke.digest.adapter.NewsAdapter;
-import com.shenke.digest.core.NewsListActivity;
-import com.shenke.digest.fragment.NewsListFragment;
-import com.shenke.digest.util.DateUtil;
-import com.shenke.digest.util.Helper;
-import com.shenke.digest.util.LogUtil;
-import com.shenke.digest.view.BlurredView;
-import com.shenke.digest.view.DonutProgress;
-import com.shenke.digest.view.LoadViewLayout;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -48,8 +34,6 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static com.shenke.digest.core.NewsListActivity.PREFERENCES_SETTINS;
-
 /**
  * 根据时间选择MoreDigest
  */
@@ -57,7 +41,6 @@ public class MoreDigestDialog extends DialogFragment {
 
     private DonutProgress donutProgress;
     private ValueAnimator valueAnimator;
-    private static final String TAG = "MoreDigestDialog";
     private TextView next;
     private TextView tvH, tvM, tvS;
     private ImageView img;
@@ -73,34 +56,26 @@ public class MoreDigestDialog extends DialogFragment {
     private int mSecond;
     private Subscription subscription;
     private LinearLayout linearLayout;
-    public static final String SECTION_SELECTED = EditionDialog.SECTION_SELECTED;
-    public static final String DATE_SELECTED = EditionDialog.DATE_SELECTED;
-    public static final String LANG_SELECTED = "LANGUAG";
-    private BlurredView iv_background;
-    private Bitmap bitmap;
+   public static final String SECTION_SELECTED ="SECTION_SELECTED";
+    public static final String DATE_SELECTED = "DATE_SELECTED";
+
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
     }
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        SharedPreferences pre_settings = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
-        section = pre_settings.getInt("DIGEST_EDITION", 0);
-        mLang = pre_settings.getString("LANGUAGE", "en-AA");
-        mDate =pre_settings.getString("DATE", Helper.getGlobalTime(mLang).trim().substring(0, 10));
-
     }
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.more_digest_dialog, container);
+        View rootView = inflater.inflate(R.layout.countdown_layout, container);
         final HorizontalScrollView hsv = (HorizontalScrollView) rootView.findViewById(R.id.hsv);
         //滑动
         new Handler().postDelayed(new Runnable() {
@@ -109,19 +84,7 @@ public class MoreDigestDialog extends DialogFragment {
                 hsv.scrollTo(2000, 0);
             }
         }, 2000);
-        iv_background = (BlurredView) rootView.findViewById(R.id.iv_background);
-        String TAG = getArguments().getString("fragment");
-        if (TAG.equals("NewsListFragment")) {
-            bitmap = NewsListFragment.bitmap;
-        } else if (TAG.equals("LoadViewLayout")) {
-            bitmap = LoadViewLayout.bitmap;
-        } else if (TAG.equals("NewsAdapter")) {
-            bitmap = NewsAdapter.bitmap;
-        }
-        if (bitmap != null) {
-            iv_background.setBlurredImg(bitmap);
-            iv_background.setBlurredLevel(100);
-        }
+
         linearLayout = (LinearLayout) rootView.findViewById(R.id.newsChooser);
         Typeface typefaceLight = Typeface.createFromAsset(rootView.getContext().getAssets(), "fonts/Roboto-Light.ttf");
         donutProgress = (DonutProgress) rootView.findViewById(R.id.progress);
@@ -145,7 +108,6 @@ public class MoreDigestDialog extends DialogFragment {
         infoType = (TextView) rootView.findViewById(R.id.infoType);
         infoType.setTypeface(typefaceLight);
         mHandler = initHandler();
-
         return rootView;
     }
 
@@ -169,12 +131,20 @@ public class MoreDigestDialog extends DialogFragment {
         }
     }
 
+    /**
+     * 获取选择项
+     * @param newsSection
+     * @return
+     */
     private Subscription getSelected(final int newsSection) {
         return rx.Observable
                 .create(new Observable.OnSubscribe<Map<String, String>>() {
                     @Override
                     public void call(Subscriber<? super Map<String, String>> subscriber) {
                         try {
+                            section =  0;
+                            mLang = "en-GB";
+                            mDate = Helper.getGlobalTime(mLang).trim().substring(0, 10);
                             Map<String, String> map = new HashMap<String, String>();
                             map.put(SECTION_SELECTED, String.valueOf(section));
                             map.put(DATE_SELECTED, mDate);
@@ -190,7 +160,7 @@ public class MoreDigestDialog extends DialogFragment {
                 .subscribe(new Subscriber<Map<String, String>>() {
                     @Override
                     public void onCompleted() {
-                        LogUtil.e(TAG, "onCompleted");
+
                     }
 
                     @Override
@@ -200,7 +170,7 @@ public class MoreDigestDialog extends DialogFragment {
 
                     @Override
                     public void onNext(Map<String, String> map) {
-                        LogUtil.e(TAG, "onNext " + map);
+
                         initChooseItem(map);
                     }
                 });
@@ -235,11 +205,11 @@ public class MoreDigestDialog extends DialogFragment {
                     infoType.setText("Util Evening Digest");
                     img.setImageResource(R.mipmap.countdown_day_moon);
                 } else {
-                    mHour =deltaValue.hour;
+                    mHour = deltaValue.hour;
                     infoType.setText("Util Morning Digest");
                     img.setImageResource(R.mipmap.countdown_day_sun);
                 }
-                mMinute = deltaValue.minute;
+                mMinute =deltaValue.minute;
                 mSecond = deltaValue.second;
                 tvHour.setText("" + format(mHour));
                 tvMinute.setText("" + format(mMinute));
@@ -300,12 +270,12 @@ public class MoreDigestDialog extends DialogFragment {
         try {
             SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String ymd = sdf1.format(sdf2.parse(Helper.getGlobalTime(mLang)));
+            String ymd = sdf1.format(sdf2.parse(Helper.getGlobalTime("en-AA")));
             Date morning = sdf2.parse(ymd + " 08:00:00");
             Date evening = sdf2.parse(ymd + " 18:00:00");
             Date night = sdf2.parse(ymd + " 00:00:00");
             Date nighttoday = sdf2.parse(ymd + " 23:59:59");
-            Date present = sdf2.parse(Helper.getGlobalTime(mLang));
+            Date present = sdf2.parse(Helper.getGlobalTime("en-AA"));
             long delta = 0L;
             int day = 0, hour = 0, min = 0, second = 0, progress = 0;
 
@@ -317,7 +287,7 @@ public class MoreDigestDialog extends DialogFragment {
             } else if (present.after(evening) && present.before(nighttoday) ) {//18:00:00至23:59:59之间
                 section = SECTION_EVENING;
 
-                delta = nighttoday.getTime() - present.getTime()+morning.getTime()-night.getTime();
+                delta = present.getTime() - evening.getTime()+morning.getTime()-night.getTime();
                 progress = (int) (100 * delta / (1000 * 14 * 60 * 60));
 
             } else {//08:00至18:00之间
@@ -350,7 +320,6 @@ public class MoreDigestDialog extends DialogFragment {
      * @param map
      */
     private void initChooseItem(Map<String, String> map) {
-        LogUtil.d(TAG, "initChooseItem" + map);
         linearLayout.removeAllViews();
         for (int i = 5; i >= 0; i--) {
             Date date = DateUtil.getPreNDay(new Date(), i);
@@ -363,19 +332,11 @@ public class MoreDigestDialog extends DialogFragment {
             newsDay.setText(str.substring(0, 3));
             ImageView daytime = (ImageView) item.findViewById(R.id.daytime);
             daytime.setTag(str);
-            final Intent intent = new Intent(getContext(), NewsListActivity.class);
             daytime.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     dismiss();
-                    getActivity().finish();
-                    SharedPreferences pre_settings = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
-                    SharedPreferences.Editor editor = pre_settings.edit();
-                    String nowdate = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
-                    editor.putString("DATE", nowdate);
-                    editor.putInt("DIGEST_EDITION", SECTION_MORNING);
-                    editor.commit();
-                    startActivity(intent);
+
                 }
             });
             ImageView night = (ImageView) item.findViewById(R.id.night);
@@ -383,14 +344,6 @@ public class MoreDigestDialog extends DialogFragment {
             night.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    getActivity().finish();
-                    SharedPreferences pre_settings = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
-                    SharedPreferences.Editor editor = pre_settings.edit();
-                    String nowdate = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
-                    editor.putString("DATE", nowdate);
-                    editor.putInt("DIGEST_EDITION", SECTION_EVENING);
-                    editor.commit();
-                    startActivity(intent);
                     dismiss();
                 }
             });

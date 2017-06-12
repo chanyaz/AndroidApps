@@ -30,7 +30,7 @@ import java.util.Locale;
 
 public class SelectableTextHelper {
 
-    private final static int DEFAULT_SELECTION_LENGTH = 1;
+    private final static int DEFAULT_SELECTION_LENGTH = 2;
     private static final int DEFAULT_SHOW_DURATION = 100;
 
     private CursorHandle mStartHandle;
@@ -150,7 +150,8 @@ public class SelectableTextHelper {
                 if (status == TextToSpeech.SUCCESS) {
                     //设置使用美式英语朗读(虽然设置里有中文选项Locale.Chinese,但并不支持中文)
                     int result = tts.setLanguage(Locale.US);
-                    tts.setSpeechRate(0.8f);
+                    tts.setSpeechRate(0.8f);//设置播放速率
+                    tts.setPitch(1.2f);//设置语音的声高
                     //如果不支持设置的语言
                     if (result != TextToSpeech.LANG_COUNTRY_AVAILABLE
                             && result != TextToSpeech.LANG_AVAILABLE) {
