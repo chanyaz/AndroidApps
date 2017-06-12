@@ -61,7 +61,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     public static String PREFERENCES_SETTINS = "PREFERENCES_SETTINS";
     public static String ITEM_IS_CHECKED = "IS_CHECKED";
     private boolean first;//是否第一次打开APP
-
+    private int cachetime; //缓存保留时长
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -192,8 +192,8 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                     public void call(NewsDigest mNewsDigest) {
                         Log.i("NewsDigestData", mNewsDigest.toString());
                         digestLoadDialog.onLoadSuccess();
-                        int cachetime = Helper.getCacheSaveTime(lang, digest_edition, "08:00:00", "18:00:00");
-                        aCache.put(mLang + "-NewsDigestData-" + date + "-" + String.valueOf(digest_edition), mNewsDigest, cachetime);//有新内容时缓存失效
+                        cachetime = Helper.getCacheSaveTime(lang, digest_edition, "08:00:00", "18:00:00");
+                        aCache.put(mLang + "-NewsDigestData-" + date + "-" + String.valueOf(digest_edition), mNewsDigest,  cachetime);//有新内容时缓存失效
                     }
                 })
                 .subscribe(observer);
@@ -236,7 +236,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         }
 
 
-        if (mSection == 1) {
+        if (mSection == 1 ) {
             digest_edition = 1;
         } else if (mSection == 0) {
             digest_edition = 0;

@@ -679,92 +679,6 @@ public class NewsDetailFragment extends BaseFragment {
         }
     }
 
- /*private void addTweet(NewsDigest.NewsItem newsItem) {
-        tweets.removeAllViews();
-        NewsDigest.NewsItem.TweetKeyword tweetRealm = newsItem.tweetKeywords;
-        if (tweetRealm != null && tweetRealm.getTweets() != null
-                && tweetRealm.getTweets().size() > 0) {
-            RealmList<TweetItemRealm> tweetItemRealms = tweetRealm.getTweets();
-            for (TweetItemRealm tweetItemRealm : tweetItemRealms) {
-
-                View tweetItemView =
-                        LayoutInflater.from(tweets.getContext()).inflate(R.layout.item_twitter, tweets, false);
-
-                TextView tweetName = $(tweetItemView, R.id.tweetName);
-                tweetName.setText("" + tweetItemRealm.getUser().getName());
-                // tweetName.setTypeface(typefaceBold);
-
-                TextView tweetScreenName = $(tweetItemView, R.id.tweetScreenName);
-                //  tweetScreenName.setTypeface(typefaceBold);
-                StringBuilder sb = new StringBuilder();
-                sb.append("<a href=\"https://mobile.twitter.com/").append(tweetItemRealm.getUser().getScreen_name()).append("\">");
-                sb.append("@").append(tweetItemRealm.getUser().getScreen_name()).append("<a>");
-                tweetScreenName.setText(Html.fromHtml(sb.toString()));
-                tweetScreenName.setMovementMethod(LinkMovementMethod.getInstance());
-                tweetScreenName.setLinkTextColor(Color.parseColor("#FF95CEFB"));
-                URLSpanNoUnderline.stripUnderlines(tweetScreenName);
-
-                TextView tweetTime = $(tweetItemView, R.id.tweetTime);
-                String d = TweetTransformer.twitterTime(tweetItemRealm.getCreated_at());
-                tweetTime.setText(d);
-
-
-                TextView tweetText = $(tweetItemView, R.id.tweetText);
-                tweetText.setTypeface(typefaceLight);
-                String text = tweetItemRealm.getText();
-                Spanned s = Html.fromHtml(TweetTransformer.convert(text));
-                tweetText.setText(s);
-
-                tweetText.setLinkTextColor(getResources().getColor(R.color.twitter_border));
-                tweetText.setMovementMethod(LinkMovementMethod.getInstance());
-                URLSpanNoUnderline.stripUnderlines(tweetText);
-
-                if (!TextUtils.isEmpty(tweetItemRealm.getId())) {
-
-                    final String replyUrl = "https://twitter.com/intent/tweet?in_reply_to=" + tweetItemRealm.getId();
-                    ImageView twitterReply = $(tweetItemView, R.id.twitterReply);
-                    twitterReply.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Uri uri = Uri.parse(replyUrl);
-                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                            startActivity(intent);
-                        }
-                    });
-
-                    final String retweet = "https://twitter.com/intent/retweet?tweet_id=" + tweetItemRealm.getId() + "&related=twitterapi,twittermedia,twitter,support";
-                    ImageView twitterRetweet = $(tweetItemView, R.id.twitterRetweet);
-                    twitterRetweet.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Uri uri = Uri.parse(retweet);
-                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                            startActivity(intent);
-                        }
-                    });
-
-                    final String favoriteUrl = "https://twitter.com/intent/favorite?tweet_id=" + tweetItemRealm.getId();
-                    ImageView twitterFavorite = $(tweetItemView, R.id.twitterFavorite);
-                    twitterFavorite.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Uri uri = Uri.parse(favoriteUrl);
-                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                            startActivity(intent);
-                        }
-                    });
-
-                }
-
-
-                tweets.addView(tweetItemView);
-
-            }
-
-
-        }
-    }*/
-
     private void addWiki(NewsDigest.NewsItem newsItem) {
         wikis.removeAllViews();
         List<NewsDigest.NewsItem.Wiki> wikiList = newsItem.wikis;
@@ -788,7 +702,7 @@ public class NewsDetailFragment extends BaseFragment {
                 TextView searchTerms = $(wikiItemView, R.id.searchTerms);
                 StringBuilder sb = new StringBuilder();
                 for (NewsDigest.NewsItem.Wiki.Term term : wiki.searchTerms) {
-                     sb.append(term.term).append("");
+                    sb.append(term.term).append("");
                 }
 
                 searchTerms.setText("learn more:" + sb.toString());
@@ -960,7 +874,7 @@ public class NewsDetailFragment extends BaseFragment {
                     //quoteSource.setTypeface(typefaceBold);
                     View verticalLine = $(quoteContainer, R.id.verticalLine);
                     verticalLine.setBackgroundColor(color);
-                    speakstr = speakstr+ item.text + item.quote.text;
+                    speakstr = speakstr + item.text + item.quote.text;
                 }
                 SumAndQuoteText = speakstr;
                 summary.addView(summaryItemView);

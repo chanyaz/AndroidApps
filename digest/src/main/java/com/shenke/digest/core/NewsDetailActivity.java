@@ -38,7 +38,6 @@ public class NewsDetailActivity extends AppCompatActivity {
     private RxBus rxBus;
     private int currentIndex = -1;
     public NewsDigest mNewsDigest;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
