@@ -20,7 +20,6 @@ import com.shenke.digest.R;
 import com.shenke.digest.adapter.NewsAdapter;
 import com.shenke.digest.core.ExtraNewsListActivity;
 import com.shenke.digest.core.NewsDetailActivity;
-import com.shenke.digest.core.NewsListActivity;
 import com.shenke.digest.dialog.EditionDialog;
 import com.shenke.digest.dialog.MoreDigestDialog;
 import com.shenke.digest.dialog.SettingsDialog;
@@ -76,20 +75,10 @@ public class NewsListFragment extends BaseFragment {
                     @Override
                     public void call(Subscriber<? super Map<String, String>> subscriber) {
                         try {
-                            SharedPreferences p_settings = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
-                            String strdate = Helper.format(new Date());
-                            String nowdate = strdate.trim().substring(10, 14) + "-" + strdate.trim().substring(4, 6) + "-" + strdate.trim().substring(7, 9);
-                            mDate = p_settings.getString("DATE", nowdate);
-                            mSection = p_settings.getInt("DIGEST_EDITION", 2);
-                            lang = p_settings.getString("LANGUAGE", NewsListActivity.LanguageEdtion(3));
-
                             Map<String, String> map = new HashMap<String, String>();
                             map.put(EditionDialog.SECTION_SELECTED, String.valueOf(mSection));
                             map.put(EditionDialog.DATE_SELECTED, mDate);
                             map.put(EditionDialog.EDITION, String.valueOf(lang));
-
-
-
                             subscriber.onNext(map);
                             subscriber.onCompleted();
                         } catch (Exception e) {
@@ -228,9 +217,6 @@ public class NewsListFragment extends BaseFragment {
         MoreDigestDialog moreDigestDialog = new MoreDigestDialog();
         Bundle bundle = new Bundle();
         bundle.putString("fragment", TAG);
-        bundle.putString(MoreDigestDialog.DATE_SELECTED, mDate);
-        bundle.putInt(MoreDigestDialog.SECTION_SELECTED, mSection);
-        bundle.putString(MoreDigestDialog.LANG_SELECTED,lang);
         moreDigestDialog.setArguments(bundle);
         moreDigestDialog.show(getChildFragmentManager(), "moreDigest");
     }

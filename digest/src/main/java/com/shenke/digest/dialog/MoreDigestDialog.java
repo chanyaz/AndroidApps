@@ -73,9 +73,9 @@ public class MoreDigestDialog extends DialogFragment {
     private int mSecond;
     private Subscription subscription;
     private LinearLayout linearLayout;
-    public static final String SECTION_SELECTED = EditionDialog.SECTION_SELECTED;
-    public static final String DATE_SELECTED = EditionDialog.DATE_SELECTED;
-    public static final String LANG_SELECTED = "LANGUAG";
+    public static final String SECTION_SELECTED = "SECTION_SELECTED";
+    public static final String DATE_SELECTED = "DATE_SELECTED";
+    public static final String LANGUAGE_SELECTED = "LANGUAGE_SELECTED";
     private BlurredView iv_background;
     private Bitmap bitmap;
 
@@ -92,7 +92,7 @@ public class MoreDigestDialog extends DialogFragment {
         SharedPreferences pre_settings = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
         section = pre_settings.getInt("DIGEST_EDITION", 0);
         mLang = pre_settings.getString("LANGUAGE", "en-AA");
-        mDate =pre_settings.getString("DATE", Helper.getGlobalTime(mLang).trim().substring(0, 10));
+        mDate = pre_settings.getString("DATE", Helper.getGlobalTime(mLang).trim().substring(0, 10));
 
     }
 
@@ -169,7 +169,7 @@ public class MoreDigestDialog extends DialogFragment {
         }
     }
 
-    private Subscription getSelected(final int newsSection) {
+    private Subscription getSelected() {
         return rx.Observable
                 .create(new Observable.OnSubscribe<Map<String, String>>() {
                     @Override
@@ -178,6 +178,7 @@ public class MoreDigestDialog extends DialogFragment {
                             Map<String, String> map = new HashMap<String, String>();
                             map.put(SECTION_SELECTED, String.valueOf(section));
                             map.put(DATE_SELECTED, mDate);
+                            map.put(LANGUAGE_SELECTED, mLang);
                             subscriber.onNext(map);
                             subscriber.onCompleted();
                         } catch (Exception e) {
@@ -235,7 +236,7 @@ public class MoreDigestDialog extends DialogFragment {
                     infoType.setText("Util Evening Digest");
                     img.setImageResource(R.mipmap.countdown_day_moon);
                 } else {
-                    mHour =deltaValue.hour;
+                    mHour = deltaValue.hour;
                     infoType.setText("Util Morning Digest");
                     img.setImageResource(R.mipmap.countdown_day_sun);
                 }
@@ -268,7 +269,7 @@ public class MoreDigestDialog extends DialogFragment {
         if (subscription != null) {
             subscription.unsubscribe();
         }
-        subscription = getSelected(section);
+        subscription = getSelected();
 
         donutProgress.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -314,10 +315,10 @@ public class MoreDigestDialog extends DialogFragment {
                 delta = morning.getTime() - present.getTime();
                 progress = 100 - (int) (100 * delta / (1000 * 14 * 60 * 60));
 
-            } else if (present.after(evening) && present.before(nighttoday) ) {//18:00:00至23:59:59之间
+            } else if (present.after(evening) && present.before(nighttoday)) {//18:00:00至23:59:59之间
                 section = SECTION_EVENING;
 
-                delta = nighttoday.getTime() - present.getTime()+morning.getTime()-night.getTime();
+                delta = nighttoday.getTime() - present.getTime() + morning.getTime() - night.getTime();
                 progress = (int) (100 * delta / (1000 * 14 * 60 * 60));
 
             } else {//08:00至18:00之间
@@ -350,11 +351,27 @@ public class MoreDigestDialog extends DialogFragment {
      * @param map
      */
     private void initChooseItem(Map<String, String> map) {
-        LogUtil.d(TAG, "initChooseItem" + map);
         linearLayout.removeAllViews();
+        String lang = map.get(LANGUAGE_SELECTED);
         for (int i = 5; i >= 0; i--) {
-            Date date = DateUtil.getPreNDay(new Date(), i);
-            final String str = Helper.format(date);
+            Date date = null;
+            try {
+                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String ymd = sdf1.format(sdf2.parse(Helper.getGlobalTime(lang)));
+                Date morning = sdf2.parse(ymd + " 08:00:00");
+                Date night = sdf2.parse(ymd + " 00:00:00");
+                Date present = sdf2.parse(Helper.getGlobalTime(lang));
+
+                if (present.before(morning) && present.after(night)) {
+                    date = DateUtil.getPreNDay(DateUtil.getPreDay(new Date()), i);//Thu Jun 08 10:18:42 格林尼治标准时间+0800 2017
+                } else {
+                    date = DateUtil.getPreNDay(new Date(), i);//Thu Jun 08 10:18:42 格林尼治标准时间+0800 2017
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            final String str = Helper.format(date);//Thu 06/08/2017 10:18:42 周四 Jun Thursday
             View item = LayoutInflater.from(getContext()).inflate(R.layout.news_chooser_item, linearLayout, false);
             TextView newsDate = (TextView) item.findViewById(R.id.newsDate);/**日期*/
             ImageView divider = (ImageView) item.findViewById(R.id.divider);
@@ -394,7 +411,24 @@ public class MoreDigestDialog extends DialogFragment {
                     dismiss();
                 }
             });
-            if (section == SECTION_MORNING) {
+
+            int digest_edition = 0;
+            try {
+                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String ymd = sdf1.format(sdf2.parse(Helper.getGlobalTime(lang)));
+                Date morning = sdf2.parse(ymd + " 08:00:00");
+                Date evening = sdf2.parse(ymd + " 18:00:00");
+                Date present = sdf2.parse(Helper.getGlobalTime(lang));
+                if (present.before(morning) || present.after(evening)) {
+                    digest_edition = SECTION_EVENING;
+                } else {
+                    digest_edition = SECTION_MORNING;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            if (digest_edition == SECTION_MORNING) {
                 if (i == 5) {
                     daytime.setVisibility(View.GONE);
                     divider.setVisibility(View.INVISIBLE);
@@ -402,10 +436,10 @@ public class MoreDigestDialog extends DialogFragment {
                     newsDay.setVisibility(View.INVISIBLE);
                 } else if (i == 0) {
                     night.setVisibility(View.GONE);
-                    daytime.setBackgroundResource(R.drawable.count_down_check_drawable);
-                    daytime.setImageResource(R.mipmap.countdown_day_sun_w);
+                    //daytime.setBackgroundResource(R.drawable.count_down_check_drawable);
+                    // daytime.setImageResource(R.mipmap.countdown_day_sun_w);
                 }
-            } else if (section == SECTION_EVENING) {
+            } else if (digest_edition == SECTION_EVENING) {
                 if (i == 5) {
                     item.setVisibility(View.GONE);
                 } else if (i == 0) {
@@ -413,16 +447,21 @@ public class MoreDigestDialog extends DialogFragment {
 
                 }
             }
+
             int sectionSelected = Integer.parseInt(map.get(SECTION_SELECTED));
             String dateSelected = map.get(DATE_SELECTED);
-            if (sectionSelected == SECTION_MORNING && str.equals(dateSelected)) {
+            String datestr = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
+            if (sectionSelected == SECTION_MORNING && dateSelected.equals(datestr)) {
                 daytime.setBackgroundResource(R.drawable.count_down_check_drawable);
                 daytime.setImageResource(R.mipmap.countdown_day_sun_w);
-            } else if (sectionSelected == SECTION_EVENING && str.equals(dateSelected)) {
+            } else if (sectionSelected == SECTION_EVENING && dateSelected.equals(datestr)) {
                 night.setBackgroundResource(R.drawable.count_down_check_drawable);
                 night.setImageResource(R.mipmap.countdown_day_moon_w);
             }
+            //allChecked DONE!!!
+           /* if(allIsChecked){
 
+            }*/
             linearLayout.addView(item);
         }
 

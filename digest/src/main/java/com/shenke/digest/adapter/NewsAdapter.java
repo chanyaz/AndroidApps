@@ -116,6 +116,11 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
                     ed = mNewsDigest.regionEdition;
                 }
                 holder.date.setText(DateUtil.MonthFormat(mNewsDigest.date.substring(5, 7).trim()) + " " + mNewsDigest.date.substring(8, 10).trim());
+                if (mNewsDigest.edition == 1) {
+                    section = SECTION_EVENING;
+                } else {
+                    section = SECTION_MORNING;
+                }
                 try {
                     String str = DateUtil.DayforWeek(mNewsDigest.date);
 
@@ -135,14 +140,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
                 holder.sectionArea.setVisibility(View.GONE);
 
             }
-            if (mNewsDigest.edition == 1) {
-               /* holder.rl_news_list.setBackgroundResource(R.color.black);
-                holder.title.setTextColor(Color.WHITE);
-                holder.triangle_background.setBackgroundResource(R.mipmap.evening_triangle_background);*/
-                section = SECTION_EVENING;
-            } else {
-                section = SECTION_MORNING;
-            }
+
             /**
              * tap to see moredigest
              */

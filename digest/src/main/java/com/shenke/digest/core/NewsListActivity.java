@@ -111,9 +111,6 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                 // digestLoadDialog.onLoadSuccess();
                 NewsListFragment mNewsListFragment = new NewsListFragment();
                 Bundle bundle = new Bundle();
-                bundle.putString("DATE", date);
-                bundle.putInt("SECTION", digest_edition);
-                bundle.putString("LANGUAGE", mLang);
                 bundle.putSerializable("NewsDigestData", mNewsDigest);
                 mNewsListFragment.setArguments(bundle);
                 getSupportFragmentManager()
