@@ -4,10 +4,13 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -157,5 +160,37 @@ public class Helper {
             }
         }
         return cache_time;
+    }
+    public static Map<String, String> isRequestedLatest(String lang){
+        Map<String, String> param = new HashMap<String, String>();
+        String digest_edition = "";
+        String date = "";
+        final String nowtime = Helper.getGlobalTime(lang);
+        try {
+            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String ymd = sdf1.format(sdf2.parse(Helper.getGlobalTime(lang)));
+            Date morning = sdf2.parse(ymd + " 08:00:00");
+            Date evening = sdf2.parse(ymd + " 18:00:00");
+            Date night = sdf2.parse(ymd + " 00:00:00");
+            Date present = sdf2.parse(Helper.getGlobalTime(lang));
+            if (present.before(morning) || present.after(evening)) {
+                digest_edition = "1";
+            } else {
+                digest_edition = "0";
+            }
+            if (present.before(morning) && present.after(night)) {
+                String str = Helper.format(DateUtil.getPreDay(new Date()));
+                date = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
+            } else {
+                date = nowtime.trim().substring(0, 10);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        param.put("DATE", date);
+        param.put("DIGEST_EDITION",digest_edition);
+        return param;
+
     }
 }

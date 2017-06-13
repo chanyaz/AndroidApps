@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="#ffffff"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_morning"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_gravity="left"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="15dp"
+                android:gravity="center"
+                android:text="Morning"
+                android:textColor="#000000" />
+
+            <TextView
+                android:id="@+id/tv_pushtime_morning"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="50dp"
+                android:layout_marginTop="15dp"
+                android:gravity="center"
+                android:text="8:00 am"
+                android:textColor="#000000" />
+
+            <CheckBox
+                android:id="@+id/checkBox_Morning"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignBaseline="@id/tv_morning"
+                android:layout_alignParentEnd="true"
+                android:layout_alignTop="@+id/tv_morning"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/notification_checkbox_selector"
+                android:button="@null"
+                android:checked="true" />
+        </RelativeLayout>
+
+        <com.july.cloud.timepickerdemo.RulerView
+            android:id="@+id/RulerView_Morning"
+            android:layout_width="match_parent"
+            android:layout_height="76.7dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="20dp"
+            android:background="#ffffff" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="#000000"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_evening"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_gravity="left"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="15dp"
+                android:gravity="center"
+                android:text="Evening"
+                android:textColor="#ffffff" />
+
+            <TextView
+                android:id="@+id/tv_pushtime_evening"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_alignParentEnd="true"
+
+                android:layout_marginRight="50dp"
+                android:layout_marginTop="15dp"
+                android:gravity="center"
+                android:text="8:00 pm"
+                android:textColor="#ffffff" />
+
+            <CheckBox
+                android:id="@+id/checkBox_Evening"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignBaseline="@id/tv_evening"
+                android:layout_alignParentEnd="true"
+                android:layout_alignTop="@+id/tv_evening"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/notification_checkbox_selector"
+                android:button="@null"
+                android:checked="true"
+                android:gravity="center" />
+        </RelativeLayout>
+
+        <com.july.cloud.timepickerdemo.RulerView
+            android:id="@+id/RulerView_Evening"
+            android:layout_width="match_parent"
+            android:layout_height="76.7dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="10dp"
+            android:background="#00000000" />
+    </LinearLayout>
+</LinearLayout>

@@ -365,7 +365,10 @@ public class MoreDigestDialog extends DialogFragment {
 
                 if (present.before(morning) && present.after(night)) {
                     date = DateUtil.getPreNDay(DateUtil.getPreDay(new Date()), i);//Thu Jun 08 10:18:42 格林尼治标准时间+0800 2017
-                } else {
+                } else if(lang == "en-CA"){
+                    date = DateUtil.getPreNDay(DateUtil.getPreDay(new Date()), i);//Thu Jun 08 10:18:42 格林尼治标准时间+0800 2017
+                }
+                else {
                     date = DateUtil.getPreNDay(new Date(), i);//Thu Jun 08 10:18:42 格林尼治标准时间+0800 2017
                 }
             } catch (ParseException e) {

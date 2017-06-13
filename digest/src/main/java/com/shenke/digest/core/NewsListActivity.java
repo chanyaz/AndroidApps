@@ -143,7 +143,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
 
         if (mNewsDigest != null) {
             Observable.just(mNewsDigest).distinct().subscribe(observer);
-        } else {
+        } else{
             fetchDataByNetWork(observer);
         }
     }
@@ -209,8 +209,11 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         String timezone = Helper.getTimeZone(lang).trim().substring(3);
         String region_edition = lang.trim().substring(3, 5);
         String more_stories = "0";
-
-        if (mDate != null) {
+        Map<String, String> para = Helper.isRequestedLatest(mLang);
+        String latest_date = para.get("DATE");
+        String latest_digest_edition = para.get("DIGEST_EDITION");
+        NewsDigest newsDigest = (NewsDigest) aCache.getAsObject(mLang + "-NewsDigestData-" + latest_date + "-" + latest_digest_edition);
+        if (mDate != null && newsDigest != null) {
             date = mDate;
         } else {
             final String nowtime = Helper.getGlobalTime(lang);
@@ -233,9 +236,9 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         }
 
 
-        if (mSection == 1 ) {
+        if (mSection == 1 && newsDigest != null) {
             digest_edition = 1;
-        } else if (mSection == 0) {
+        } else if (mSection == 0 && newsDigest != null) {
             digest_edition = 0;
         } else {
             try {
