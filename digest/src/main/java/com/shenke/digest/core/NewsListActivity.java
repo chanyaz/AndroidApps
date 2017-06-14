@@ -20,14 +20,11 @@ import com.shenke.digest.dialog.ProductGuideDialog;
 import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.fragment.NewsListFragment;
 import com.shenke.digest.http.RetrofitSingleton;
-import com.shenke.digest.util.DateUtil;
 import com.shenke.digest.util.Helper;
 import com.shenke.digest.util.IntentUtil;
 import com.shenke.digest.util.LogUtil;
 import com.shenke.digest.util.StatusBarCompat;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,9 +37,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
-
-import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_EVENING;
-import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_MORNING;
 
 public class NewsListActivity extends BaseActivity implements DigestLoadDialog.OnNewsLoadInActivityListener {
     private static final String TAG = "NewsListActivity";
@@ -59,9 +53,11 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     private String date;
     private int digest_edition = 0;
     public static String PREFERENCES_SETTINS = "PREFERENCES_SETTINS";
+    public static String UPDATE_SETTINS = "UPDATE_SETTINS";
     public static String ITEM_IS_CHECKED = "IS_CHECKED";
     private boolean first;//是否第一次打开APP
     private int cachetime; //缓存保留时长
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,7 +75,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         String nowdate = strdate.trim().substring(10, 14) + "-" + strdate.trim().substring(4, 6) + "-" + strdate.trim().substring(7, 9);
         mDate = p_settings.getString("DATE", nowdate);
         mSection = p_settings.getInt("DIGEST_EDITION", 2);
-        mLang = p_settings.getString("LANGUAGE", LanguageEdtion(3));
+        mLang = p_settings.getString("LANGUAGE", Helper.LanguageEdtion(3));
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container, digestLoadDialog, "loading")
@@ -136,14 +132,13 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         final String digest_edition = parameters.get("DIGEST_EDITION");
         try {
             mNewsDigest = (NewsDigest) aCache.getAsObject(lang + "-NewsDigestData-" + str + "-" + digest_edition);
-
         } catch (Exception e) {
             Log.e("DigestNews", e.toString());
         }
 
         if (mNewsDigest != null) {
             Observable.just(mNewsDigest).distinct().subscribe(observer);
-        } else{
+        } else {
             fetchDataByNetWork(observer);
         }
     }
@@ -190,7 +185,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                         Log.i("NewsDigestData", mNewsDigest.toString());
                         digestLoadDialog.onLoadSuccess();
                         cachetime = Helper.getCacheSaveTime(lang, digest_edition, "08:00:00", "18:00:00");
-                        aCache.put(mLang + "-NewsDigestData-" + date + "-" + String.valueOf(digest_edition), mNewsDigest,  cachetime);//有新内容时缓存失效
+                        aCache.put(mLang + "-NewsDigestData-" + date + "-" + String.valueOf(digest_edition), mNewsDigest, cachetime);//有新内容时缓存失效
                     }
                 })
                 .subscribe(observer);
@@ -209,53 +204,17 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         String timezone = Helper.getTimeZone(lang).trim().substring(3);
         String region_edition = lang.trim().substring(3, 5);
         String more_stories = "0";
-        Map<String, String> para = Helper.isRequestedLatest(mLang);
-        String latest_date = para.get("DATE");
-        String latest_digest_edition = para.get("DIGEST_EDITION");
-        NewsDigest newsDigest = (NewsDigest) aCache.getAsObject(mLang + "-NewsDigestData-" + latest_date + "-" + latest_digest_edition);
-        if (mDate != null && newsDigest != null) {
+        if (mDate != null && CheckUpdate()) {
             date = mDate;
         } else {
-            final String nowtime = Helper.getGlobalTime(lang);
-            try {
-                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String ymd = sdf1.format(sdf2.parse(Helper.getGlobalTime(lang)));
-                Date morning = sdf2.parse(ymd + " 08:00:00");
-                Date night = sdf2.parse(ymd + " 00:00:00");
-                Date present = sdf2.parse(Helper.getGlobalTime(lang));
-                if (present.before(morning) && present.after(night)) {
-                    String str = Helper.format(DateUtil.getPreDay(new Date()));
-                    date = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
-                } else {
-                    date = nowtime.trim().substring(0, 10);
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            date = Helper.getDigestDate(lang);
         }
-
-
-        if (mSection == 1 && newsDigest != null) {
+        if (mSection == 1 && CheckUpdate()) {
             digest_edition = 1;
-        } else if (mSection == 0 && newsDigest != null) {
+        } else if (mSection == 0 && CheckUpdate()) {
             digest_edition = 0;
         } else {
-            try {
-                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String ymd = sdf1.format(sdf2.parse(Helper.getGlobalTime(lang)));
-                Date morning = sdf2.parse(ymd + " 08:00:00");
-                Date evening = sdf2.parse(ymd + " 18:00:00");
-                Date present = sdf2.parse(Helper.getGlobalTime(lang));
-                if (present.before(morning) || present.after(evening)) {
-                    digest_edition = SECTION_EVENING;
-                } else {
-                    digest_edition = SECTION_MORNING;
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            digest_edition = Helper.getDigestEdition(lang);
         }
         parameters.put("CREAT_ETIME", String.valueOf(create_time));
         parameters.put("TIMEZONE", timezone);
@@ -265,6 +224,26 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         parameters.put("DIGEST_EDITION", String.valueOf(digest_edition));
         parameters.put("MORE_STORY", more_stories);
         return parameters;
+    }
+
+    /**
+     * 检查是否最新内容，false不用更新，true需要更新
+     * @return
+     */
+    private  Boolean CheckUpdate(){
+        Map<String, String> para = Helper.isRequestedLatest(mLang);
+        String latest_date = para.get("DATE");
+        int latest_edition = Integer.valueOf(para.get("DIGEST_EDITION"));
+        SharedPreferences latest_update = getSharedPreferences(PREFERENCES_SETTINS, 0);
+        String strdate = Helper.format(new Date());
+        String nowdate = strdate.trim().substring(10, 14) + "-" + strdate.trim().substring(4, 6) + "-" + strdate.trim().substring(7, 9);
+        String first_date = latest_update.getString("DATE", nowdate);
+        int first_edition = latest_update.getInt("DIGEST_EDITION", Helper.getDigestEdition(Helper.LanguageEdtion(3)));
+        if (latest_date == first_date && latest_edition == first_edition) {
+            return false;
+        }else{
+            return true;
+        }
     }
 
     private Subscription checkInstall() {
@@ -360,24 +339,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         }
         unregisterReceiver(myReceiver);
         super.onDestroy();
-
-
     }
-
-    public static String LanguageEdtion(int language) {
-        String mlang = "";
-        if (language == 0) {
-            mlang = "en-CA";
-        } else if (language == 1) {
-            mlang = "en-GB";
-        } else if (language == 2) {
-            mlang = "en-US";
-        } else {
-            mlang = "en-AA";
-        }
-        return mlang;
-    }
-
     @Override
     public void onLoad() {
         if (IntentUtil.isNetworkConnected(NewsListActivity.this)) {

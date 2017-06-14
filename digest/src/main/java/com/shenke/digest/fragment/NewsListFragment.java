@@ -37,7 +37,6 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static com.shenke.digest.core.NewsListActivity.LanguageEdtion;
 import static com.shenke.digest.core.NewsListActivity.PREFERENCES_SETTINS;
 
 public class NewsListFragment extends BaseFragment {
@@ -66,7 +65,7 @@ public class NewsListFragment extends BaseFragment {
         String nowdate = strdate.trim().substring(10, 14) + "-" + strdate.trim().substring(4, 6) + "-" + strdate.trim().substring(7, 9);
         mDate = p_settings.getString("DATE", nowdate);
         mSection = p_settings.getInt("DIGEST_EDITION", 2);
-        lang = p_settings.getString("LANGUAGE", LanguageEdtion(3));
+        lang = p_settings.getString("LANGUAGE", Helper.LanguageEdtion(3));
     }
 
     private void getConfg() {

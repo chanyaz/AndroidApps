@@ -38,9 +38,12 @@ import com.shenke.digest.view.LoadViewLayout;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -95,7 +98,6 @@ public class MoreDigestDialog extends DialogFragment {
         mDate = pre_settings.getString("DATE", Helper.getGlobalTime(mLang).trim().substring(0, 10));
 
     }
-
 
     @Nullable
     @Override
@@ -231,7 +233,23 @@ public class MoreDigestDialog extends DialogFragment {
             public void onAnimationUpdate(ValueAnimator animation) {
                 DeltaValue deltaValue = (DeltaValue) animation.getAnimatedValue();
                 donutProgress.setProgress(deltaValue.progress);
-                if (section == SECTION_MORNING) {
+                int digest_edition = 0;
+                try {
+                    SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+                    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String ymd = sdf1.format(sdf2.parse(Helper.getGlobalTime(mLang)));
+                    Date morning = sdf2.parse(ymd + " 08:00:00");
+                    Date evening = sdf2.parse(ymd + " 18:00:00");
+                    Date present = sdf2.parse(Helper.getGlobalTime(mLang));
+                    if (present.before(morning) || present.after(evening)) {
+                        digest_edition = SECTION_EVENING;
+                    } else {
+                        digest_edition = SECTION_MORNING;
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                if (digest_edition == SECTION_MORNING) {
                     mHour = deltaValue.hour;
                     infoType.setText("Util Evening Digest");
                     img.setImageResource(R.mipmap.countdown_day_moon);
@@ -309,21 +327,13 @@ public class MoreDigestDialog extends DialogFragment {
             Date present = sdf2.parse(Helper.getGlobalTime(mLang));
             long delta = 0L;
             int day = 0, hour = 0, min = 0, second = 0, progress = 0;
-
             if (present.after(night) && present.before(morning)) {//00:00至08:00之间
-                section = SECTION_EVENING;
                 delta = morning.getTime() - present.getTime();
                 progress = 100 - (int) (100 * delta / (1000 * 14 * 60 * 60));
-
             } else if (present.after(evening) && present.before(nighttoday)) {//18:00:00至23:59:59之间
-                section = SECTION_EVENING;
-
                 delta = nighttoday.getTime() - present.getTime() + morning.getTime() - night.getTime();
                 progress = (int) (100 * delta / (1000 * 14 * 60 * 60));
-
             } else {//08:00至18:00之间
-                section = SECTION_MORNING;
-
                 delta = evening.getTime() - present.getTime();
                 progress = (int) (100 * delta / (1000 * 10 * 60 * 60));
             }
@@ -364,12 +374,21 @@ public class MoreDigestDialog extends DialogFragment {
                 Date present = sdf2.parse(Helper.getGlobalTime(lang));
 
                 if (present.before(morning) && present.after(night)) {
-                    date = DateUtil.getPreNDay(DateUtil.getPreDay(new Date()), i);//Thu Jun 08 10:18:42 格林尼治标准时间+0800 2017
-                } else if(lang == "en-CA"){
-                    date = DateUtil.getPreNDay(DateUtil.getPreDay(new Date()), i);//Thu Jun 08 10:18:42 格林尼治标准时间+0800 2017
+                    Date now_date = DateUtil.getPreDay(new Date());
+                    date = DateUtil.getPreNDay(now_date, i);//Thu Jun 08 10:18:42 格林尼治标准时间+0800 2017
                 }
                 else {
-                    date = DateUtil.getPreNDay(new Date(), i);//Thu Jun 08 10:18:42 格林尼治标准时间+0800 2017
+                    String mTimeZone = Helper.getTimeZone(lang);
+                    Calendar calendar = Calendar.getInstance();
+                    Calendar ukTime = new GregorianCalendar(TimeZone.getTimeZone(mTimeZone));
+                    ukTime.setTimeInMillis(calendar.getTimeInMillis());
+                    int now_year = ukTime.get(Calendar.YEAR);
+                    int now_month = ukTime.get(Calendar.MONTH);
+                    int now_date = ukTime.get(Calendar.DATE);
+                    int now_hour = ukTime.get(Calendar.HOUR_OF_DAY);
+                    int now_mini = ukTime.get(Calendar.MINUTE);
+                    int now_second = ukTime.get(Calendar.SECOND);
+                    date = DateUtil.getPreNDay(new Date(now_year-1900,now_month,now_date,now_hour,now_mini,now_second), i);//Thu Jun 08 10:18:42 格林尼治标准时间+0800 2017
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -415,22 +434,7 @@ public class MoreDigestDialog extends DialogFragment {
                 }
             });
 
-            int digest_edition = 0;
-            try {
-                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String ymd = sdf1.format(sdf2.parse(Helper.getGlobalTime(lang)));
-                Date morning = sdf2.parse(ymd + " 08:00:00");
-                Date evening = sdf2.parse(ymd + " 18:00:00");
-                Date present = sdf2.parse(Helper.getGlobalTime(lang));
-                if (present.before(morning) || present.after(evening)) {
-                    digest_edition = SECTION_EVENING;
-                } else {
-                    digest_edition = SECTION_MORNING;
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            int digest_edition = Helper.getDigestEdition(lang);
             if (digest_edition == SECTION_MORNING) {
                 if (i == 5) {
                     daytime.setVisibility(View.GONE);

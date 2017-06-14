@@ -15,7 +15,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.shenke.digest.R;
-import com.shenke.digest.core.NewsListActivity;
+import com.shenke.digest.util.Helper;
 import com.shenke.digest.util.RxBus;
 
 import rx.Observable;
@@ -97,7 +97,7 @@ public class EditionDialog extends DialogFragment implements View.OnClickListene
                         public void call(Subscriber<? super Integer> subscriber) {
                             try {
                                 SharedPreferences p_settings = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
-                                String language = p_settings.getString("LANGUAGE", NewsListActivity.LanguageEdtion(3));
+                                String language = p_settings.getString("LANGUAGE", Helper.LanguageEdtion(3));
                                 int edition = Language2Edtion(language);
                                 subscriber.onNext(edition);
                                 subscriber.onCompleted();

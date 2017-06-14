@@ -9,7 +9,6 @@
         android:id="@+id/summaryText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textIsSelectable="true"
         android:text="Donald Trump took a major step toward sewing up the Republican presidential nomination Tuesday with a victory in Indiana's primary election, dashing the hopes of rival Ted Cruz and other GOP forces who fear the brash businessman will doom their party in the general election. Hillary Clinton and Bernie Sanders were vying for victory in the Democratic primary, though it was too early to call the race as votes were still being tallied. Clinton is already 91 percent of the way to her party's nomination."
         android:textColor="@android:color/black"
         android:textSize="16sp" />

@@ -38,7 +38,11 @@ public class Helper {
         }
     }
 
-
+    /**
+     * 时间格式刷
+     * @param date
+     * @return
+     */
     public static String format(Date date) {
         SimpleDateFormat myFmt1 = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss EEE");
         String[] days = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
@@ -53,6 +57,11 @@ public class Helper {
 
     }
 
+    /**
+     * 获取不同时区的当前时间
+     * @param country
+     * @return
+     */
     public static String getGlobalTime(String country) {
         String mTimeZone = getTimeZone(country);
         Calendar calendar = Calendar.getInstance();
@@ -99,6 +108,11 @@ public class Helper {
         return nowtime;
     }
 
+    /**
+     * 根据语言选择获取当前时区
+     * @param country
+     * @return
+     */
     public static String getTimeZone(String country) {
         String mTimeZone = "GMT";
         if (country == "en-GB") {
@@ -161,9 +175,53 @@ public class Helper {
         }
         return cache_time;
     }
+
+    /**
+     * 获取当前最新的请求日期和早晚版本参数
+     * @param lang
+     * @return
+     */
     public static Map<String, String> isRequestedLatest(String lang){
         Map<String, String> param = new HashMap<String, String>();
-        String digest_edition = "";
+        String digest_edition =String.valueOf(getDigestEdition(lang));
+        String date = getDigestDate(lang);
+        param.put("DATE", date);
+        param.put("DIGEST_EDITION",digest_edition);
+        return param;
+
+    }
+
+    /**
+     * 获取对应时区最新请求digest_edition
+     * @param lang
+     * @return
+     */
+    public static int getDigestEdition(String lang){
+        int digest_edition = 0;
+        try {
+            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String ymd = sdf1.format(sdf2.parse(Helper.getGlobalTime(lang)));
+            Date morning = sdf2.parse(ymd + " 08:00:00");
+            Date evening = sdf2.parse(ymd + " 18:00:00");
+            Date present = sdf2.parse(Helper.getGlobalTime(lang));
+            if (present.before(morning) || present.after(evening)) {
+                digest_edition = 1;
+            } else {
+                digest_edition = 0;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return digest_edition;
+    }
+
+    /**
+     * 获取对应时区最新请求日期
+     * @param lang
+     * @return
+     */
+    public static String getDigestDate(String lang){
         String date = "";
         final String nowtime = Helper.getGlobalTime(lang);
         try {
@@ -171,14 +229,8 @@ public class Helper {
             SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String ymd = sdf1.format(sdf2.parse(Helper.getGlobalTime(lang)));
             Date morning = sdf2.parse(ymd + " 08:00:00");
-            Date evening = sdf2.parse(ymd + " 18:00:00");
             Date night = sdf2.parse(ymd + " 00:00:00");
             Date present = sdf2.parse(Helper.getGlobalTime(lang));
-            if (present.before(morning) || present.after(evening)) {
-                digest_edition = "1";
-            } else {
-                digest_edition = "0";
-            }
             if (present.before(morning) && present.after(night)) {
                 String str = Helper.format(DateUtil.getPreDay(new Date()));
                 date = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
@@ -188,9 +240,26 @@ public class Helper {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        param.put("DATE", date);
-        param.put("DIGEST_EDITION",digest_edition);
-        return param;
+        return date;
 
+    }
+
+    /**
+     * 语言版本代码转换
+     * @param language
+     * @return
+     */
+    public static String LanguageEdtion(int language) {
+        String mlang = "";
+        if (language == 0) {
+            mlang = "en-CA";
+        } else if (language == 1) {
+            mlang = "en-GB";
+        } else if (language == 2) {
+            mlang = "en-US";
+        } else {
+            mlang = "en-AA";
+        }
+        return mlang;
     }
 }

@@ -23,8 +23,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
-
-import static com.shenke.digest.core.NewsListActivity.LanguageEdtion;
 import static com.shenke.digest.core.NewsListActivity.PREFERENCES_SETTINS;
 
 public class ExtraNewsListActivity extends BaseActivity {
@@ -45,7 +43,7 @@ public class ExtraNewsListActivity extends BaseActivity {
         String nowdate = strdate.trim().substring(10, 14) + "-" + strdate.trim().substring(4, 6) + "-" + strdate.trim().substring(7, 9);
         mdate = p_settings.getString("DATE", nowdate);
         mdigest_edition = p_settings.getInt("DIGEST_EDITION", 2);
-        mlang = p_settings.getString("LANGUAGE", LanguageEdtion(3));
+        mlang = p_settings.getString("LANGUAGE", Helper.LanguageEdtion(3));
         allChecked = getIntent().getBooleanExtra(ALL_CHECKED, false);
         fetchData();
 

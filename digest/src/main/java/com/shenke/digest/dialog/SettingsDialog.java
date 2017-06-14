@@ -24,15 +24,10 @@ import com.shenke.digest.core.MyApplication;
 import com.shenke.digest.core.NewsListActivity;
 import com.shenke.digest.fragment.NewsDetailFragment;
 import com.shenke.digest.fragment.NewsListFragment;
-import com.shenke.digest.util.DateUtil;
 import com.shenke.digest.util.Helper;
 import com.shenke.digest.util.RxBus;
 import com.shenke.digest.view.BlurredView;
 import com.shenke.digest.view.LoadViewLayout;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -41,8 +36,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static com.shenke.digest.core.NewsListActivity.PREFERENCES_SETTINS;
-import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_EVENING;
-import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_MORNING;
+import static com.shenke.digest.core.NewsListActivity.UPDATE_SETTINS;
 
 
 public class SettingsDialog extends DialogFragment {
@@ -225,22 +219,11 @@ public class SettingsDialog extends DialogFragment {
                                     subscriber.onError(e);
                                 }
                             }
-                        }
-
+                        })
+                .subscribeOn(Schedulers.io()
                 )
-                .
-
-                        subscribeOn(Schedulers.io()
-
-                        )
-                .
-
-                        observeOn(AndroidSchedulers.mainThread()
-
-                        )
-                .
-
-                        subscribe(new Subscriber<Integer>() {
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Integer>() {
                                       @Override
                                       public void onCompleted() {
                                           if (subscription1 != null) {
@@ -248,20 +231,16 @@ public class SettingsDialog extends DialogFragment {
                                               subscription1 = null;
                                           }
                                       }
-
                                       @Override
                                       public void onError(Throwable e) {
                                           e.printStackTrace();
                                       }
-
                                       @Override
                                       public void onNext(Integer integer) {
                                           mEdition = integer;
                                           initArea(mEdition);
                                       }
-                                  }
-
-                        );
+                                  });
 
     }
 
@@ -293,36 +272,20 @@ public class SettingsDialog extends DialogFragment {
                             Intent intent = new Intent(getContext(), NewsListActivity.class);
                             SharedPreferences pre_settings = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
                             SharedPreferences.Editor editor = pre_settings.edit();
-                            String language =  NewsListActivity.LanguageEdtion(integer);
+                            String language =  Helper.LanguageEdtion(integer);
                             editor.putString("LANGUAGE", language);
                             final String nowtime = Helper.getGlobalTime(language);
-                            String nowdate = "";
-                            int digest_edition = 0;
-                            try {
-                                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-                                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                String ymd = sdf1.format(sdf2.parse(Helper.getGlobalTime(language)));
-                                Date morning = sdf2.parse(ymd + " 08:00:00");
-                                Date night = sdf2.parse(ymd + " 00:00:00");
-                                Date evening = sdf2.parse(ymd + " 18:00:00");
-                                Date present = sdf2.parse(Helper.getGlobalTime(language));
-                                if (present.before(morning) && present.after(night)) {
-                                    String str = Helper.format(DateUtil.getPreDay(new Date()));
-                                    nowdate = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
-                                } else {
-                                    nowdate = nowtime.trim().substring(0, 10);
-                                }
-                                if (present.before(morning) || present.after(evening)) {
-                                    digest_edition = SECTION_EVENING;
-                                } else {
-                                    digest_edition = SECTION_MORNING;
-                                }
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
+                            String nowdate = Helper.getDigestDate(language);
+                            int digest_edition = Helper.getDigestEdition(language);
                             editor.putString("DATE", nowdate);
                             editor.putInt("DIGEST_EDITION", digest_edition);
                             editor.commit();
+                            //保存当前最新用于和之后的新内容对比以更新
+                            SharedPreferences latest_update = getContext().getSharedPreferences(UPDATE_SETTINS, 0);
+                            SharedPreferences.Editor update_editor = latest_update.edit();
+                            update_editor.putString("LATEST_DATE", nowdate);
+                            update_editor.putInt("LATEST_DIGEST_EDITION", digest_edition);
+                            update_editor.commit();
                             startActivity(intent);
 
                         }
