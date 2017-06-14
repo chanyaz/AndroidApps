@@ -62,7 +62,6 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         StatusBarCompat.showSystemUI(this);
-
         setContentView(R.layout.activity_news_list);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(MyReceiver.ACTION_TASK_COUNT);
@@ -184,7 +183,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                     public void call(NewsDigest mNewsDigest) {
                         Log.i("NewsDigestData", mNewsDigest.toString());
                         digestLoadDialog.onLoadSuccess();
-                        cachetime = Helper.getCacheSaveTime(lang, digest_edition, "08:00:00", "18:00:00");
+                        cachetime = Helper.getCacheSaveTime(lang,  "08:00:00", "18:00:00");
                         aCache.put(mLang + "-NewsDigestData-" + date + "-" + String.valueOf(digest_edition), mNewsDigest, cachetime);//有新内容时缓存失效
                     }
                 })
