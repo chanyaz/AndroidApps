@@ -136,7 +136,7 @@ public class ExtraNewsListActivity extends BaseActivity {
                     @Override
                     public void call(NewsDigest mNewsDigest) {
                         Log.i("ExtraNewsDigestData", mNewsDigest.toString());
-                        int cachetime = Helper.getCacheSaveTime(lang, digest_edition, "08:00:00", "18:00:00");
+                        int cachetime = Helper.getCacheSaveTime(lang, "08:00:00", "18:00:00");
                         aCache.put(mlang + "-ExtraNewsDigestData-" + mdate + "-" + String.valueOf(mdigest_edition), mNewsDigest, cachetime);
                     }
                 })

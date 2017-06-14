@@ -131,12 +131,11 @@ public class Helper {
      * 缓存保存时长
      *
      * @param country
-     * @param digest_edition
      * @param set_mornning_time
      * @param set_evening_time
      * @return
      */
-    public static int getCacheSaveTime(String country, int digest_edition, String set_mornning_time, String set_evening_time) {
+    public static int getCacheSaveTime(String country, String set_mornning_time, String set_evening_time) {
         String mTimeZone = getTimeZone(country);
         Calendar calendar = Calendar.getInstance();
         Calendar ukTime = new GregorianCalendar(TimeZone.getTimeZone(mTimeZone));
@@ -151,6 +150,7 @@ public class Helper {
         if (set_evening_time == "") {
             set_evening_time = "18:00:00";//18-22
         }
+        int digest_edition = getDigestEdition(country);
         if (digest_edition == 0) {
             //evening - nowtime
             int set_mini = Integer.valueOf(set_evening_time.substring(3, 5).trim());
