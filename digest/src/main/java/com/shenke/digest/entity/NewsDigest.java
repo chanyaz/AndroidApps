@@ -20,11 +20,11 @@ public class NewsDigest implements Serializable {
     @SerializedName("poster")
     public Poster poster;
 
-    public class Poster implements Serializable{
+    public class Poster implements Serializable {
         @SerializedName("images")
         public Images images;
 
-        public class Images implements Serializable{
+        public class Images implements Serializable {
             @SerializedName("originalUrl")
             public String originalUrl;
             @SerializedName("originalWidth")
@@ -42,7 +42,7 @@ public class NewsDigest implements Serializable {
             @SerializedName("resolutions")
             public List<Resolution> resolutions = new ArrayList<>();
 
-            public class Resolution implements Serializable{
+            public class Resolution implements Serializable {
                 @SerializedName("height")
                 public int height;
                 @SerializedName("width")
@@ -58,11 +58,11 @@ public class NewsDigest implements Serializable {
     @SerializedName("posterTablet")
     public PosterTablet posterTablet;
 
-    public class PosterTablet implements Serializable{
+    public class PosterTablet implements Serializable {
         @SerializedName("images")
         public Images images;
 
-        public class Images implements Serializable{
+        public class Images implements Serializable {
             @SerializedName("originalUrl")
             public String originalUrl;
             @SerializedName("originalWidth")
@@ -80,7 +80,7 @@ public class NewsDigest implements Serializable {
             @SerializedName("resolutions")
             public List<Resolution> resolutions = new ArrayList<>();
 
-            public class Resolution implements Serializable{
+            public class Resolution implements Serializable {
                 @SerializedName("height")
                 public int height;
                 @SerializedName("width")
@@ -97,7 +97,7 @@ public class NewsDigest implements Serializable {
     public List<Bonu> bonus = new ArrayList<>();
 
 
-    public class Bonu implements Serializable{
+    public class Bonu implements Serializable {
         @SerializedName("id")
         public String id;
         @SerializedName("text")
@@ -113,8 +113,9 @@ public class NewsDigest implements Serializable {
     @SerializedName("items")
     public List<NewsItem> items = new ArrayList<>();
 
-    public class NewsItem implements Serializable{
+    public class NewsItem implements Serializable {
         public boolean checked;
+
         public boolean isChecked() {
             return checked;
         }
@@ -136,7 +137,7 @@ public class NewsDigest implements Serializable {
         @SerializedName("locations")
         public List<Location> locations = new ArrayList<>();
 
-        public class Location implements Serializable{
+        public class Location implements Serializable {
             @SerializedName("latitude")
             public String latitude;
             @SerializedName("longitude")
@@ -156,7 +157,7 @@ public class NewsDigest implements Serializable {
         @SerializedName("colors")
         public List<Color> colors = new ArrayList<>();
 
-        public class Color implements Serializable{
+        public class Color implements Serializable {
             @SerializedName("r")
             public String r;
             @SerializedName("g")
@@ -173,22 +174,22 @@ public class NewsDigest implements Serializable {
         @SerializedName("stocks")
         public List<Stock> stocks = new ArrayList<>();
 
-        public class Stock implements Serializable{
+        public class Stock implements Serializable {
 
         }
 
         @SerializedName("infographs")
         public List<Infograph> infographs = new ArrayList<>();
 
-        public class Infograph implements Serializable{
+        public class Infograph implements Serializable {
             @SerializedName("title")
             public String title;
             @SerializedName("caption")
             public String caption;
             @SerializedName("images")
-            public Images images ;
+            public Images images;
 
-            public class Images implements Serializable{
+            public class Images implements Serializable {
                 @SerializedName("originalUrl")
                 public String originalUrl;
                 @SerializedName("originalWidth")
@@ -206,7 +207,7 @@ public class NewsDigest implements Serializable {
                 @SerializedName("resolutions")
                 public List<Resolution> resolutions = new ArrayList<>();
 
-                public class Resolution implements Serializable{
+                public class Resolution implements Serializable {
                     @SerializedName("height")
                     public int height;
                     @SerializedName("width")
@@ -222,14 +223,14 @@ public class NewsDigest implements Serializable {
         @SerializedName("stats")
         public List<Stat> stats = new ArrayList<>();
 
-        public class Stat implements Serializable{
+        public class Stat implements Serializable {
 
         }
 
         @SerializedName("categories")
         public List<Category> categories = new ArrayList<>();
 
-        public class Category implements Serializable{
+        public class Category implements Serializable {
             @SerializedName("name")
             public String name;
         }
@@ -237,13 +238,13 @@ public class NewsDigest implements Serializable {
         @SerializedName("multiSummary")
         public List<Summary> multiSummary = new ArrayList<>();
 
-        public class Summary implements Serializable{
+        public class Summary implements Serializable {
             @SerializedName("text")
             public String text;
             @SerializedName("quote")
             public Quote quote;
 
-            public class Quote implements Serializable{
+            public class Quote implements Serializable {
                 @SerializedName("url")
                 public String url;
                 @SerializedName("text")
@@ -256,7 +257,7 @@ public class NewsDigest implements Serializable {
         @SerializedName("wikis")
         public List<Wiki> wikis = new ArrayList<>();
 
-        public class Wiki implements Serializable{
+        public class Wiki implements Serializable {
             @SerializedName("id")
             public String id;
             @SerializedName("text")
@@ -266,7 +267,7 @@ public class NewsDigest implements Serializable {
             @SerializedName("searchTerms")
             public List<Term> searchTerms = new ArrayList<>();
 
-            public class Term implements Serializable{
+            public class Term implements Serializable {
                 @SerializedName("term")
                 public String term;
             }
@@ -274,9 +275,9 @@ public class NewsDigest implements Serializable {
             @SerializedName("url")
             public String url;
             @SerializedName("images")
-            public Images images ;
+            public Images images;
 
-            public class Images implements Serializable{
+            public class Images implements Serializable {
                 @SerializedName("originalUrl")
                 public String originalUrl;
                 @SerializedName("originalWidth")
@@ -294,7 +295,7 @@ public class NewsDigest implements Serializable {
                 @SerializedName("resolutions")
                 public List<Resolution> resolutions = new ArrayList<>();
 
-                public class Resolution implements Serializable{
+                public class Resolution implements Serializable {
                     @SerializedName("height")
                     public int height;
                     @SerializedName("width")
@@ -310,7 +311,7 @@ public class NewsDigest implements Serializable {
         @SerializedName("longreads")
         public List<Longread> longreads = new ArrayList<>();
 
-        public class Longread implements Serializable{
+        public class Longread implements Serializable {
             @SerializedName("title")
             public String title;
             @SerializedName("publisher")
@@ -322,7 +323,7 @@ public class NewsDigest implements Serializable {
             @SerializedName("images")
             public Images images;
 
-            public class Images implements Serializable{
+            public class Images implements Serializable {
                 @SerializedName("originalUrl")
                 public String originalUrl;
                 @SerializedName("originalWidth")
@@ -340,7 +341,7 @@ public class NewsDigest implements Serializable {
                 @SerializedName("resolutions")
                 public List<Resolution> resolutions = new ArrayList<>();
 
-                public class Resolution implements Serializable{
+                public class Resolution implements Serializable {
                     @SerializedName("height")
                     public int height;
                     @SerializedName("width")
@@ -364,7 +365,7 @@ public class NewsDigest implements Serializable {
         @SerializedName("images")
         public Images images;
 
-        public class Images implements Serializable{
+        public class Images implements Serializable {
             @SerializedName("originalUrl")
             public String originalUrl;
             @SerializedName("originalWidth")
@@ -382,7 +383,7 @@ public class NewsDigest implements Serializable {
             @SerializedName("resolutions")
             public List<Resolution> resolutions = new ArrayList<>();
 
-            public class Resolution implements Serializable{
+            public class Resolution implements Serializable {
                 @SerializedName("height")
                 public int height;
                 @SerializedName("width")
@@ -398,13 +399,13 @@ public class NewsDigest implements Serializable {
         @SerializedName("videos")
         public List<Video> videos = new ArrayList<>();
 
-        public class Video implements Serializable{
+        public class Video implements Serializable {
             @SerializedName("thumbnail")
             public String thumbnail;
             @SerializedName("streams")
             public List<Stream> streams = new ArrayList<>();
 
-            public class Stream implements Serializable{
+            public class Stream implements Serializable {
                 @SerializedName("mime_type")
                 public String mime_type;
                 @SerializedName("duration")
@@ -434,11 +435,11 @@ public class NewsDigest implements Serializable {
         @SerializedName("slideshow")
         public SlideShow slideshow;
 
-        public class SlideShow implements Serializable{
+        public class SlideShow implements Serializable {
             @SerializedName("photos")
             public Photos photos;
 
-            public class Photos implements Serializable{
+            public class Photos implements Serializable {
                 @SerializedName("layout")
                 public String layout;
                 @SerializedName("total")
@@ -446,7 +447,7 @@ public class NewsDigest implements Serializable {
                 @SerializedName("elements")
                 public List<Element> elements = new ArrayList<>();
 
-                public class Element implements Serializable{
+                public class Element implements Serializable {
                     @SerializedName("headline")
                     public String headline;
                     @SerializedName("provider_name")
@@ -456,7 +457,7 @@ public class NewsDigest implements Serializable {
                     @SerializedName("images")
                     public Images images;
 
-                    public class Images implements Serializable{
+                    public class Images implements Serializable {
                         @SerializedName("originalUrl")
                         public String originalUrl;
                         @SerializedName("originalWidth")
@@ -474,7 +475,7 @@ public class NewsDigest implements Serializable {
                         @SerializedName("resolutions")
                         public List<Resolution> resolutions = new ArrayList<>();
 
-                        public class Resolution implements Serializable{
+                        public class Resolution implements Serializable {
                             @SerializedName("height")
                             public int height;
                             @SerializedName("width")
@@ -493,7 +494,7 @@ public class NewsDigest implements Serializable {
         @SerializedName("tweetKeywords")
         public List<TweetKeyword> tweetKeywords = new ArrayList<>();
 
-        public class TweetKeyword implements Serializable{
+        public class TweetKeyword implements Serializable {
 
         }
 
@@ -502,7 +503,7 @@ public class NewsDigest implements Serializable {
         @SerializedName("advertisement")
         public Advertisement advertisement;
 
-        public class Advertisement implements Serializable{
+        public class Advertisement implements Serializable {
             @SerializedName("enabled")
             public Boolean enabled;
         }
@@ -510,14 +511,14 @@ public class NewsDigest implements Serializable {
         @SerializedName("weatherLocations")
         public List<WeatherLocation> weatherLocations = new ArrayList<>();
 
-        public class WeatherLocation implements Serializable{
+        public class WeatherLocation implements Serializable {
 
         }
 
         @SerializedName("sources")
         public List<Source> sources = new ArrayList<>();
 
-        public class Source implements Serializable{
+        public class Source implements Serializable {
             @SerializedName("published")
             public String published;
             @SerializedName("title")
@@ -533,13 +534,13 @@ public class NewsDigest implements Serializable {
         @SerializedName("statDetail")
         public List<StatDetail> statDetail = new ArrayList<>();
 
-        public class StatDetail implements Serializable{
+        public class StatDetail implements Serializable {
             @SerializedName("layout")
             public String layout;
             @SerializedName("title")
             public Title title;
 
-            public class Title implements Serializable{
+            public class Title implements Serializable {
                 @SerializedName("text")
                 public String text;
                 @SerializedName("color")
@@ -550,7 +551,7 @@ public class NewsDigest implements Serializable {
             @SerializedName("value")
             public Value value;
 
-            public class Value implements Serializable{
+            public class Value implements Serializable {
                 @SerializedName("text")
                 public String text;
                 @SerializedName("color")
@@ -561,7 +562,7 @@ public class NewsDigest implements Serializable {
             @SerializedName("units")
             public Units units;
 
-            public class Units implements Serializable{
+            public class Units implements Serializable {
                 @SerializedName("text")
                 public String text;
                 @SerializedName("color")
@@ -572,7 +573,7 @@ public class NewsDigest implements Serializable {
             @SerializedName("description")
             public Description description;
 
-            public class Description implements Serializable{
+            public class Description implements Serializable {
                 @SerializedName("text")
                 public String text;
                 @SerializedName("color")
@@ -583,7 +584,7 @@ public class NewsDigest implements Serializable {
             @SerializedName("tragedy")
             public Tragedy tragedy;
 
-            public class Tragedy implements Serializable{
+            public class Tragedy implements Serializable {
                 @SerializedName("enabled")
                 public Boolean enabled;
                 @SerializedName("color")
@@ -595,7 +596,7 @@ public class NewsDigest implements Serializable {
         @SerializedName("tabletImages")
         public TabletImages tabletImages;
 
-        public class TabletImages implements Serializable{
+        public class TabletImages implements Serializable {
             @SerializedName("originalUrl")
             public String originalUrl;
             @SerializedName("originalWidth")
@@ -613,7 +614,7 @@ public class NewsDigest implements Serializable {
             @SerializedName("resolutions")
             public List<Resolution> resolutions = new ArrayList<>();
 
-            public class Resolution implements Serializable{
+            public class Resolution implements Serializable {
                 @SerializedName("height")
                 public int height;
                 @SerializedName("width")
@@ -635,7 +636,7 @@ public class NewsDigest implements Serializable {
         @SerializedName("watchImage")
         public WatchImage watchImage;
 
-        public class WatchImage implements Serializable{
+        public class WatchImage implements Serializable {
             @SerializedName("originalUrl")
             public String originalUrl;
             @SerializedName("originalWidth")
@@ -653,7 +654,7 @@ public class NewsDigest implements Serializable {
             @SerializedName("resolutions")
             public List<Resolution> resolutions = new ArrayList<>();
 
-            public class Resolution implements Serializable{
+            public class Resolution implements Serializable {
                 @SerializedName("height")
                 public int height;
                 @SerializedName("width")
@@ -676,7 +677,7 @@ public class NewsDigest implements Serializable {
         @SerializedName("keywords")
         public List<Keyword> keywords = new ArrayList<>();
 
-        public class Keyword implements Serializable{
+        public class Keyword implements Serializable {
             @SerializedName("text")
             public String text;
         }
@@ -695,7 +696,7 @@ public class NewsDigest implements Serializable {
     @SerializedName("videos")
     public List<Vedio> videos = new ArrayList<>();
 
-    public class Vedio implements Serializable{
+    public class Vedio implements Serializable {
 
     }
 
