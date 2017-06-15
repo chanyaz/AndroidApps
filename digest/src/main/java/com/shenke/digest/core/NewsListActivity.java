@@ -136,6 +136,12 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         }
 
         if (mNewsDigest != null) {
+            SharedPreferences pre_settings = getSharedPreferences(PREFERENCES_SETTINS, 0);
+            SharedPreferences.Editor editor = pre_settings.edit();
+            editor.putString("DATE", mNewsDigest.date);
+            editor.putString("LANGUAGE", mNewsDigest.lang);
+            editor.putInt("DIGEST_EDITION", mNewsDigest.edition);
+            editor.commit();
             Observable.just(mNewsDigest).distinct().subscribe(observer);
         } else {
             fetchDataByNetWork(observer);
@@ -183,7 +189,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                     public void call(NewsDigest mNewsDigest) {
                         Log.i("NewsDigestData", mNewsDigest.toString());
                         digestLoadDialog.onLoadSuccess();
-                        cachetime = Helper.getCacheSaveTime(lang,  "08:00:00", "18:00:00");
+                        cachetime = Helper.getCacheSaveTime(lang, "08:00:00", "18:00:00");
                         aCache.put(mLang + "-NewsDigestData-" + date + "-" + String.valueOf(digest_edition), mNewsDigest, cachetime);//有新内容时缓存失效
                     }
                 })

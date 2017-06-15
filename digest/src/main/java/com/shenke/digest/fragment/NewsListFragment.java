@@ -23,7 +23,6 @@ import com.shenke.digest.core.NewsDetailActivity;
 import com.shenke.digest.dialog.EditionDialog;
 import com.shenke.digest.dialog.MoreDigestDialog;
 import com.shenke.digest.dialog.SettingsDialog;
-import com.shenke.digest.entity.Cache;
 import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.util.Helper;
 
@@ -42,15 +41,12 @@ import static com.shenke.digest.core.NewsListActivity.PREFERENCES_SETTINS;
 public class NewsListFragment extends BaseFragment {
     private final String TAG = "NewsListFragment";
     private NewsAdapter adapter;
-    private Cache mCache;
     private RecyclerView recyclerView;
     private ImageButton menu;
     private boolean initFooterView = false;
     private ArrayList<NewsDigest.NewsItem> list = new ArrayList<NewsDigest.NewsItem>();
-    private int digest_edition;
     private int mSection;
     private int mEdition;
-    private String date;
     private String mDate;
     private String lang;
     public static Bitmap bitmap;
@@ -165,17 +161,12 @@ public class NewsListFragment extends BaseFragment {
         adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(NewsAdapter.ViewHolder holder, int position) {
-                mNewsDigest.items.get(position).checked = true;
                 Intent intent = new Intent(rootView.getContext(), NewsDetailActivity.class);
                 intent.putExtra(NewsDetailActivity.INDEX, position);
-                intent.putExtra(NewsDetailActivity.MORE, true);
-                intent.putExtra(NewsDetailActivity.SOURCE,NewsAdapter.newssource);
-               // intent.putParcelableArrayListExtra(NewsDetailActivity.DATA,  list);
-                intent.putExtra(NewsDetailActivity.DATA,mNewsDigest);
-              /* SharedPreferences item_isChecked = getContext().getSharedPreferences(ITEM_IS_CHECKED, 0);
-                SharedPreferences.Editor editor = item_isChecked.edit();
-                editor.putBoolean(mNewsDigest.items.get(position).uuid, true);
-                editor.commit();*/
+                intent.putExtra(NewsDetailActivity.MORE, false);
+                intent.putExtra(NewsDetailActivity.SOURCE, NewsAdapter.newssource);
+                intent.putExtra(NewsDetailActivity.DATA, mNewsDigest);
+
                 startActivityForResult(intent, 0x111);
 
             }
@@ -288,7 +279,7 @@ public class NewsListFragment extends BaseFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (resultCode){
+        switch (resultCode) {
             case 0x110:
                 recyclerView.postDelayed(new Runnable() {
                     @Override

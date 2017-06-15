@@ -135,11 +135,11 @@ public class TranslateActivity extends Activity {
 
     private void query() {
         String from = languageSelectFrom.getText().toString();
-        if(languageSelectFrom.getText().toString() == "English"){
+        if (languageSelectFrom.getText().toString() == "English") {
             from = "英文";
         }
         String to = languageSelectTo.getText().toString();
-        if(languageSelectTo.getText().toString() == "Chinese"){
+        if (languageSelectTo.getText().toString() == "Chinese") {
             to = "中文";
         }
         String input = fanyiInputText.getText().toString();
@@ -186,7 +186,7 @@ public class TranslateActivity extends Activity {
 
             @Override
             public void onError(TranslateErrorCode error) {
-               // ToastUtils.show("查询错误:" + error.name());
+                // ToastUtils.show("查询错误:" + error.name());
                 dismissLoadingView();
             }
         });
@@ -218,7 +218,7 @@ public class TranslateActivity extends Activity {
 
     }
 
-    public static  synchronized void playVoice(String speakUrl) {
+    public static synchronized void playVoice(String speakUrl) {
         if (!TextUtils.isEmpty(speakUrl) && speakUrl.startsWith("http")) {
             ToastUtils.show("正在发音");
             AudioMgr.startPlayVoice(speakUrl, new AudioMgr.SuccessListener() {
@@ -246,7 +246,9 @@ public class TranslateActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        tts.shutdown();
+        if (tts != null) {
+            tts.shutdown();
+        }
     }
 
     @Override

@@ -27,7 +27,7 @@ public class NewsDetailActivity extends AppCompatActivity {
     public static String TAG = "NewsDetailActivity";
     public static final String INDEX = "index";
     public static final String DATA = "data";
-    public static final String MORE = "more";
+    public static final String MORE = "more_stories";
     public static final String SOURCE = "source";
     private ArrayList<NewsDigest.NewsItem> data = new ArrayList<NewsDigest.NewsItem>();
     private ViewPager viewPager;
@@ -129,10 +129,10 @@ public class NewsDetailActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            if (!more && mNewsDigest != null && !mNewsDigest.items.isEmpty()) {
+            if (more && mNewsDigest != null && !mNewsDigest.items.isEmpty()) {
                 NewsDigest.NewsItem newsItem = mNewsDigest.items.get(position);
-                return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), -1,true,source,mNewsDigest);
-            } else if (more && mNewsDigest != null && !mNewsDigest.items.isEmpty()) {
+                return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), position,true,source,mNewsDigest);
+            } else if (!more && mNewsDigest != null && !mNewsDigest.items.isEmpty()) {
                 if (position < getCount() - 1) {
                     NewsDigest.NewsItem newsItem= mNewsDigest.items.get(position);
                     return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), position,true,source,mNewsDigest);
@@ -152,7 +152,7 @@ public class NewsDetailActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            if (more) {
+            if (!more) {
                 return mNewsDigest == null ? 0 : mNewsDigest.items.size() + 1;
             } else {
                 return mNewsDigest == null ? 0 : mNewsDigest.items.size();

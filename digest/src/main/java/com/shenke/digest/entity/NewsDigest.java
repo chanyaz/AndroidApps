@@ -122,6 +122,7 @@ public class NewsDigest implements Serializable {
         public void setChecked(boolean checked) {
             this.checked = checked;
         }
+
         @SerializedName("uuid")
         public String uuid;
         @SerializedName("title")

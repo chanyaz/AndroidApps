@@ -168,7 +168,7 @@ public class NewsDetailFragment extends BaseFragment {
             index = getArguments().getInt(INDEX);
             newssource = getArguments().getString(SOURCE, "Yahoo News Digest");
             mNewsDigest = (NewsDigest) getArguments().getSerializable("NewsDigestData");
-            mNewsDigest.items.get(index).checked = getArguments().getBoolean("CHECKED", true);
+
         }
         InitTtsEngine();
     }
@@ -244,9 +244,7 @@ public class NewsDetailFragment extends BaseFragment {
         functionBar = $(rootView, R.id.functionBar);
         banner = $(rootView, R.id.banner);
         donutProgress = $(rootView, R.id.index);
-        if (mNewsDigest.more_stories == "1") {
-            donutProgress.setVisibility(View.GONE);
-        } else if (index == -1) {
+      if (mNewsDigest.more_stories == "1") {
             donutProgress.setVisibility(View.GONE);
         } else {
             donutProgress.setText("" + (index + 1));
@@ -339,8 +337,8 @@ public class NewsDetailFragment extends BaseFragment {
     }
 
     private void ListenDigest() {
-        speakContent = title.getText().toString().trim() + SumAndQuoteText;
-        if (tts.isSpeaking()) {
+        speakContent = title.getText().toString().trim() + "."+ SumAndQuoteText;
+        if (tts != null && tts.isSpeaking()) {
             tts.stop();
             tts.speak(speakContent, TextToSpeech.QUEUE_ADD, null);
         } else {
@@ -404,7 +402,7 @@ public class NewsDetailFragment extends BaseFragment {
                     @Override
                     public void onNext(Boolean aBoolean) {
                         if (aBoolean) {
-                            if (index != -1) {
+                            if (mNewsDigest.more_stories != "1") {
 
                                 donutProgress.setInnerBackgroundColor(color);
                                 donutProgress.setTextColor(Color.WHITE);
@@ -429,15 +427,15 @@ public class NewsDetailFragment extends BaseFragment {
 
         if (mNewsDigest != null && mNewsDigest.items.get(index).multiSummary != null) {
 
-            if (index != -1 && mNewsDigest.items.get(index).isChecked()) {
+            if (mNewsDigest.more_stories != "1" ) {
                 donutProgress.setVisibility(View.VISIBLE);
                 donutProgress.setInnerBackgroundColor(color);
                 donutProgress.setTextColor(Color.WHITE);
-            } else if (index == -1) {
+            } else if (mNewsDigest.more_stories  == "1") {
                 donutProgress.setVisibility(View.GONE);
-            } else {
+            }/* else {
                 donutProgress.setVisibility(View.VISIBLE);
-            }
+            }*/
 
             //label
             lable.setText(mNewsDigest.items.get(index).categories.get(0).name);
@@ -491,7 +489,7 @@ public class NewsDetailFragment extends BaseFragment {
                     activeItem();
                 }
             }
-            if (index != -1) {
+            if (mNewsDigest.more_stories != "1") {
                 event = getEvent(mNewsDigest.items.get(index));
             }
         } else {
@@ -1076,8 +1074,7 @@ public class NewsDetailFragment extends BaseFragment {
                             }
 
                         }
-                    })
-                    ;
+                    });
         }
         return null;
     }
