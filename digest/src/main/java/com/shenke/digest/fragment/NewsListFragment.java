@@ -25,6 +25,7 @@ import com.shenke.digest.dialog.MoreDigestDialog;
 import com.shenke.digest.dialog.SettingsDialog;
 import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.util.Helper;
+import com.shenke.digest.util.StatusBarCompat;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -122,6 +123,7 @@ public class NewsListFragment extends BaseFragment {
 
     @Override
     protected void initView(final View rootView) {
+        StatusBarCompat.showSystemUI(getActivity());
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
         menu = (ImageButton) rootView.findViewById(R.id.menu);
         menu.setOnClickListener(new View.OnClickListener() {

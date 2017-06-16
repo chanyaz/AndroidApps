@@ -30,13 +30,6 @@ public class RxBus {
     }
 
     public void post(Object o) {
-       /* try {
-            bus.onNext(o);
-            bus.onCompleted();
-        } catch (Exception e) {
-            bus.onError(e);
-        }
-*/
         _bus.onNext(o);
     }
 

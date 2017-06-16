@@ -23,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.shenke.digest.R;
 import com.shenke.digest.dialog.MoreDigestDialog;
 import com.shenke.digest.entity.NewsDigest;
@@ -104,7 +105,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
                 holder.section.setVisibility(View.VISIBLE);
                 holder.date.setVisibility(View.VISIBLE);
                 holder.sectionArea.setVisibility(View.VISIBLE);
-                Glide.with((holder.itemView.getContext())).load(mNewsDigest.poster.images.originalUrl).crossFade().into(holder.img);
+                Glide.with((holder.itemView.getContext())).load(mNewsDigest.poster.images.originalUrl).crossFade() .diskCacheStrategy(DiskCacheStrategy.ALL).into(holder.img);
                 String ed;
                 if (mNewsDigest.regionEdition.equals("AA")) {
                     ed = "Intl.";

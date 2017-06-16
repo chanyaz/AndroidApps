@@ -103,144 +103,112 @@ public class SettingsDialog extends DialogFragment {
         final Animation operatingAnim = AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.setting_imagerotate);
         LinearInterpolator lin = new LinearInterpolator();
         operatingAnim.setInterpolator(lin);
-        pics.setOnClickListener(new View.OnClickListener()
-
-                                {
-                                    @Override
-                                    public void onClick(View v) {
-                                        pics.startAnimation(operatingAnim);
-                                    }
-                                }
-
-        );
-        privacy.setOnClickListener(new View.OnClickListener()
-
-                                   {
-                                       @Override
-                                       public void onClick(View v) {
-                                           EditionDialog aboutDialog = new EditionDialog();
-                                           Bundle bundle = new Bundle();
-                                           bundle.putString(EditionDialog.PAGE, EditionDialog.PAGE_ABOUT);
-                                           aboutDialog.setArguments(bundle);
-                                           aboutDialog.show(getChildFragmentManager(), "noticeDialog");
-                                       }
-                                   }
-
-        );
+        pics.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pics.startAnimation(operatingAnim);
+            }
+        });
+        privacy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditionDialog aboutDialog = new EditionDialog();
+                Bundle bundle = new Bundle();
+                bundle.putString(EditionDialog.PAGE, EditionDialog.PAGE_ABOUT);
+                aboutDialog.setArguments(bundle);
+                aboutDialog.show(getChildFragmentManager(), "noticeDialog");
+            }
+        });
         notifications = rootView.findViewById(R.id.notifications);
-        notifications.setOnClickListener(new View.OnClickListener()
-
-                                         {
-                                             @Override
-                                             public void onClick(View v) {
-                                                 TimePickerDialog timePickerDialog = new TimePickerDialog();
-                                                 Bundle bundle = new Bundle();
-                                                 bundle.putString(TimePickerDialog.AM, TimePickerDialog.PM);
-                                                 timePickerDialog.setArguments(bundle);
-                                                 timePickerDialog.show(getChildFragmentManager(), "noticeTimeDialog");
-                                             }
-                                         }
-
-        );
+        notifications.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TimePickerDialog timePickerDialog = new TimePickerDialog();
+                Bundle bundle = new Bundle();
+                bundle.putString(TimePickerDialog.AM, TimePickerDialog.PM);
+                timePickerDialog.setArguments(bundle);
+                timePickerDialog.show(getChildFragmentManager(), "noticeTimeDialog");
+            }
+        });
         edition = rootView.findViewById(R.id.edition);
         tvArea = (TextView) rootView.findViewById(R.id.area);
         tvArea.setTypeface(typeFacePress);
 
-        edition.setOnClickListener(new View.OnClickListener()
-
-                                   {
-                                       @Override
-                                       public void onClick(View v) {
-                                           EditionDialog editionDialog = new EditionDialog();
-                                           Bundle bundle = new Bundle();
-                                           bundle.putString(EditionDialog.PAGE, EditionDialog.PAGE_NOTICE);
-                                           editionDialog.setArguments(bundle);
-                                           editionDialog.show(getChildFragmentManager(), "noticeDialog");
-                                       }
-                                   }
-
-        );
+        edition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditionDialog editionDialog = new EditionDialog();
+                Bundle bundle = new Bundle();
+                bundle.putString(EditionDialog.PAGE, EditionDialog.PAGE_NOTICE);
+                editionDialog.setArguments(bundle);
+                editionDialog.show(getChildFragmentManager(), "noticeDialog");
+            }
+        });
 
         share = rootView.findViewById(R.id.shareApp);
-        share.setOnClickListener(new View.OnClickListener()
-
-                                 {
-                                     @Override
-                                     public void onClick(View v) {
-                                         ShareLogoDialog editionDialog = new ShareLogoDialog();
-                                         editionDialog.show(getChildFragmentManager(), "shareLogoDialog");
-                                     }
-                                 }
-
-        );
+        share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShareLogoDialog editionDialog = new ShareLogoDialog();
+                editionDialog.show(getChildFragmentManager(), "shareLogoDialog");
+            }
+        });
 
         rate = rootView.findViewById(R.id.rateApp);
-        rate.setOnClickListener(new View.OnClickListener()
-
-                                {
-                                    @Override
-                                    public void onClick(View v) {
-                                        Intent i = new Intent(Intent.ACTION_VIEW);
-                                        i.setData(Uri.parse(Urlrate));
-                                        startActivity(i);
-                                    }
-                                }
-
-        );
+        rate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(Urlrate));
+                startActivity(i);
+            }
+        });
         works = rootView.findViewById(R.id.works);
-        works.setOnClickListener(new View.OnClickListener()
-
-                                 {
-                                     @Override
-                                     public void onClick(View v) {
-                                         ProductGuideDialog productGuideDialog = new ProductGuideDialog();
-                                         productGuideDialog.show(getChildFragmentManager(), "productDialog");
-                                     }
-                                 }
-
-        );
-        subscription =
-
-                getEvent();
+        works.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProductGuideDialog productGuideDialog = new ProductGuideDialog();
+                productGuideDialog.show(getChildFragmentManager(), "productDialog");
+            }
+        });
+        subscription = getEvent();
 
         subscription1 = rx.Observable
-                .create(new Observable.OnSubscribe<Integer>()
-
-                        {
-
-                            @Override
-                            public void call(Subscriber<? super Integer> subscriber) {
-                                try {
-                                    SharedPreferences settings = getActivity().getSharedPreferences(EditionDialog.PREFS_NAME, 0);
-                                    int edition = settings.getInt(EditionDialog.EDITION, EditionDialog.EDITION_INT);
-                                    subscriber.onNext(edition);
-                                    subscriber.onCompleted();
-                                } catch (Exception e) {
-                                    subscriber.onError(e);
-                                }
-                            }
-                        })
-                .subscribeOn(Schedulers.io()
-                )
+                .create(new Observable.OnSubscribe<Integer>() {
+                    @Override
+                    public void call(Subscriber<? super Integer> subscriber) {
+                        try {
+                            SharedPreferences settings = getActivity().getSharedPreferences(EditionDialog.PREFS_NAME, 0);
+                            int edition = settings.getInt(EditionDialog.EDITION, EditionDialog.EDITION_INT);
+                            subscriber.onNext(edition);
+                            subscriber.onCompleted();
+                        } catch (Exception e) {
+                            subscriber.onError(e);
+                        }
+                    }
+                })
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<Integer>() {
-                                      @Override
-                                      public void onCompleted() {
-                                          if (subscription1 != null) {
-                                              subscription1.unsubscribe();
-                                              subscription1 = null;
-                                          }
-                                      }
-                                      @Override
-                                      public void onError(Throwable e) {
-                                          e.printStackTrace();
-                                      }
-                                      @Override
-                                      public void onNext(Integer integer) {
-                                          mEdition = integer;
-                                          initArea(mEdition);
-                                      }
-                                  });
+                    @Override
+                    public void onCompleted() {
+                        if (subscription1 != null) {
+                            subscription1.unsubscribe();
+                            subscription1 = null;
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(Integer integer) {
+                        mEdition = integer;
+                        initArea(mEdition);
+                    }
+                });
 
     }
 
@@ -253,7 +221,6 @@ public class SettingsDialog extends DialogFragment {
                 .subscribe(new Subscriber<Integer>() {
                     @Override
                     public void onCompleted() {
-
                     }
 
                     @Override
@@ -272,7 +239,7 @@ public class SettingsDialog extends DialogFragment {
                             Intent intent = new Intent(getContext(), NewsListActivity.class);
                             SharedPreferences pre_settings = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
                             SharedPreferences.Editor editor = pre_settings.edit();
-                            String language =  Helper.LanguageEdtion(integer);
+                            String language = Helper.LanguageEdtion(integer);
                             editor.putString("LANGUAGE", language);
                             final String nowtime = Helper.getGlobalTime(language);
                             String nowdate = Helper.getDigestDate(language);

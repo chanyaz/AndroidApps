@@ -31,7 +31,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:maxWidth="260dp"
-                    android:text="单词释义"
+                    android:text="Interpretation"
                     android:textColor="#808080"
                     android:textSize="20sp" />
 
@@ -137,7 +137,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:gravity="left|top"
-                    android:text="查看更多释义"
+                    android:text="See More"
                     android:textColor="#3399ff"
                     android:textSize="16sp" />
             </LinearLayout>
