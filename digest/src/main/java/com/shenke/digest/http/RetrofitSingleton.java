@@ -31,7 +31,7 @@ public class RetrofitSingleton {
 
     private static final String TAG = RetrofitSingleton.class.getSimpleName();
 
-    public static Context context;
+    public Context context;
 
 
     /**

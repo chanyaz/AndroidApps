@@ -468,7 +468,6 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
         final View doYouKnow;
         final TextView toggleButton;
         final TextView urd;
-        final TextView read;
         final LinearLayout ll_newslist_footer;
         final View foot_view;
 
@@ -484,7 +483,6 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
             this.doYouKnow = itemView.findViewById(R.id.know);
             this.toggleButton = (TextView) itemView.findViewById(R.id.toggleButton);
             this.urd = (TextView) itemView.findViewById(R.id.uread);
-            this.read = (TextView) itemView.findViewById(R.id.read);
             this.ll_newslist_footer = (LinearLayout) itemView.findViewById(R.id.ll_newslist_footer);
             this.foot_view = itemView.findViewById(R.id.footer_view);
         }

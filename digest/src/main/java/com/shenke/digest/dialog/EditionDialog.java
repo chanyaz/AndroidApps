@@ -211,7 +211,7 @@ public class EditionDialog extends DialogFragment implements View.OnClickListene
                     .subscribe(new Subscriber<Boolean>() {
                         @Override
                         public void onCompleted() {
-                            RxBus.getInstance().post(new Integer(mEdition));
+                            RxBus.getInstance().post(Integer.valueOf(mEdition));
                             dismiss();
                         }
 

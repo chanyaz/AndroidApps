@@ -413,7 +413,7 @@ public class MoreDigestDialog extends DialogFragment {
                     String nowdate = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
                     editor.putString("DATE", nowdate);
                     editor.putInt("DIGEST_EDITION", SECTION_MORNING);
-                    editor.commit();
+                    editor.apply();
                     startActivity(intent);
                 }
             });
@@ -428,7 +428,7 @@ public class MoreDigestDialog extends DialogFragment {
                     String nowdate = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
                     editor.putString("DATE", nowdate);
                     editor.putInt("DIGEST_EDITION", SECTION_EVENING);
-                    editor.commit();
+                    editor.apply();
                     startActivity(intent);
                     dismiss();
                 }

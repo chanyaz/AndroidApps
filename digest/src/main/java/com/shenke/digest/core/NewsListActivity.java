@@ -57,7 +57,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     public static String ITEM_IS_CHECKED = "IS_CHECKED";
     private boolean first;//是否第一次打开APP
     private int cachetime; //缓存保留时长
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
