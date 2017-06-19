@@ -247,7 +247,12 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         if (latest_date.equals(first_date) && latest_edition == first_edition) {
             return false;
         }else{
+            SharedPreferences.Editor update_editor = latest_update.edit();
+            update_editor.putString("LATEST_DATE", nowdate);
+            update_editor.putInt("LATEST_DIGEST_EDITION", digest_edition);
+            update_editor.apply();
             return true;
+
         }
     }
 
