@@ -486,7 +486,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
             this.urd = (TextView) itemView.findViewById(R.id.uread);
             this.read = (TextView) itemView.findViewById(R.id.read);
             this.ll_newslist_footer = (LinearLayout) itemView.findViewById(R.id.ll_newslist_footer);
-            this.foot_view = (View) itemView.findViewById(R.id.footer_view);
+            this.foot_view = itemView.findViewById(R.id.footer_view);
         }
     }
 

@@ -143,11 +143,11 @@ public class EditionDialog extends DialogFragment implements View.OnClickListene
     }
     public static int Language2Edtion(String language) {
         int mlang = 3;
-        if (language == "en-CA") {
+        if (language.equals("en-CA") ) {
             mlang = 0;
-        } else if (language == "en-GB") {
+        } else if (language.equals("en-GB")) {
             mlang = 1;
-        } else if (language == "en-US") {
+        } else if (language.equals("en-US")) {
             mlang = 2;
         }
         return mlang;

@@ -122,11 +122,6 @@
         </activity>
 
 
-        <activity
-            android:name="com.shenke.digest.translate.MyBrowser"
-            android:theme="@style/YouDaoTranslateStyle" >
-        </activity>
-
     </application>
 
 </manifest>

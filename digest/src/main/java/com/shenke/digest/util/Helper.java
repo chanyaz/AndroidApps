@@ -115,13 +115,13 @@ public class Helper {
      */
     public static String getTimeZone(String country) {
         String mTimeZone = "GMT";
-        if (country == "en-GB") {
+        if (country .equals("en-GB")) {
             mTimeZone = "GMT+1";
-        } else if (country == "en-US") {
+        } else if (country.equals("en-US")){
             mTimeZone = "GMT-4";
-        } else if (country == "en-CA") {
+        } else if (country.equals("en-CA")) {
             mTimeZone = "GMT-8";
-        } else if (country == "en-AA") {
+        } else if (country.equals("en-AA")) {
             mTimeZone = "GMT+8";
         }
         return mTimeZone;
@@ -144,10 +144,10 @@ public class Helper {
         int mini = ukTime.get(Calendar.MINUTE);
         int second = ukTime.get(Calendar.SECOND);
         int cache_time = 0;
-        if (set_mornning_time == "") {
+        if (set_mornning_time .equals( "")) {
             set_mornning_time = "08:00:00";//6-10
         }
-        if (set_evening_time == "") {
+        if (set_evening_time .equals("")) {
             set_evening_time = "18:00:00";//18-22
         }
         int digest_edition = getDigestEdition(country);
@@ -160,7 +160,7 @@ public class Helper {
             //morning - mowtime
             int mor_set_hou = 0;
             int mor_set_min = 0;
-            if (set_mornning_time.substring(0, 1) == "0") {
+            if (set_mornning_time.substring(0, 1) .equals("0")) {
                 mor_set_min = Integer.valueOf(set_mornning_time.substring(3, 5).trim());
                 mor_set_hou = Integer.valueOf(set_mornning_time.substring(1, 2).trim());
             } else {

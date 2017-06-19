@@ -79,7 +79,7 @@ public class ShareDialog extends DialogFragment {
         appInfoAdapter.setHeaderView(headerView);
         recyclerView.setAdapter(appInfoAdapter);
         tvTitle.setText("" + title);
-        if(source == ""){
+        if(source.equals("")){
             tvPress.setVisibility(View.INVISIBLE);
         }else{
             tvPress.setText("" + source);

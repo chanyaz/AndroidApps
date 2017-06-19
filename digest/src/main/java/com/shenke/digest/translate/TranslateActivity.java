@@ -135,11 +135,11 @@ public class TranslateActivity extends Activity {
 
     private void query() {
         String from = languageSelectFrom.getText().toString();
-        if (languageSelectFrom.getText().toString() == "English") {
+        if (languageSelectFrom.getText().toString().equals( "English")) {
             from = "英文";
         }
         String to = languageSelectTo.getText().toString();
-        if (languageSelectTo.getText().toString() == "Chinese") {
+        if (languageSelectTo.getText().toString().equals("Chinese")){
             to = "中文";
         }
         String input = fanyiInputText.getText().toString();

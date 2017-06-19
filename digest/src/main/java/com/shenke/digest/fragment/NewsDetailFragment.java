@@ -244,7 +244,7 @@ public class NewsDetailFragment extends BaseFragment {
         functionBar = $(rootView, R.id.functionBar);
         banner = $(rootView, R.id.banner);
         donutProgress = $(rootView, R.id.index);
-      if (mNewsDigest.more_stories == "1") {
+      if (mNewsDigest.more_stories .equals("1")) {
             donutProgress.setVisibility(View.GONE);
         } else {
             donutProgress.setText("" + (index + 1));
@@ -402,7 +402,7 @@ public class NewsDetailFragment extends BaseFragment {
                     @Override
                     public void onNext(Boolean aBoolean) {
                         if (aBoolean) {
-                            if (mNewsDigest.more_stories != "1") {
+                            if (!mNewsDigest.more_stories.equals("1")) {
 
                                 donutProgress.setInnerBackgroundColor(color);
                                 donutProgress.setTextColor(Color.WHITE);
@@ -427,11 +427,11 @@ public class NewsDetailFragment extends BaseFragment {
 
         if (mNewsDigest != null && mNewsDigest.items.get(index).multiSummary != null) {
 
-            if (mNewsDigest.more_stories != "1" ) {
+            if (!mNewsDigest.more_stories .equals("1" )) {
                 donutProgress.setVisibility(View.VISIBLE);
                 donutProgress.setInnerBackgroundColor(color);
                 donutProgress.setTextColor(Color.WHITE);
-            } else if (mNewsDigest.more_stories  == "1") {
+            } else if (mNewsDigest.more_stories.equals("1")) {
                 donutProgress.setVisibility(View.GONE);
             }/* else {
                 donutProgress.setVisibility(View.VISIBLE);
@@ -489,7 +489,7 @@ public class NewsDetailFragment extends BaseFragment {
                     activeItem();
                 }
             }
-            if (mNewsDigest.more_stories != "1") {
+            if (!mNewsDigest.more_stories .equals("1")) {
                 event = getEvent(mNewsDigest.items.get(index));
             }
         } else {

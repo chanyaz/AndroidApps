@@ -209,14 +209,14 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         String timezone = Helper.getTimeZone(lang).trim().substring(3);
         String region_edition = lang.trim().substring(3, 5);
         String more_stories = "0";
-        if (mDate != null && CheckUpdate()) {
+        if (mDate != null && !CheckUpdate()) {
             date = mDate;
         } else {
             date = Helper.getDigestDate(lang);
         }
-        if (mSection == 1 && CheckUpdate()) {
+        if (mSection == 1 && !CheckUpdate()) {
             digest_edition = 1;
-        } else if (mSection == 0 && CheckUpdate()) {
+        } else if (mSection == 0 && !CheckUpdate()) {
             digest_edition = 0;
         } else {
             digest_edition = Helper.getDigestEdition(lang);
@@ -239,12 +239,12 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         Map<String, String> para = Helper.isRequestedLatest(mLang);
         String latest_date = para.get("DATE");
         int latest_edition = Integer.valueOf(para.get("DIGEST_EDITION"));
-        SharedPreferences latest_update = getSharedPreferences(PREFERENCES_SETTINS, 0);
+        SharedPreferences latest_update = getSharedPreferences(UPDATE_SETTINS, 0);
         String strdate = Helper.format(new Date());
         String nowdate = strdate.trim().substring(10, 14) + "-" + strdate.trim().substring(4, 6) + "-" + strdate.trim().substring(7, 9);
-        String first_date = latest_update.getString("DATE", nowdate);
-        int first_edition = latest_update.getInt("DIGEST_EDITION", Helper.getDigestEdition(Helper.LanguageEdtion(3)));
-        if (latest_date == first_date && latest_edition == first_edition) {
+        String first_date = latest_update.getString("LATEST_DATE", nowdate);
+        int first_edition = latest_update.getInt("LATEST_DIGEST_EDITION", Helper.getDigestEdition(Helper.LanguageEdtion(3)));
+        if (latest_date.equals(first_date) && latest_edition == first_edition) {
             return false;
         }else{
             return true;

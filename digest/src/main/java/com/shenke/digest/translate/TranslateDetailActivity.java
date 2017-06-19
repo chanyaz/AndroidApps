@@ -84,20 +84,17 @@ public class TranslateDetailActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                WordHelper.openMore(TranslateDetailActivity.this, translateData
+              WordHelper.openMore(TranslateDetailActivity.this, translateData
                         .getTranslate().getQuery());
-                // 注意，若用户没安装有道词典，开发者可自己实现deeplink的跳转
-                // if(!WordHelper.openDeepLink(TranslateDetailActivity.this,
-                // translateData.getQuery())){
-                // //获取deeplink链接
-                // String deeplinkUrl =
-                // WordHelper.getWordDetailUrl(translateData.getQuery());
-                // //处理deeplink链接，可通过自定义浏览器打开
-                // 处理deeplink链接，可通过自定义浏览器打开
-                // TranslateForwardHelper.toBrowser(TranslateDetailActivity.this,
-                // deeplinkUrl);
-                // }
+             /*   if (!WordHelper.openDeepLink(TranslateDetailActivity.this,
+                        translateData.getQuery())) {
+                    String deeplinkUrl = WordHelper.getWordDetailUrl(translateData.getQuery());
+                    toBrowser(TranslateDetailActivity.this,
+                            deeplinkUrl);
+                }*/
             }
+
+
         });
 
     }
