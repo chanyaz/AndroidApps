@@ -143,23 +143,25 @@ public class SelectableTextHelper {
      * 初始化语音引擎
      */
     private void InitTtsEngine() {
-        tts = new TextToSpeech(mContext, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                //如果装载TTS引擎成功
-                if (status == TextToSpeech.SUCCESS) {
-                    //设置使用美式英语朗读(虽然设置里有中文选项Locale.Chinese,但并不支持中文)
-                    int result = tts.setLanguage(Locale.US);
-                    tts.setSpeechRate(0.8f);//设置播放速率
-                    tts.setPitch(1.2f);//设置语音的声高
-                    //如果不支持设置的语言
-                    if (result != TextToSpeech.LANG_COUNTRY_AVAILABLE
-                            && result != TextToSpeech.LANG_AVAILABLE) {
-                        //Toast.makeText(mContext, "TTS暂时不支持这种语言朗读", Toast.LENGTH_SHORT).show();
+
+            tts = new TextToSpeech(mContext, new TextToSpeech.OnInitListener() {
+                @Override
+                public void onInit(int status) {
+                    //如果装载TTS引擎成功
+                    if (status == TextToSpeech.SUCCESS) {
+                        //设置使用美式英语朗读(虽然设置里有中文选项Locale.Chinese,但并不支持中文)
+                        int result = tts.setLanguage(Locale.US);
+                        tts.setSpeechRate(0.8f);//设置播放速率
+                        tts.setPitch(1.2f);//设置语音的声高
+                        //如果不支持设置的语言
+                        if (result != TextToSpeech.LANG_COUNTRY_AVAILABLE
+                                && result != TextToSpeech.LANG_AVAILABLE) {
+                            //Toast.makeText(mContext, "TTS暂时不支持这种语言朗读", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
-            }
-        });
+            });
+
     }
 
     private void postShowSelectView(int duration) {
@@ -226,7 +228,9 @@ public class SelectableTextHelper {
         selectText(startOffset, endOffset);
         showCursorHandle(mStartHandle);
         showCursorHandle(mEndHandle);
-        mOperateWindow.show();
+        if(mOperateWindow!= null){
+            mOperateWindow.show();
+        }
     }
 
     private void showCursorHandle(CursorHandle cursorHandle) {

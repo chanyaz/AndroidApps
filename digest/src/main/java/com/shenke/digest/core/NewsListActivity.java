@@ -57,7 +57,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     public static String ITEM_IS_CHECKED = "IS_CHECKED";
     private boolean first;//是否第一次打开APP
     private int cachetime; //缓存保留时长
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,20 +129,24 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         final String lang = parameters.get("LANGUAGE");
         final String str = parameters.get("DATE");
         final String digest_edition = parameters.get("DIGEST_EDITION");
-        try {
-            mNewsDigest = (NewsDigest) aCache.getAsObject(lang + "-NewsDigestData-" + str + "-" + digest_edition);
-        } catch (Exception e) {
-            Log.e("DigestNews", e.toString());
-        }
+        if (!CheckUpdate()) {
+            try {
+                mNewsDigest = (NewsDigest) aCache.getAsObject(lang + "-NewsDigestData-" + str + "-" + digest_edition);
+            } catch (Exception e) {
+                Log.e("DigestNews", e.toString());
+            }
 
-        if (mNewsDigest != null) {
-            SharedPreferences pre_settings = getSharedPreferences(PREFERENCES_SETTINS, 0);
-            SharedPreferences.Editor editor = pre_settings.edit();
-            editor.putString("DATE", mNewsDigest.date);
-            editor.putString("LANGUAGE", mNewsDigest.lang);
-            editor.putInt("DIGEST_EDITION", mNewsDigest.edition);
-            editor.commit();
-            Observable.just(mNewsDigest).distinct().subscribe(observer);
+            if (mNewsDigest != null) {
+                SharedPreferences pre_settings = getSharedPreferences(PREFERENCES_SETTINS, 0);
+                SharedPreferences.Editor editor = pre_settings.edit();
+                editor.putString("DATE", mNewsDigest.date);
+                editor.putString("LANGUAGE", mNewsDigest.lang);
+                editor.putInt("DIGEST_EDITION", mNewsDigest.edition);
+                editor.commit();
+                Observable.just(mNewsDigest).distinct().subscribe(observer);
+            }else{
+                fetchDataByNetWork(observer);
+            }
         } else {
             fetchDataByNetWork(observer);
         }
@@ -209,17 +213,25 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         String timezone = Helper.getTimeZone(lang).trim().substring(3);
         String region_edition = lang.trim().substring(3, 5);
         String more_stories = "0";
-        if (mDate != null && !CheckUpdate()) {
+        if (mDate != null) {
             date = mDate;
         } else {
             date = Helper.getDigestDate(lang);
         }
-        if (mSection == 1 && !CheckUpdate()) {
+        if (mSection == 1) {
             digest_edition = 1;
-        } else if (mSection == 0 && !CheckUpdate()) {
+        } else if (mSection == 0) {
             digest_edition = 0;
         } else {
             digest_edition = Helper.getDigestEdition(lang);
+        }
+
+        if (CheckUpdate()) {
+            Map<String, String> para = Helper.isRequestedLatest(mLang);
+            String latest_date = para.get("DATE");
+            int latest_edition = Integer.valueOf(para.get("DIGEST_EDITION"));
+            date = latest_date;
+            digest_edition = latest_edition;
         }
         parameters.put("CREAT_ETIME", String.valueOf(create_time));
         parameters.put("TIMEZONE", timezone);
@@ -233,9 +245,10 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
 
     /**
      * 检查是否最新内容，false不用更新，true需要更新
+     *
      * @return
      */
-    private  Boolean CheckUpdate(){
+    private Boolean CheckUpdate() {
         Map<String, String> para = Helper.isRequestedLatest(mLang);
         String latest_date = para.get("DATE");
         int latest_edition = Integer.valueOf(para.get("DIGEST_EDITION"));
@@ -246,11 +259,13 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         int first_edition = latest_update.getInt("LATEST_DIGEST_EDITION", Helper.getDigestEdition(Helper.LanguageEdtion(3)));
         if (latest_date.equals(first_date) && latest_edition == first_edition) {
             return false;
-        }else{
+        } else {
             SharedPreferences.Editor update_editor = latest_update.edit();
-            update_editor.putString("LATEST_DATE", nowdate);
-            update_editor.putInt("LATEST_DIGEST_EDITION", digest_edition);
+            update_editor.putString("LATEST_DATE", latest_date);
+            update_editor.putInt("LATEST_DIGEST_EDITION", latest_edition);
             update_editor.apply();
+            mDate = latest_date;
+            mSection = latest_edition;
             return true;
 
         }
@@ -350,6 +365,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         unregisterReceiver(myReceiver);
         super.onDestroy();
     }
+
     @Override
     public void onLoad() {
         if (IntentUtil.isNetworkConnected(NewsListActivity.this)) {

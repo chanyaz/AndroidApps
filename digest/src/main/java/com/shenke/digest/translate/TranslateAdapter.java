@@ -2,7 +2,6 @@ package com.shenke.digest.translate;
 
 import android.app.Activity;
 import android.content.Context;
-import android.speech.tts.TextToSpeech;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +19,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static com.shenke.digest.selector.SelectableTextHelper.tts;
+
 public class TranslateAdapter extends BaseAdapter {
 
     private List<TranslateData> list;
@@ -27,7 +28,6 @@ public class TranslateAdapter extends BaseAdapter {
     private LayoutInflater inflater;
 
     private Context context;
-    public static TextToSpeech tts;
 
     public TranslateAdapter(Context context, List<TranslateData> list) {
         this.list = list;
@@ -63,7 +63,6 @@ public class TranslateAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         final TranslateData bean = list.get(position);
-        InitTtsEngine();
         ViewHolder holder = null;
         if (convertView == null) {
             holder = new ViewHolder();
@@ -79,13 +78,6 @@ public class TranslateAdapter extends BaseAdapter {
                     .findViewById(R.id.mainimage);
             holder.readBtn = (ImageView) convertView.findViewById(R.id.readBtn);
             holder.moreBtn = (ImageView) convertView.findViewById(R.id.more);
-            holder.read_source = (ImageView) convertView.findViewById(R.id.read_source);
-            holder.read_source.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ListenDigest(list.get(position).getQuery());
-                }
-            });
             holder.readBtn.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -122,7 +114,6 @@ public class TranslateAdapter extends BaseAdapter {
                     Locale.ENGLISH);
             timeText = format.format(d);
         }
-
         holder.commentItemTime.setText(timeText);
         if (TextUtils.isEmpty(bean.getTranslate().getQuery())) {
             holder.commentItemContent.setVisibility(View.GONE);
@@ -130,7 +121,6 @@ public class TranslateAdapter extends BaseAdapter {
             holder.commentItemContent.setVisibility(View.VISIBLE);
             holder.commentItemContent.setText(bean.getQuery());
         }
-
         holder.mainimage.setVisibility(View.GONE);
         if (convertView != null) {
             convertView.setOnClickListener(new OnClickListener() {
@@ -141,7 +131,6 @@ public class TranslateAdapter extends BaseAdapter {
                 }
             });
         }
-
         try {
             if (!TextUtils.isEmpty(bean.translates())) {
                 holder.translateText.setText(bean.translates());
@@ -150,58 +139,22 @@ public class TranslateAdapter extends BaseAdapter {
         } catch (Exception e) {
 
         }
-
         return convertView;
-    }
-
-    private void ListenDigest(String speakContent) {
-        if (tts.isSpeaking()) {
-            tts.stop();
-            tts.speak(speakContent, TextToSpeech.QUEUE_ADD, null);
-        } else {
-            tts.speak(speakContent, TextToSpeech.QUEUE_ADD, null);
-        }
-
-    }
-
-    /**
-     * 初始化语音引擎
-     */
-    private void InitTtsEngine() {
-        tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                //如果装载TTS引擎成功
-                if (status == TextToSpeech.SUCCESS) {
-                    //设置使用美式英语朗读
-                    int result = tts.setLanguage(Locale.US);
-                    tts.setSpeechRate(0.8f);//设置播放速率
-                    tts.setPitch(1f);//设置语音的声高
-                    //tts.setVoice();//设置文字语音转化的声音
-                    //setOnUtteranceProgressListener(UtteranceProgressListener listener)//设置监听播放进度的回调
-                    //如果不支持设置的语言
-                    if (result != TextToSpeech.LANG_COUNTRY_AVAILABLE
-                            && result != TextToSpeech.LANG_AVAILABLE) {
-                        // Toast.makeText(MainActivity.this, "TTS暂时不支持这种语言朗读", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
     }
 
     private final class ViewHolder {
 
         public TextView translateText;
 
-        public ImageView commentItemImg; // 评论人图�?
+        public ImageView commentItemImg;
 
-        public TextView commentItemTime; // 评论时间
+        public TextView commentItemTime;
 
         public TextView commentItemContent;
 
-        public ImageView mainimage;// 评论内容
+        public ImageView mainimage;
 
-        public ImageView readBtn, moreBtn, read_source;
+        public ImageView readBtn, moreBtn;
 
         public View wordBtn;
     }

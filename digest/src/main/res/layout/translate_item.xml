@@ -34,14 +34,6 @@
                 android:textColor="#808080"
                 android:textSize="14sp"/>
 
-            <ImageView
-                android:id="@+id/read_source"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="18dp"
-                android:src="@drawable/readdrawable"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -63,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="18dp"
+
                 android:src="@drawable/moreicon"/>
         </RelativeLayout>
 
@@ -74,11 +66,11 @@
 
             <TextView
                 android:id="@+id/translateText"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_marginBottom="6dp"
-                android:layout_marginRight="24dp"
+                android:layout_marginRight="32dp"
                 android:layout_marginTop="6dp"
                 android:lineSpacingExtra="5dp"
                 android:padding="12dp"
@@ -91,7 +83,6 @@
                 android:layout_height="28dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="18dp"
                 android:src="@drawable/readdrawable"/>
         </RelativeLayout>
     </LinearLayout>
@@ -107,8 +98,6 @@
         android:contentDescription="icon"
         android:scaleType="centerCrop"
         android:src="@null"/>
-
-    <!-- 评论时间 -->
 
     <RelativeLayout
         android:layout_width="match_parent"

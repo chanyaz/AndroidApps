@@ -9,20 +9,25 @@
 
     <TextView
         android:id="@+id/tv_copy"
+        android:drawableTop="@mipmap/copy"
         android:text="@string/copy"
         style="@style/OperateTextView"/>
 
     <TextView
         android:id="@+id/tv_select_all"
+        android:drawableTop="@mipmap/select_all"
+
         android:text="@string/select_all"
         style="@style/OperateTextView"/>
 
     <TextView
         android:id="@+id/tv_dictionary"
+        android:drawableTop="@mipmap/dictionary"
         android:text="@string/tv_dictionary"
         style="@style/OperateTextView"/>
     <TextView
         android:id="@+id/tv_listen"
+        android:drawableTop="@mipmap/listen"
         android:text="@string/tv_listen"
         style="@style/OperateTextView"/>
 

@@ -26,7 +26,8 @@ import com.youdao.sdk.ydtranslate.Translate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.shenke.digest.translate.TranslateAdapter.tts;
+import static com.shenke.digest.selector.SelectableTextHelper.tts;
+
 
 /**
  * TODO: default from zh to en

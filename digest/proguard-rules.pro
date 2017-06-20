@@ -23,7 +23,27 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
 -ignorewarnings
 -libraryjars libs/ YoudaoBase1.0.0.jar
 -libraryjars libs/ YoudaoTranslateOnline-1.0.0.jar
 -keep class com.youdao.sdk.ydtranslate.** { *;}
+#-libraryjars libs/youdaosdk.jar
+#-keep class com.youdao.sdk.** { *;}
+-dontwarn com.squareup.okhttp3.**
+-keep class com.squareup.okhttp3.** { *;}
+-dontwarn okio.**
+-dontwarn javax.annotation.**
+
+-dontwarn net.youmi.android.**
+-keep class net.youmi.android.** { *;}
+
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public class * extends com.bumptech.glide.AppGlideModule
+-keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
+
+# for DexGuard only
+#-keepresourcexmlelements manifest/application/meta-data@value=GlideModule
