@@ -25,6 +25,7 @@ public class DBManager {
 
     /**
      * add persons
+     *
      * @param persons
      */
     public void add(List<Person> persons) {
@@ -41,6 +42,7 @@ public class DBManager {
 
     /**
      * update person's age
+     *
      * @param person
      */
     public void updateAge(Person person) {
@@ -51,6 +53,7 @@ public class DBManager {
 
     /**
      * delete old person
+     *
      * @param person
      */
     public void deleteOldPerson(Person person) {
@@ -59,6 +62,7 @@ public class DBManager {
 
     /**
      * query all persons, return list
+     *
      * @return List<Person>
      */
     public List<Person> query() {
@@ -78,10 +82,24 @@ public class DBManager {
 
     /**
      * query all persons, return cursor
-     * @return  Cursor
+     *
+     * @return Cursor
      */
     public Cursor queryTheCursor() {
         Cursor c = db.rawQuery("SELECT * FROM person", null);
+        return c;
+    }
+
+    /**
+     * query one
+     */
+
+    public Cursor getPost(String  uuid) {
+        String[] projection = {"_id", "uuid", "isChecked"};
+        String selection = "uuid LIKE ?";
+        String[] selectionArgs = {uuid};
+        Cursor c = db.query("person", projection, selection, selectionArgs, null, null, null
+        );
         return c;
     }
 

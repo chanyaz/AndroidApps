@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,20 +18,18 @@ public class DBManager {
 
     public DBManager(Context context) {
         helper = new DBHelper(context);
-        //因为getWritableDatabase内部调用了mContext.openOrCreateDatabase(mName, 0, mFactory);
-        //所以要确保context已初始化,我们可以把实例化DBManager的步骤放在Activity的onCreate里
         db = helper.getWritableDatabase();
     }
 
     /**
      * add digestStatus
      *
-     * @param digestStatuses
+     * @param digeststatuses
      */
-    public void add(List<DigestStatus> digestStatuses) {
+    public void add(List<DigestStatus> digeststatuses) {
         db.beginTransaction();  //开始事务
         try {
-            for (DigestStatus digestStatus : digestStatuses) {
+            for (DigestStatus digestStatus : digeststatuses) {
                 db.execSQL("INSERT INTO digestStatus VALUES(null, ?, ?)", new Object[]{digestStatus.uuid, digestStatus.isChecked});
             }
             db.setTransactionSuccessful();  //设置事务成功完成
@@ -55,27 +54,27 @@ public class DBManager {
      *
      * @param digestStatus
      */
-    public void deleteOldPerson(DigestStatus digestStatus) {
-        db.delete("digestStatus", "uuid >= ?", new String[]{String.valueOf(digestStatus.uuid)});
+    public void deleteOldDigest(DigestStatus digestStatus) {
+        db.delete("digestStatus", "uuid >= ?", new String[]{digestStatus.uuid});
     }
 
     /**
-     * query all persons, return list
+     * query all digest, return list
      *
-     * @return List<Person>
+     * @return List<DigestStatus>
      */
-    public DigestStatus query() {
-
+    public List<DigestStatus> query() {
+        ArrayList<DigestStatus> digests = new ArrayList<DigestStatus>();
         Cursor c = queryTheCursor();
-
-        DigestStatus digestStatus = new DigestStatus();
-        digestStatus._id = c.getInt(c.getColumnIndex("_id"));
-        digestStatus.uuid = c.getString(c.getColumnIndex("uuid"));
-        // person.isChecked = c.getInt(c.getColumnIndex(isChecked));
-
-
+        while (c.moveToNext()) {
+            DigestStatus digest = new DigestStatus();
+            digest._id = c.getInt(c.getColumnIndex("_id"));
+            digest.uuid = c.getString(c.getColumnIndex("uuid"));
+            digest.isChecked = c.getInt(c.getColumnIndex("isChecked"));
+            digests.add(digest);
+        }
         c.close();
-        return digestStatus;
+        return digests;
     }
 
     /**
@@ -85,6 +84,19 @@ public class DBManager {
      */
     public Cursor queryTheCursor() {
         Cursor c = db.rawQuery("SELECT * FROM digestStatus", null);
+        return c;
+    }
+
+    /**
+     * query one
+     */
+
+    public Cursor getPost(String uuid) {
+        String[] projection = {"_id", "uuid", "isChecked"};
+        String selection = "uuid LIKE ?";
+        String[] selectionArgs = {uuid};
+        Cursor c = db.query("digestStatus", projection, selection, selectionArgs, null, null, null
+        );
         return c;
     }
 

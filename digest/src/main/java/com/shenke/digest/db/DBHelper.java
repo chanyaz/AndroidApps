@@ -22,7 +22,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS digestStatus" +
-                "(_id INTEGER PRIMARY KEY AUTOINCREMENT, uuid VARCHAR, isChecked BOOLEAN)");
+                "(_id INTEGER PRIMARY KEY AUTOINCREMENT, uuid VARCHAR, isChecked INTEGER)");
     }
 
     //如果DATABASE_VERSION值被改为2,系统发现现有数据库版本不同,即会调用onUpgrade

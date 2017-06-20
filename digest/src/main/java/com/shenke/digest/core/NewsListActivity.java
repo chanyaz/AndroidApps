@@ -14,6 +14,8 @@ import android.util.Log;
 import com.shenke.digest.BuildConfig;
 import com.shenke.digest.R;
 import com.shenke.digest.api.DigestApi;
+import com.shenke.digest.db.DBManager;
+import com.shenke.digest.db.DigestStatus;
 import com.shenke.digest.dialog.DigestLoadDialog;
 import com.shenke.digest.dialog.EditionDialog;
 import com.shenke.digest.dialog.ProductGuideDialog;
@@ -25,6 +27,7 @@ import com.shenke.digest.util.IntentUtil;
 import com.shenke.digest.util.LogUtil;
 import com.shenke.digest.util.StatusBarCompat;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,6 +60,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     public static String ITEM_IS_CHECKED = "IS_CHECKED";
     private boolean first;//是否第一次打开APP
     private int cachetime; //缓存保留时长
+    private DBManager mgr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +83,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                 .beginTransaction()
                 .replace(R.id.container, digestLoadDialog, "loading")
                 .commit();
+        mgr = new DBManager(this);
         fetchData();
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
@@ -144,7 +149,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                 editor.putInt("DIGEST_EDITION", mNewsDigest.edition);
                 editor.commit();
                 Observable.just(mNewsDigest).distinct().subscribe(observer);
-            }else{
+            } else {
                 fetchDataByNetWork(observer);
             }
         } else {
@@ -193,6 +198,14 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                     public void call(NewsDigest mNewsDigest) {
                         Log.i("NewsDigestData", mNewsDigest.toString());
                         digestLoadDialog.onLoadSuccess();
+                        ArrayList<DigestStatus> digestStatuses = new ArrayList<DigestStatus>();
+                        for (int i = 0; i < mNewsDigest.items.size(); i++) {
+                            DigestStatus digestStatus = new DigestStatus();
+                            digestStatus.uuid = mNewsDigest.items.get(i).uuid;
+                            digestStatus.isChecked = 0;
+                            digestStatuses.add(digestStatus);
+                        }
+                        mgr.add(digestStatuses);
                         cachetime = Helper.getCacheSaveTime(lang, "08:00:00", "18:00:00");
                         aCache.put(mLang + "-NewsDigestData-" + date + "-" + String.valueOf(digest_edition), mNewsDigest, cachetime);//有新内容时缓存失效
                     }
@@ -200,6 +213,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                 .subscribe(observer);
 
     }
+
 
     private Map<String, String> getParameters() {
         Map<String, String> parameters = new HashMap<String, String>();

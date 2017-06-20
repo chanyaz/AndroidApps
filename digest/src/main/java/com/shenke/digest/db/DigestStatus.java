@@ -7,13 +7,13 @@ package com.shenke.digest.db;
 public class DigestStatus {
     public int _id;
     public String uuid;
-    public boolean isChecked;
+    public int isChecked;
 
     public DigestStatus() {
 
     }
 
-    public DigestStatus(String uuid, boolean isChecked) {
+    public DigestStatus(String uuid, int isChecked) {
         this.isChecked = isChecked;
         this.uuid = uuid;
     }
