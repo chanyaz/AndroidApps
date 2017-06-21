@@ -20,6 +20,8 @@ import com.shenke.digest.R;
 import com.shenke.digest.adapter.NewsAdapter;
 import com.shenke.digest.core.ExtraNewsListActivity;
 import com.shenke.digest.core.NewsDetailActivity;
+import com.shenke.digest.core.NewsListActivity;
+import com.shenke.digest.db.DigestStatus;
 import com.shenke.digest.dialog.EditionDialog;
 import com.shenke.digest.dialog.MoreDigestDialog;
 import com.shenke.digest.dialog.SettingsDialog;
@@ -168,7 +170,10 @@ public class NewsListFragment extends BaseFragment {
                 intent.putExtra(NewsDetailActivity.MORE, false);
                 intent.putExtra(NewsDetailActivity.SOURCE, NewsAdapter.newssource);
                 intent.putExtra(NewsDetailActivity.DATA, mNewsDigest);
-
+                DigestStatus digestStatus =new DigestStatus();
+                digestStatus.uuid = mNewsDigest.items.get(position).uuid;
+                digestStatus.isChecked = 1;
+                NewsListActivity.mgr.updateStatus(digestStatus);
                 startActivityForResult(intent, 0x111);
 
             }

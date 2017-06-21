@@ -45,6 +45,7 @@ public class DBManager {
      */
     public void updateStatus(DigestStatus digestStatus) {
         ContentValues cv = new ContentValues();
+        cv.put("uuid",digestStatus.uuid);
         cv.put("isChecked", digestStatus.isChecked);
         db.update("digestStatus", cv, "uuid = ?", new String[]{digestStatus.uuid});
     }
@@ -91,15 +92,20 @@ public class DBManager {
      * query one
      */
 
-    public Cursor getPost(String uuid) {
+    public DigestStatus queryItemStatus(String uuid) {
+        DigestStatus digestStatus = new DigestStatus();
+        Cursor c = queryItemCursor(uuid);
+        digestStatus.isChecked = c.getInt(c.getColumnIndex("isChecked"));
+        c.close();
+        return digestStatus;
+    }
+    public Cursor queryItemCursor(String uuid) {
         String[] projection = {"_id", "uuid", "isChecked"};
         String selection = "uuid LIKE ?";
         String[] selectionArgs = {uuid};
-        Cursor c = db.query("digestStatus", projection, selection, selectionArgs, null, null, null
-        );
+        Cursor c = db.query("digestStatus", projection, selection, selectionArgs, null, null, null);
         return c;
     }
-
     /**
      * close database
      */

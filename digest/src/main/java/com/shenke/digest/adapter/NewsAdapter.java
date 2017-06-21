@@ -25,6 +25,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.shenke.digest.R;
+import com.shenke.digest.core.NewsListActivity;
+import com.shenke.digest.db.DigestStatus;
 import com.shenke.digest.dialog.MoreDigestDialog;
 import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.util.DateUtil;
@@ -221,8 +223,14 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
 
             int stateColor = android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode);
             //index
-            SharedPreferences item_isChecked =mContext.getSharedPreferences(ITEM_IS_CHECKED, 0);
-            isChecked = item_isChecked.getBoolean(newsItem.uuid,false);
+            //DigestStatus digestStatus = NewsListActivity.mgr.queryItemStatus(newsItem.uuid);
+            //isChecked = digestStatus.isChecked>0;
+            List<DigestStatus> digests = NewsListActivity.mgr.query();
+           for(int i =0;i<digests.size();i++){
+               if(newsItem.uuid.equals(digests.get(i))){
+                   isChecked = digests.get(i).isChecked>0;
+               }
+           }
             if (isChecked) {
                 holder.donutProgress.setFinishedStrokeColor(stateColor);
                 holder.donutProgress.setUnfinishedStrokeColor(stateColor);
