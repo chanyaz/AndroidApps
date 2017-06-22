@@ -41,12 +41,14 @@ public class ExtraFragment extends BaseFragment {
     private LinearLayout know;
     private TextView bigTitle;
     private TextView smallTitle;
+    private TextView smallTitle_source;
     private NewsDigest mNewsDigest;
     private boolean allChecked;
-   private int index;
+    private int index;
     private Subscription subscription;
     private Handler mHandler;
     public List<DigestStatus> digests = NewsListActivity.mgr.query();
+
     public ExtraFragment() {
     }
 
@@ -83,7 +85,10 @@ public class ExtraFragment extends BaseFragment {
         bigTitle.setTypeface(typeface);
         bigTitle.setText("Did you know?");
         smallTitle.setTypeface(typeface);
-        smallTitle.setText("\""+mNewsDigest.bonus.get(0).text+"\""+"\n"+"\n"+mNewsDigest.bonus.get(0).source);
+        smallTitle.setText("\"" + mNewsDigest.bonus.get(0).text);
+        smallTitle_source = $(rootView, R.id.smallTitle_source);
+        smallTitle_source.setTypeface(typeface);
+        smallTitle_source.setText("-" + mNewsDigest.bonus.get(0).source);
         read = $(rootView, R.id.read);
         know = $(rootView, R.id.know);
         TextView urd = $(rootView, R.id.uread);
@@ -91,18 +96,19 @@ public class ExtraFragment extends BaseFragment {
         urd.setTypeface(ty);
         read.setTypeface(ty);
         read.setText("");
-       if (mNewsDigest.items != null && mNewsDigest.items.size() > 0) {
+        if (mNewsDigest.items != null && mNewsDigest.items.size() > 0) {
             read.setText(circleLayout.getActiveCount() + " of " + mNewsDigest.items.size());
             for (int i = 0; i < mNewsDigest.items.size(); i++) {
                 int activeColor = android.graphics.Color.parseColor(mNewsDigest.items.get(i).colors.get(0).hexcode);
                 circleLayout.addItem("" + (i + 1), activeColor);
             }
             for (int i = 0; i < mNewsDigest.items.size(); i++) {
-                if(mNewsDigest.items.get(i).uuid.equals(digests.get(i).uuid)){
-                if (digests.get(i).isChecked>0 && !circleLayout.isItemActive(i)) {
-                    circleLayout.activeItem(i);
-                    read.setText(circleLayout.getActiveCount() + " of " + mNewsDigest.items.size());
-                }}
+                if (mNewsDigest.items.get(i).uuid.equals(digests.get(i).uuid)) {
+                    if (digests.get(i).isChecked > 0 && !circleLayout.isItemActive(i)) {
+                        circleLayout.activeItem(i);
+                        read.setText(circleLayout.getActiveCount() + " of " + mNewsDigest.items.size());
+                    }
+                }
             }
 
             if (circleLayout.getActiveCount() == mNewsDigest.items.size()) {
@@ -188,7 +194,7 @@ public class ExtraFragment extends BaseFragment {
                         case 0x110:
                             int index = (int) msg.obj;
                             circleLayout.activeItem(index);
-                           read.setText(circleLayout.getActiveCount() + " of " + mNewsDigest.items.size());
+                            read.setText(circleLayout.getActiveCount() + " of " + mNewsDigest.items.size());
                             break;
                         default:
                             break;
@@ -223,13 +229,13 @@ public class ExtraFragment extends BaseFragment {
                         public void onNext(ArrayList arrayList) {
                             if (arrayList != null && !allChecked) {
                                 mNewsDigest.items = arrayList;
-                               for (int i = 0; i < mNewsDigest.items.size(); i++) {
-                                   if(mNewsDigest.items.get(i).uuid.equals(digests.get(i).uuid)) {
-                                       if (digests.get(i).isChecked > 0 && !circleLayout.isItemActive(i)) {
-                                           Message msg = mHandler.obtainMessage(0x110, i);
-                                           mHandler.sendMessageDelayed(msg, 500);
-                                       }
-                                   }
+                                for (int i = 0; i < mNewsDigest.items.size(); i++) {
+                                    if (mNewsDigest.items.get(i).uuid.equals(digests.get(i).uuid)) {
+                                        if (digests.get(i).isChecked > 0 && !circleLayout.isItemActive(i)) {
+                                            Message msg = mHandler.obtainMessage(0x110, i);
+                                            mHandler.sendMessageDelayed(msg, 500);
+                                        }
+                                    }
                                 }
                             }
                         }

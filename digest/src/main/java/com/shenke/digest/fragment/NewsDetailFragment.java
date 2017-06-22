@@ -246,7 +246,7 @@ public class NewsDetailFragment extends BaseFragment {
         functionBar = $(rootView, R.id.functionBar);
         banner = $(rootView, R.id.banner);
         donutProgress = $(rootView, R.id.index);
-      if (mNewsDigest.more_stories .equals("1")) {
+        if (mNewsDigest.more_stories.equals("1")) {
             donutProgress.setVisibility(View.GONE);
         } else {
             donutProgress.setText("" + (index + 1));
@@ -339,7 +339,7 @@ public class NewsDetailFragment extends BaseFragment {
     }
 
     private void ListenDigest() {
-        speakContent = title.getText().toString().trim() + "."+ SumAndQuoteText;
+        speakContent = title.getText().toString().trim() + "." + SumAndQuoteText;
         if (tts != null && tts.isSpeaking()) {
             tts.stop();
             tts.speak(speakContent, TextToSpeech.QUEUE_ADD, null);
@@ -381,7 +381,7 @@ public class NewsDetailFragment extends BaseFragment {
 
                     @Override
                     public void call(final Subscriber<? super Boolean> subscriber) {
-                        DigestStatus digestStatus =new DigestStatus();
+                        DigestStatus digestStatus = new DigestStatus();
                         digestStatus.uuid = uuid;
                         digestStatus.isChecked = 1;
                         NewsListActivity.mgr.updateStatus(digestStatus);
@@ -428,7 +428,7 @@ public class NewsDetailFragment extends BaseFragment {
 
         if (mNewsDigest != null && mNewsDigest.items.get(index).multiSummary != null) {
 
-            if (!mNewsDigest.more_stories .equals("1" )) {
+            if (!mNewsDigest.more_stories.equals("1")) {
                 donutProgress.setVisibility(View.VISIBLE);
                 donutProgress.setInnerBackgroundColor(color);
                 donutProgress.setTextColor(Color.WHITE);
@@ -487,7 +487,7 @@ public class NewsDetailFragment extends BaseFragment {
                     activeItem();
                 }
             }
-            if (!mNewsDigest.more_stories .equals("1")) {
+            if (!mNewsDigest.more_stories.equals("1")) {
                 event = getEvent(mNewsDigest.items.get(index));
             }
         } else {
@@ -761,7 +761,7 @@ public class NewsDetailFragment extends BaseFragment {
                         videoItemView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                               Intent mpdIntent = new Intent(v.getContext(), MediaPlayerActivity.class);
+                                Intent mpdIntent = new Intent(v.getContext(), MediaPlayerActivity.class);
                                 mpdIntent.setData(Uri.parse(src));
                                 mpdIntent.putExtra(MediaPlayerActivity.CONTENT_TYPE_EXTRA, Util.TYPE_OTHER);
                                 mpdIntent.putExtra(MediaPlayerActivity.CONTENT_ID_EXTRA, src);

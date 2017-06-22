@@ -70,6 +70,19 @@
             android:gravity="center"
             android:layout_marginTop="20dp"
             android:text="Did you know...?"
+            android:textSize="16sp"
+            android:textColor="@android:color/white" />
+        <TextView
+            android:id="@+id/smallTitle_source"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="12dp"
+            android:layout_marginLeft="12dp"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:text="Did you know...?"
+            android:textSize="12sp"
             android:textColor="@android:color/white" />
 
     </LinearLayout>
