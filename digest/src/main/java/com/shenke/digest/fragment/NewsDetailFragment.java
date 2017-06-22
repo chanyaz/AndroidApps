@@ -41,16 +41,15 @@ import com.amap.api.maps2d.model.CameraPosition;
 import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.MarkerOptions;
 import com.bumptech.glide.Glide;
-import com.google.android.exoplayer.util.Util;
 import com.shenke.digest.R;
 import com.shenke.digest.adapter.BaseRecyclerViewAdapter;
 import com.shenke.digest.adapter.GalleryAdapter;
 import com.shenke.digest.core.ExtraNewsListActivity;
 import com.shenke.digest.core.LocationActivity;
-import com.shenke.digest.core.MediaPlayerActivity;
 import com.shenke.digest.core.NewsDetailActivity;
 import com.shenke.digest.core.NewsListActivity;
 import com.shenke.digest.core.SlideShowActivity;
+import com.shenke.digest.core.VideoAdActivity;
 import com.shenke.digest.db.DigestStatus;
 import com.shenke.digest.dialog.SettingsDialog;
 import com.shenke.digest.dialog.ShareDialog;
@@ -761,12 +760,12 @@ public class NewsDetailFragment extends BaseFragment {
                         videoItemView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent mpdIntent = new Intent(v.getContext(), MediaPlayerActivity.class);
+                               /* Intent mpdIntent = new Intent(v.getContext(), MediaPlayerActivity.class);
                                 mpdIntent.setData(Uri.parse(src));
                                 mpdIntent.putExtra(MediaPlayerActivity.CONTENT_TYPE_EXTRA, Util.TYPE_OTHER);
                                 mpdIntent.putExtra(MediaPlayerActivity.CONTENT_ID_EXTRA, src);
-                                mpdIntent.putExtra(MediaPlayerActivity.PROVIDER_EXTRA, "");
-                                //Intent mpdIntent = new Intent(v.getContext(), NativeVideoAdActivity.class);//视频AD
+                                mpdIntent.putExtra(MediaPlayerActivity.PROVIDER_EXTRA, "");*/
+                                Intent mpdIntent = new Intent(v.getContext(), VideoAdActivity.class);//视频AD
                                 startActivity(mpdIntent);
                             }
                         });
