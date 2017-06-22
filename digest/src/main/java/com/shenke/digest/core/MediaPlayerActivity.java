@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -53,7 +52,7 @@ import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.util.List;
 
-public class MediaPlayerActivity extends AppCompatActivity implements SurfaceHolder.Callback,
+public class MediaPlayerActivity extends BaseActivity implements SurfaceHolder.Callback,
         DemoPlayer.Listener, DemoPlayer.CaptionListener, DemoPlayer.Id3MetadataListener,
         AudioCapabilitiesReceiver.Listener {
 

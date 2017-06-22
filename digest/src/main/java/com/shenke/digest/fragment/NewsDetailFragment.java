@@ -49,7 +49,9 @@ import com.shenke.digest.core.ExtraNewsListActivity;
 import com.shenke.digest.core.LocationActivity;
 import com.shenke.digest.core.MediaPlayerActivity;
 import com.shenke.digest.core.NewsDetailActivity;
+import com.shenke.digest.core.NewsListActivity;
 import com.shenke.digest.core.SlideShowActivity;
+import com.shenke.digest.db.DigestStatus;
 import com.shenke.digest.dialog.SettingsDialog;
 import com.shenke.digest.dialog.ShareDialog;
 import com.shenke.digest.entity.NewsDigest;
@@ -379,12 +381,11 @@ public class NewsDetailFragment extends BaseFragment {
 
                     @Override
                     public void call(final Subscriber<? super Boolean> subscriber) {
-                       /* SharedPreferences item_isChecked = getContext().getSharedPreferences(ITEM_IS_CHECKED, 0);
-                        SharedPreferences.Editor editor = item_isChecked.edit();
-                        editor.putBoolean(mNewsDigest.items.get(index).uuid, true);
-                        subscriber.onNext(editor.commit());
-                        subscriber.onCompleted();*/
-                        return;
+                        DigestStatus digestStatus =new DigestStatus();
+                        digestStatus.uuid = uuid;
+                        digestStatus.isChecked = 1;
+                        NewsListActivity.mgr.updateStatus(digestStatus);
+                        subscriber.onNext(true);
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -433,10 +434,7 @@ public class NewsDetailFragment extends BaseFragment {
                 donutProgress.setTextColor(Color.WHITE);
             } else if (mNewsDigest.more_stories.equals("1")) {
                 donutProgress.setVisibility(View.GONE);
-            }/* else {
-                donutProgress.setVisibility(View.VISIBLE);
-            }*/
-
+            }
             //label
             lable.setText(mNewsDigest.items.get(index).categories.get(0).name);
             lable.setVisibility(View.VISIBLE);
@@ -763,11 +761,12 @@ public class NewsDetailFragment extends BaseFragment {
                         videoItemView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent mpdIntent = new Intent(v.getContext(), MediaPlayerActivity.class);
+                               Intent mpdIntent = new Intent(v.getContext(), MediaPlayerActivity.class);
                                 mpdIntent.setData(Uri.parse(src));
                                 mpdIntent.putExtra(MediaPlayerActivity.CONTENT_TYPE_EXTRA, Util.TYPE_OTHER);
                                 mpdIntent.putExtra(MediaPlayerActivity.CONTENT_ID_EXTRA, src);
                                 mpdIntent.putExtra(MediaPlayerActivity.PROVIDER_EXTRA, "");
+                                //Intent mpdIntent = new Intent(v.getContext(), NativeVideoAdActivity.class);//视频AD
                                 startActivity(mpdIntent);
                             }
                         });

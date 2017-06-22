@@ -3,7 +3,6 @@ package com.shenke.digest.adapter;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -40,7 +39,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static com.shenke.digest.core.NewsListActivity.ITEM_IS_CHECKED;
 import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_EVENING;
 import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_MORNING;
 
@@ -60,6 +58,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
     private final String TAG = "NewsAdapter";
     public static Bitmap bitmap;
     public static  String newssource;
+    public List<DigestStatus> digests = NewsListActivity.mgr.query();
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
@@ -225,24 +224,24 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
             //index
             //DigestStatus digestStatus = NewsListActivity.mgr.queryItemStatus(newsItem.uuid);
             //isChecked = digestStatus.isChecked>0;
-            List<DigestStatus> digests = NewsListActivity.mgr.query();
            for(int i =0;i<digests.size();i++){
-               if(newsItem.uuid.equals(digests.get(i))){
+               if(newsItem.uuid.equals(digests.get(i).uuid)){
                    isChecked = digests.get(i).isChecked>0;
+                   if (isChecked) {
+                       holder.donutProgress.setFinishedStrokeColor(stateColor);
+                       holder.donutProgress.setUnfinishedStrokeColor(stateColor);
+                       holder.donutProgress.setInnerBackgroundColor(stateColor);
+                       holder.donutProgress.setTextColor(android.graphics.Color.WHITE);
+
+                   } else {
+                       holder.donutProgress.setFinishedStrokeColor(stateColor);
+                       holder.donutProgress.setUnfinishedStrokeColor(stateColor);
+                       holder.donutProgress.setTextColor(stateColor);
+                       holder.donutProgress.setInnerBackgroundColor(android.graphics.Color.TRANSPARENT);
+                   }
                }
            }
-            if (isChecked) {
-                holder.donutProgress.setFinishedStrokeColor(stateColor);
-                holder.donutProgress.setUnfinishedStrokeColor(stateColor);
-                holder.donutProgress.setInnerBackgroundColor(stateColor);
-                holder.donutProgress.setTextColor(android.graphics.Color.WHITE);
 
-            } else {
-                holder.donutProgress.setFinishedStrokeColor(stateColor);
-                holder.donutProgress.setUnfinishedStrokeColor(stateColor);
-                holder.donutProgress.setTextColor(stateColor);
-                holder.donutProgress.setInnerBackgroundColor(android.graphics.Color.TRANSPARENT);
-            }
 
             //label
             holder.label.setTextColor(stateColor);
@@ -324,9 +323,8 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
                 holder.circleLayout.addItem("" + index, activeColor);
                 index++;
             }
-
             for (int i = 0; i < count; i++) {
-                if (mNewsDigest.items.get(i).isChecked()) {
+                if (digests.get(i).isChecked>0) {
                     holder.circleLayout.activeItem(i);
                 }
             }
@@ -363,7 +361,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
                     holder.circleLayout.activeItem(index);
                     if (onItemClickListener != null) {
                         onItemClickListener.onItemClick(null, index);
-
+                        activationItem(index);
                     }
                     holder.textView.setText(holder.circleLayout.getActiveCount() + " of " + count);
                 }
@@ -411,9 +409,10 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
     }
 
     public void activationItem(int index) {
-        SharedPreferences item_isChecked =mContext.getSharedPreferences(ITEM_IS_CHECKED, 0);
-        isChecked = item_isChecked.getBoolean(newsItem.uuid,false);
-        getItem(index).setChecked(isChecked);
+        DigestStatus digestStatus =new DigestStatus();
+        digestStatus.uuid = mNewsDigest.items.get(index).uuid;
+        digestStatus.isChecked = 1;
+        NewsListActivity.mgr.updateStatus(digestStatus);
         notifyDataSetChanged();
     }
 

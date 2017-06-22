@@ -14,12 +14,15 @@ import android.widget.TextView;
 
 import com.shenke.digest.R;
 import com.shenke.digest.core.NewsDetailActivity;
+import com.shenke.digest.core.NewsListActivity;
+import com.shenke.digest.db.DigestStatus;
 import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.util.LogUtil;
 import com.shenke.digest.view.CircleLayout;
 import com.shenke.digest.view.CircularRevealView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import rx.Subscriber;
 import rx.Subscription;
@@ -43,7 +46,7 @@ public class ExtraFragment extends BaseFragment {
    private int index;
     private Subscription subscription;
     private Handler mHandler;
-
+    public List<DigestStatus> digests = NewsListActivity.mgr.query();
     public ExtraFragment() {
     }
 
@@ -95,10 +98,11 @@ public class ExtraFragment extends BaseFragment {
                 circleLayout.addItem("" + (i + 1), activeColor);
             }
             for (int i = 0; i < mNewsDigest.items.size(); i++) {
-                if (mNewsDigest.items.get(i).checked && !circleLayout.isItemActive(i)) {
+                if(mNewsDigest.items.get(i).uuid.equals(digests.get(i).uuid)){
+                if (digests.get(i).isChecked>0 && !circleLayout.isItemActive(i)) {
                     circleLayout.activeItem(i);
                     read.setText(circleLayout.getActiveCount() + " of " + mNewsDigest.items.size());
-                }
+                }}
             }
 
             if (circleLayout.getActiveCount() == mNewsDigest.items.size()) {
@@ -220,10 +224,12 @@ public class ExtraFragment extends BaseFragment {
                             if (arrayList != null && !allChecked) {
                                 mNewsDigest.items = arrayList;
                                for (int i = 0; i < mNewsDigest.items.size(); i++) {
-                                    if (mNewsDigest.items.get(i).checked && !circleLayout.isItemActive(i)) {
-                                        Message msg = mHandler.obtainMessage(0x110, i);
-                                        mHandler.sendMessageDelayed(msg, 500);
-                                    }
+                                   if(mNewsDigest.items.get(i).uuid.equals(digests.get(i).uuid)) {
+                                       if (digests.get(i).isChecked > 0 && !circleLayout.isItemActive(i)) {
+                                           Message msg = mHandler.obtainMessage(0x110, i);
+                                           mHandler.sendMessageDelayed(msg, 500);
+                                       }
+                                   }
                                 }
                             }
                         }

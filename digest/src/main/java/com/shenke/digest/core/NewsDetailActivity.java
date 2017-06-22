@@ -69,7 +69,7 @@ public class NewsDetailActivity extends AppCompatActivity {
                         viewPager.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                // rxBus.post(data);
+                                 rxBus.post(data);
 
                             }
                         }, 1000);

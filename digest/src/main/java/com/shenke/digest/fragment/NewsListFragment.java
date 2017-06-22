@@ -286,15 +286,13 @@ public class NewsListFragment extends BaseFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (resultCode) {
-            case 0x110:
-                recyclerView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        extraNews();
-                    }
-                }, 300);
-                break;
+        if (requestCode == 0x110 && resultCode == 0x110) {
+            recyclerView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    extraNews();
+                }
+            }, 300);
         }
     }
 

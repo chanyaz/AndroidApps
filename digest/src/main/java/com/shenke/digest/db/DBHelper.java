@@ -12,7 +12,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "digest_status.db";
     private static final int DATABASE_VERSION = 1;
-
+    public static String TABLE_NAME = "digestStatus";
     public DBHelper(Context context) {
         //CursorFactory设置为null,使用默认值
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -21,7 +21,7 @@ public class DBHelper extends SQLiteOpenHelper {
     //数据库第一次被创建时onCreate会被调用
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS digestStatus" +
+        db.execSQL("CREATE TABLE IF NOT EXISTS " +TABLE_NAME+
                 "(_id INTEGER PRIMARY KEY AUTOINCREMENT, uuid VARCHAR, isChecked INTEGER)");
     }
 

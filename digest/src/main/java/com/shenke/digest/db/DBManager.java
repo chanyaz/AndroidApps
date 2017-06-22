@@ -45,7 +45,7 @@ public class DBManager {
      */
     public void updateStatus(DigestStatus digestStatus) {
         ContentValues cv = new ContentValues();
-        cv.put("uuid",digestStatus.uuid);
+        cv.put("uuid", digestStatus.uuid);
         cv.put("isChecked", digestStatus.isChecked);
         db.update("digestStatus", cv, "uuid = ?", new String[]{digestStatus.uuid});
     }
@@ -99,6 +99,7 @@ public class DBManager {
         c.close();
         return digestStatus;
     }
+
     public Cursor queryItemCursor(String uuid) {
         String[] projection = {"_id", "uuid", "isChecked"};
         String selection = "uuid LIKE ?";
@@ -106,10 +107,11 @@ public class DBManager {
         Cursor c = db.query("digestStatus", projection, selection, selectionArgs, null, null, null);
         return c;
     }
+
     /**
      * close database
      */
     public void closeDB() {
-        db.close();
+        this.db.close();
     }
 }
