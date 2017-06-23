@@ -235,7 +235,7 @@ public class SettingsDialog extends DialogFragment {
                         if (edition != mEdition) {
                             mEdition = edition;
                             dismiss();
-                            getActivity().finish();
+                            //getActivity().finish();
                             Intent intent = new Intent(getContext(), NewsListActivity.class);
                             SharedPreferences pre_settings = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
                             SharedPreferences.Editor editor = pre_settings.edit();
