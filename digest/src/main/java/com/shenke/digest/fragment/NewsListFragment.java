@@ -211,6 +211,7 @@ public class NewsListFragment extends BaseFragment {
     }
 
     private void moreDigest() {
+
         Intent intent = new Intent(getContext(), MoreDigestActivity.class);
         intent.putExtra("fragment", TAG);
         startActivityForResult(intent,3);

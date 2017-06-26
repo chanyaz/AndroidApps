@@ -186,7 +186,6 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                     @Override
                     public void call(NewsDigest mNewsDigest) {
                         Log.i("NewsDigestData", mNewsDigest.toString());
-                        digestLoadDialog.onLoadSuccess();
                         ArrayList<DigestStatus> digestStatuses = new ArrayList<DigestStatus>();
                         for (int i = 0; i < mNewsDigest.items.size(); i++) {
                             DigestStatus digestStatus = new DigestStatus();
@@ -365,7 +364,6 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         if (subscriptionSave != null) {
             subscriptionSave.unsubscribe();
         }
-      //  unregisterReceiver(myReceiver);
         mgr.closeDB();
         super.onDestroy();
     }
@@ -373,7 +371,13 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     @Override
     public void onLoad() {
         if (IntentUtil.isNetworkConnected(NewsListActivity.this)) {
+            digestLoadDialog.onLoading();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, digestLoadDialog, "loading")
+                    .commit();
             fetchData();
+
         } else {
             digestLoadDialog.onLoadError();
         }
@@ -382,17 +386,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //requestCode标示请求的标示   resultCode表示有数据
-        if ( resultCode == 2 ) {
-            SharedPreferences p_settings = getSharedPreferences(PREFERENCES_SETTINS, 0);
-            String strdate = Helper.format(new Date());
-            String nowdate = strdate.trim().substring(10, 14) + "-" + strdate.trim().substring(4, 6) + "-" + strdate.trim().substring(7, 9);
-            mDate = p_settings.getString("DATE", nowdate);
-            mSection = p_settings.getInt("DIGEST_EDITION", 2);
-            mLang = p_settings.getString("LANGUAGE", Helper.LanguageEdtion(3));
-            onLoad();
-        }
-        if ( resultCode == 3 ) {
+        if ( resultCode == 2 ||  resultCode == 3) {
             SharedPreferences p_settings = getSharedPreferences(PREFERENCES_SETTINS, 0);
             String strdate = Helper.format(new Date());
             String nowdate = strdate.trim().substring(10, 14) + "-" + strdate.trim().substring(4, 6) + "-" + strdate.trim().substring(7, 9);

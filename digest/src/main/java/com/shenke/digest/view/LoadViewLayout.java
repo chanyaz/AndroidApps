@@ -10,8 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -44,10 +42,6 @@ public class LoadViewLayout extends FrameLayout {
     public OnLoadNewsListener onLoadNewsListener;
     private ImageButton menu;
     public static Bitmap bitmap;
-    private int mSection;
-    private int mEdition;
-    private String mDate;
-    private FragmentManager fm;
 
     public LoadViewLayout(Context context) {
         super(context);
@@ -102,8 +96,6 @@ public class LoadViewLayout extends FrameLayout {
                 view.setDrawingCacheEnabled(true);
                 view.buildDrawingCache();
                 bitmap = view.getDrawingCache();
-                FragmentActivity activity = (FragmentActivity) (getContext());
-                fm = activity.getSupportFragmentManager();
                 PopupMenu popup = new PopupMenu(v.getContext(), v);
                 MenuInflater inflater = popup.getMenuInflater();
                 inflater.inflate(R.menu.news_list_menu, popup.getMenu());
@@ -131,25 +123,12 @@ public class LoadViewLayout extends FrameLayout {
     }
 
     private void moreDigest() {
-       /* MoreDigestDialog moreDigestDialog = new MoreDigestDialog();
-        Bundle bundle = new Bundle();
-        bundle.putString("fragment", TAG);
-        bundle.putString(MoreDigestDialog.DATE_SELECTED, mDate);
-        bundle.putInt(MoreDigestDialog.SECTION_SELECTED, mSection);
-        moreDigestDialog.setArguments(bundle);
-        moreDigestDialog.show(fm, "moreDigest");*/
         Intent intent = new Intent(getContext(), MoreDigestActivity.class);
         intent.putExtra("fragment", TAG);
         ((Activity)getContext()).startActivityForResult(intent,3);
     }
 
     private void setting() {
-        /*Bundle bundle = new Bundle();
-        bundle.putString("fragment", TAG);
-        SettingsDialog settingsDialog = new SettingsDialog();
-        settingsDialog.setArguments(bundle);
-        settingsDialog.show(fm, "setting");*/
-
         Intent intent = new Intent(getContext(), SettingActivity.class);
         intent.putExtra("fragment", TAG);
         ((Activity) getContext()).startActivityForResult(intent,2);

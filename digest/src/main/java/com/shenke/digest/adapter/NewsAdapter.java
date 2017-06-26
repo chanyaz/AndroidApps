@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,24 +52,18 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
     public static NewsDigest mNewsDigest;
     public NewsDigest.NewsItem newsItem;
     private OnItemClickListener onItemClickListener;
-    private FragmentManager fm;
     private final String TAG = "NewsAdapter";
     public static Bitmap bitmap;
-    public static  String newssource;
+    public static String newssource;
     public List<DigestStatus> digests = NewsListActivity.mgr.query();
+
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
-    public NewsAdapter(Context mContext, NewsDigest mNewsDigest ) {
+    public NewsAdapter(Context mContext, NewsDigest mNewsDigest) {
         this.mContext = mContext;
         this.mNewsDigest = mNewsDigest;
-    }
-
-    public NewsAdapter(Context mContext, FragmentManager fm) {
-        this.mContext = mContext;
-        this.fm = fm;
-
     }
 
     @Override
@@ -105,7 +98,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
                 holder.section.setVisibility(View.VISIBLE);
                 holder.date.setVisibility(View.VISIBLE);
                 holder.sectionArea.setVisibility(View.VISIBLE);
-                Glide.with((holder.itemView.getContext())).load(mNewsDigest.poster.images.originalUrl).crossFade() .diskCacheStrategy(DiskCacheStrategy.ALL).into(holder.img);
+                Glide.with((holder.itemView.getContext())).load(mNewsDigest.poster.images.originalUrl).crossFade().diskCacheStrategy(DiskCacheStrategy.ALL).into(holder.img);
                 String ed;
                 if (mNewsDigest.regionEdition.equals("AA")) {
                     ed = "Intl.";
@@ -123,8 +116,6 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
                     section = SECTION_MORNING;
                 }
                 try {
-                    String str = DateUtil.DayforWeek(mNewsDigest.date);
-
                     holder.section.setText(DateUtil.DayforWeek(mNewsDigest.date) + (section == SECTION_MORNING ? " morning" : " evening")
                             + " | " + ed);
                 } catch (Exception e) {
@@ -152,16 +143,10 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
                     view.setDrawingCacheEnabled(true);
                     view.buildDrawingCache();
                     bitmap = view.getDrawingCache();
-                   FragmentActivity activity = (FragmentActivity) (mContext);
-                    fm = activity.getSupportFragmentManager();
-                    /* MoreDigestDialog mMoreDigestDialog = new MoreDigestDialog();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("fragment", TAG);
-                    mMoreDigestDialog.setArguments(bundle);
-                    mMoreDigestDialog.show(fm, "mMoreDigestDialog");*/
+                    FragmentActivity activity = (FragmentActivity) (mContext);
                     Intent intent = new Intent(activity, MoreDigestActivity.class);
                     intent.putExtra("fragment", TAG);
-                    activity.startActivityForResult(intent,3);
+                    activity.startActivityForResult(intent, 3);
 
                 }
             });
@@ -193,19 +178,18 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
                 //  不改变顺序去重
                 Set set = new HashSet();
                 List newList = new ArrayList();
-                for (Iterator iter = publishers.iterator(); iter.hasNext(); )
-                {
+                for (Iterator iter = publishers.iterator(); iter.hasNext(); ) {
                     Object element = iter.next();
                     if (set.add(element)) newList.add(element);
                 }
                 publishers.clear();
                 publishers.addAll(newList);
-                if(publishers.size() == 1){
+                if (publishers.size() == 1) {
                     holder.sources.setText(publishers.get(0));
-                }else if(publishers.size() == 2){
-                    holder.sources.setText(publishers.get(0) + ","+ publishers.get(1));
-                }else if(publishers.size() > 2){
-                    holder.sources.setText(publishers.get(0) + ","+ publishers.get(1) + " + "+(publishers.size() - 2)+" more" );
+                } else if (publishers.size() == 2) {
+                    holder.sources.setText(publishers.get(0) + "," + publishers.get(1));
+                } else if (publishers.size() > 2) {
+                    holder.sources.setText(publishers.get(0) + "," + publishers.get(1) + " + " + (publishers.size() - 2) + " more");
                 }
             }
             newssource = holder.sources.getText().toString();
@@ -225,25 +209,23 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
 
             int stateColor = android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode);
             //index
-            //DigestStatus digestStatus = NewsListActivity.mgr.queryItemStatus(newsItem.uuid);
-            //isChecked = digestStatus.isChecked>0;
-           for(int i =0;i<digests.size();i++){
-               if(newsItem.uuid.equals(digests.get(i).uuid)){
-                   isChecked = digests.get(i).isChecked>0;
-                   if (isChecked) {
-                       holder.donutProgress.setFinishedStrokeColor(stateColor);
-                       holder.donutProgress.setUnfinishedStrokeColor(stateColor);
-                       holder.donutProgress.setInnerBackgroundColor(stateColor);
-                       holder.donutProgress.setTextColor(android.graphics.Color.WHITE);
+            for (int i = 0; i < digests.size(); i++) {
+                if (newsItem.uuid.equals(digests.get(i).uuid)) {
+                    isChecked = digests.get(i).isChecked > 0;
+                    if (isChecked) {
+                        holder.donutProgress.setFinishedStrokeColor(stateColor);
+                        holder.donutProgress.setUnfinishedStrokeColor(stateColor);
+                        holder.donutProgress.setInnerBackgroundColor(stateColor);
+                        holder.donutProgress.setTextColor(android.graphics.Color.WHITE);
 
-                   } else {
-                       holder.donutProgress.setFinishedStrokeColor(stateColor);
-                       holder.donutProgress.setUnfinishedStrokeColor(stateColor);
-                       holder.donutProgress.setTextColor(stateColor);
-                       holder.donutProgress.setInnerBackgroundColor(android.graphics.Color.TRANSPARENT);
-                   }
-               }
-           }
+                    } else {
+                        holder.donutProgress.setFinishedStrokeColor(stateColor);
+                        holder.donutProgress.setUnfinishedStrokeColor(stateColor);
+                        holder.donutProgress.setTextColor(stateColor);
+                        holder.donutProgress.setInnerBackgroundColor(android.graphics.Color.TRANSPARENT);
+                    }
+                }
+            }
 
 
             //label
@@ -260,25 +242,25 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
                 holder.view.setBackground(stateListDrawable);
             }
             if (newsItem.order != null) {
-                if (!(newsItem.wikis.size()>0)) {
+                if (!(newsItem.wikis.size() > 0)) {
                     holder.images.findViewById(R.id.wiki).setVisibility(View.GONE);
                 }
-                if (!(newsItem.locations.size()>0)) {
+                if (!(newsItem.locations.size() > 0)) {
                     holder.images.findViewById(R.id.map).setVisibility(View.GONE);
                 }
-                if (!(newsItem.videos.size()>0)) {
+                if (!(newsItem.videos.size() > 0)) {
                     holder.images.findViewById(R.id.video).setVisibility(View.GONE);
                 }
-                if (!(newsItem.slideshow.photos.elements.size()>0)) {
+                if (!(newsItem.slideshow.photos.elements.size() > 0)) {
                     holder.images.findViewById(R.id.images).setVisibility(View.GONE);
                 }
-                if (!(newsItem.statDetail.size()>0)) {
+                if (!(newsItem.statDetail.size() > 0)) {
                     holder.images.findViewById(R.id.stats).setVisibility(View.GONE);
                 }
-                if (!(newsItem.tweetKeywords.size()>0)) {
+                if (!(newsItem.tweetKeywords.size() > 0)) {
                     holder.images.findViewById(R.id.twitter).setVisibility(View.GONE);
                 }
-                if (!(newsItem.infographs.size()>0)) {
+                if (!(newsItem.infographs.size() > 0)) {
                     holder.images.findViewById(R.id.diagram).setVisibility(View.GONE);
                 }
             }
@@ -327,7 +309,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
                 index++;
             }
             for (int i = 0; i < count; i++) {
-                if (digests.get(i).isChecked>0) {
+                if (digests.get(i).isChecked > 0) {
                     holder.circleLayout.activeItem(i);
                 }
             }
@@ -387,7 +369,6 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
 
                 @Override
                 public void onAnimationShrinkEnd(Animator animation) {
-                    //final int cl = android.graphics.Color.parseColor("#00AA00");
                     holder.readIndicator.setVisibility(View.GONE);
                     holder.circleLayout.setVisibility(View.GONE);
                     holder.circleLayout.setClickable(false);
@@ -412,7 +393,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
     }
 
     public void activationItem(int index) {
-        DigestStatus digestStatus =new DigestStatus();
+        DigestStatus digestStatus = new DigestStatus();
         digestStatus.uuid = mNewsDigest.items.get(index).uuid;
         digestStatus.isChecked = 1;
         NewsListActivity.mgr.updateStatus(digestStatus);

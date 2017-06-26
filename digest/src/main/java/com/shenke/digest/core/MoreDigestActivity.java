@@ -51,7 +51,7 @@ import static com.shenke.digest.core.NewsListActivity.PREFERENCES_SETTINS;
  * Created by Cloud on 2017/6/26.
  */
 
-public class MoreDigestActivity extends BaseActivity{
+public class MoreDigestActivity extends BaseActivity {
     private DonutProgress donutProgress;
     private ValueAnimator valueAnimator;
     private static final String TAG = "MoreDigestDialog";
@@ -75,8 +75,9 @@ public class MoreDigestActivity extends BaseActivity{
     public static final String LANGUAGE_SELECTED = "LANGUAGE_SELECTED";
     private BlurredView iv_background;
     private Bitmap bitmap;
+
     @Override
-    public void onCreate( Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         StatusBarCompat.showSystemUI(this);
         setContentView(R.layout.more_digest_dialog);
@@ -91,7 +92,7 @@ public class MoreDigestActivity extends BaseActivity{
     private void initView() {
         final HorizontalScrollView hsv = (HorizontalScrollView) findViewById(R.id.hsv);
         //滑动
-       new Handler().postDelayed(new Runnable() {
+        new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 hsv.scrollTo(2000, 0);
@@ -134,6 +135,7 @@ public class MoreDigestActivity extends BaseActivity{
         infoType.setTypeface(typefaceLight);
         mHandler = initHandler();
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -145,14 +147,6 @@ public class MoreDigestActivity extends BaseActivity{
         super.onResume();
         progressAnimation();
     }
-
-  /*  @Override
-    public void onFinish(DialogInterface dialog) {
-        super.onFinish(dialog);
-        if (mHandler != null) {
-            mHandler.removeMessages(0x110);
-        }
-    }*/
 
     private Subscription getSelected() {
         return rx.Observable
@@ -359,8 +353,7 @@ public class MoreDigestActivity extends BaseActivity{
                 if (present.before(morning) && present.after(night)) {
                     Date now_date = DateUtil.getPreDay(new Date());
                     date = DateUtil.getPreNDay(now_date, i);//Thu Jun 08 10:18:42 格林尼治标准时间+0800 2017
-                }
-                else {
+                } else {
                     String mTimeZone = Helper.getTimeZone(lang);
                     Calendar calendar = Calendar.getInstance();
                     Calendar ukTime = new GregorianCalendar(TimeZone.getTimeZone(mTimeZone));
@@ -371,7 +364,7 @@ public class MoreDigestActivity extends BaseActivity{
                     int now_hour = ukTime.get(Calendar.HOUR_OF_DAY);
                     int now_mini = ukTime.get(Calendar.MINUTE);
                     int now_second = ukTime.get(Calendar.SECOND);
-                    date = DateUtil.getPreNDay(new Date(now_year-1900,now_month,now_date,now_hour,now_mini,now_second), i);//Thu Jun 08 10:18:42 格林尼治标准时间+0800 2017
+                    date = DateUtil.getPreNDay(new Date(now_year - 1900, now_month, now_date, now_hour, now_mini, now_second), i);//Thu Jun 08 10:18:42 格林尼治标准时间+0800 2017
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -397,7 +390,7 @@ public class MoreDigestActivity extends BaseActivity{
                     editor.putString("DATE", nowdate);
                     editor.putInt("DIGEST_EDITION", SECTION_MORNING);
                     editor.apply();
-                    setResult(3,intent);
+                    setResult(3, intent);
                     finish();
                 }
             });
@@ -413,7 +406,7 @@ public class MoreDigestActivity extends BaseActivity{
                     editor.putString("DATE", nowdate);
                     editor.putInt("DIGEST_EDITION", SECTION_EVENING);
                     editor.apply();
-                    setResult(3,intent);
+                    setResult(3, intent);
                     finish();
                 }
             });

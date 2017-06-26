@@ -226,14 +226,7 @@ public class NewsDetailFragment extends BaseFragment {
                                 ListenDigest();
                                 return true;
                             case R.id.settings:
-                              /*  Bundle bundle = new Bundle();
-                                bundle.putString("fragment", TAG0);
-                                SettingsDialog settingsDialog = new SettingsDialog();
-                                settingsDialog.setArguments(bundle);
-                                settingsDialog.show(getChildFragmentManager(), "setting");*/
-                                Intent intent = new Intent(getContext(), SettingActivity.class);
-                                intent.putExtra("fragment", TAG0);
-                                startActivityForResult(intent,1);
+                                settings();
                                 return true;
                             default:
                                 return false;
@@ -339,6 +332,13 @@ public class NewsDetailFragment extends BaseFragment {
             Toast.makeText(getContext(), "Your Phone does not install email application.", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    private void settings() {
+        Intent intent = new Intent(getContext(), SettingActivity.class);
+        intent.putExtra("fragment", TAG0);
+        startActivityForResult(intent, 1);
+        getActivity().finish();
     }
 
     private void ListenDigest() {
