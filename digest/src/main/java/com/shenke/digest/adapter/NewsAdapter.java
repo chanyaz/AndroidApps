@@ -3,13 +3,13 @@ package com.shenke.digest.adapter;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
-import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,9 +24,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.shenke.digest.R;
+import com.shenke.digest.core.MoreDigestActivity;
 import com.shenke.digest.core.NewsListActivity;
 import com.shenke.digest.db.DigestStatus;
-import com.shenke.digest.dialog.MoreDigestDialog;
 import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.util.DateUtil;
 import com.shenke.digest.view.CircleLayout;
@@ -39,9 +39,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_EVENING;
-import static com.shenke.digest.dialog.MoreDigestDialog.SECTION_MORNING;
-
+import static com.shenke.digest.core.MoreDigestActivity.SECTION_EVENING;
+import static com.shenke.digest.core.MoreDigestActivity.SECTION_MORNING;
 
 public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
 
@@ -153,13 +152,17 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
                     view.setDrawingCacheEnabled(true);
                     view.buildDrawingCache();
                     bitmap = view.getDrawingCache();
-                    FragmentActivity activity = (FragmentActivity) (mContext);
+                   FragmentActivity activity = (FragmentActivity) (mContext);
                     fm = activity.getSupportFragmentManager();
-                    MoreDigestDialog mMoreDigestDialog = new MoreDigestDialog();
+                    /* MoreDigestDialog mMoreDigestDialog = new MoreDigestDialog();
                     Bundle bundle = new Bundle();
                     bundle.putString("fragment", TAG);
                     mMoreDigestDialog.setArguments(bundle);
-                    mMoreDigestDialog.show(fm, "mMoreDigestDialog");
+                    mMoreDigestDialog.show(fm, "mMoreDigestDialog");*/
+                    Intent intent = new Intent(activity, MoreDigestActivity.class);
+                    intent.putExtra("fragment", TAG);
+                    activity.startActivityForResult(intent,3);
+
                 }
             });
             //index
@@ -272,11 +275,11 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
                 if (!(newsItem.statDetail.size()>0)) {
                     holder.images.findViewById(R.id.stats).setVisibility(View.GONE);
                 }
-                if (!(newsItem.stats.size()>0)) {
-                    holder.images.findViewById(R.id.diagram).setVisibility(View.GONE);
-                }
                 if (!(newsItem.tweetKeywords.size()>0)) {
                     holder.images.findViewById(R.id.twitter).setVisibility(View.GONE);
+                }
+                if (!(newsItem.infographs.size()>0)) {
+                    holder.images.findViewById(R.id.diagram).setVisibility(View.GONE);
                 }
             }
 

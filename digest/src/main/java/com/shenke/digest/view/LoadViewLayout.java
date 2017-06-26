@@ -3,13 +3,13 @@ package com.shenke.digest.view;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
@@ -27,8 +27,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.shenke.digest.R;
-import com.shenke.digest.dialog.MoreDigestDialog;
-import com.shenke.digest.dialog.SettingsDialog;
+import com.shenke.digest.core.MoreDigestActivity;
+import com.shenke.digest.core.SettingActivity;
 import com.shenke.digest.util.IntentUtil;
 
 
@@ -131,21 +131,28 @@ public class LoadViewLayout extends FrameLayout {
     }
 
     private void moreDigest() {
-        MoreDigestDialog moreDigestDialog = new MoreDigestDialog();
+       /* MoreDigestDialog moreDigestDialog = new MoreDigestDialog();
         Bundle bundle = new Bundle();
         bundle.putString("fragment", TAG);
         bundle.putString(MoreDigestDialog.DATE_SELECTED, mDate);
         bundle.putInt(MoreDigestDialog.SECTION_SELECTED, mSection);
         moreDigestDialog.setArguments(bundle);
-        moreDigestDialog.show(fm, "moreDigest");
+        moreDigestDialog.show(fm, "moreDigest");*/
+        Intent intent = new Intent(getContext(), MoreDigestActivity.class);
+        intent.putExtra("fragment", TAG);
+        ((Activity)getContext()).startActivityForResult(intent,3);
     }
 
     private void setting() {
-        Bundle bundle = new Bundle();
+        /*Bundle bundle = new Bundle();
         bundle.putString("fragment", TAG);
         SettingsDialog settingsDialog = new SettingsDialog();
         settingsDialog.setArguments(bundle);
-        settingsDialog.show(fm, "setting");
+        settingsDialog.show(fm, "setting");*/
+
+        Intent intent = new Intent(getContext(), SettingActivity.class);
+        intent.putExtra("fragment", TAG);
+        ((Activity) getContext()).startActivityForResult(intent,2);
     }
 
     private void sendEmail() {

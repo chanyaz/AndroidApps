@@ -19,12 +19,12 @@ import android.widget.Toast;
 import com.shenke.digest.R;
 import com.shenke.digest.adapter.NewsAdapter;
 import com.shenke.digest.core.ExtraNewsListActivity;
+import com.shenke.digest.core.MoreDigestActivity;
 import com.shenke.digest.core.NewsDetailActivity;
 import com.shenke.digest.core.NewsListActivity;
+import com.shenke.digest.core.SettingActivity;
 import com.shenke.digest.db.DigestStatus;
 import com.shenke.digest.dialog.EditionDialog;
-import com.shenke.digest.dialog.MoreDigestDialog;
-import com.shenke.digest.dialog.SettingsDialog;
 import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.util.Helper;
 import com.shenke.digest.util.StatusBarCompat;
@@ -211,19 +211,15 @@ public class NewsListFragment extends BaseFragment {
     }
 
     private void moreDigest() {
-        MoreDigestDialog moreDigestDialog = new MoreDigestDialog();
-        Bundle bundle = new Bundle();
-        bundle.putString("fragment", TAG);
-        moreDigestDialog.setArguments(bundle);
-        moreDigestDialog.show(getChildFragmentManager(), "moreDigest");
+        Intent intent = new Intent(getContext(), MoreDigestActivity.class);
+        intent.putExtra("fragment", TAG);
+        startActivityForResult(intent,3);
     }
 
     private void setting() {
-        Bundle bundle = new Bundle();
-        bundle.putString("fragment", TAG);
-        SettingsDialog settingsDialog = new SettingsDialog();
-        settingsDialog.setArguments(bundle);
-        settingsDialog.show(getChildFragmentManager(), "setting");
+        Intent intent = new Intent(getContext(), SettingActivity.class);
+        intent.putExtra("fragment", TAG);
+        startActivityForResult(intent,1);
     }
 
     private void sendEmail() {

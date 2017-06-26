@@ -50,9 +50,9 @@ import com.shenke.digest.core.LocationActivity;
 import com.shenke.digest.core.MediaPlayerActivity;
 import com.shenke.digest.core.NewsDetailActivity;
 import com.shenke.digest.core.NewsListActivity;
+import com.shenke.digest.core.SettingActivity;
 import com.shenke.digest.core.SlideShowActivity;
 import com.shenke.digest.db.DigestStatus;
-import com.shenke.digest.dialog.SettingsDialog;
 import com.shenke.digest.dialog.ShareDialog;
 import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.entity.SlideItem;
@@ -226,11 +226,14 @@ public class NewsDetailFragment extends BaseFragment {
                                 ListenDigest();
                                 return true;
                             case R.id.settings:
-                                Bundle bundle = new Bundle();
+                              /*  Bundle bundle = new Bundle();
                                 bundle.putString("fragment", TAG0);
                                 SettingsDialog settingsDialog = new SettingsDialog();
                                 settingsDialog.setArguments(bundle);
-                                settingsDialog.show(getChildFragmentManager(), "setting");
+                                settingsDialog.show(getChildFragmentManager(), "setting");*/
+                                Intent intent = new Intent(getContext(), SettingActivity.class);
+                                intent.putExtra("fragment", TAG0);
+                                startActivityForResult(intent,1);
                                 return true;
                             default:
                                 return false;
@@ -748,10 +751,8 @@ public class NewsDetailFragment extends BaseFragment {
                 if (streams != null && streams.size() > 0) {
                     String url = null;
                     for (NewsDigest.NewsItem.Video.Stream stream : streams) {
-                        if (!TextUtils.isEmpty(stream.url)
-                                && !TextUtils.isEmpty(stream.mime_type)
-                                && !"application/vnd.apple.mpegurl".equalsIgnoreCase(stream.mime_type)
-                                ) {
+                        if (!TextUtils.isEmpty(stream.url) && !TextUtils.isEmpty(stream.mime_type)
+                                && !"application/vnd.apple.mpegurl".equalsIgnoreCase(stream.mime_type)) {
                             url = stream.url;
                             break;
                         }
@@ -766,7 +767,7 @@ public class NewsDetailFragment extends BaseFragment {
                                 mpdIntent.putExtra(MediaPlayerActivity.CONTENT_TYPE_EXTRA, Util.TYPE_OTHER);
                                 mpdIntent.putExtra(MediaPlayerActivity.CONTENT_ID_EXTRA, src);
                                 mpdIntent.putExtra(MediaPlayerActivity.PROVIDER_EXTRA, "");
-                                //Intent mpdIntent = new Intent(v.getContext(), VideoAdActivity.class);//视频AD
+                                //Intent mpdIntent = new Intent(v.getContext(), NativeVideoAdActivity.class);//视频AD
                                 startActivity(mpdIntent);
                             }
                         });

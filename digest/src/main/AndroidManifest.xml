@@ -47,6 +47,19 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
+            android:name=".core.SettingActivity"
+            android:configChanges="locale"
+            android:label="@string/title_activity_news_detail"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        android:theme="@style/AppTheme" />
+        <activity
+            android:name=".core.MoreDigestActivity"
+            android:configChanges="locale"
+            android:label="@string/title_activity_news_detail"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
             android:name=".core.ExtraNewsListActivity"
             android:configChanges="locale"
             android:label="@string/extra_news_activity"

@@ -9,6 +9,7 @@
       <module fileurl="file://$PROJECT_DIR$/speechdemo/speechdemo.iml" filepath="$PROJECT_DIR$/speechdemo/speechdemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/sqlitedemo/sqlitedemo.iml" filepath="$PROJECT_DIR$/sqlitedemo/sqlitedemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/timepickerdemo/timepickerdemo.iml" filepath="$PROJECT_DIR$/timepickerdemo/timepickerdemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/vedioplay/vedioplay.iml" filepath="$PROJECT_DIR$/vedioplay/vedioplay.iml" />
       <module fileurl="file://$PROJECT_DIR$/youdaotrans/youdaotrans.iml" filepath="$PROJECT_DIR$/youdaotrans/youdaotrans.iml" />
     </modules>
   </component>

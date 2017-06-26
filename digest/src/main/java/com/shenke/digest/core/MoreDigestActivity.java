@@ -1,12 +1,9 @@
-package com.shenke.digest.dialog;
-
+package com.shenke.digest.core;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -14,11 +11,8 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
@@ -27,11 +21,11 @@ import android.widget.TextView;
 
 import com.shenke.digest.R;
 import com.shenke.digest.adapter.NewsAdapter;
-import com.shenke.digest.core.NewsListActivity;
 import com.shenke.digest.fragment.NewsListFragment;
 import com.shenke.digest.util.DateUtil;
 import com.shenke.digest.util.Helper;
 import com.shenke.digest.util.LogUtil;
+import com.shenke.digest.util.StatusBarCompat;
 import com.shenke.digest.view.BlurredView;
 import com.shenke.digest.view.DonutProgress;
 import com.shenke.digest.view.LoadViewLayout;
@@ -54,10 +48,10 @@ import rx.schedulers.Schedulers;
 import static com.shenke.digest.core.NewsListActivity.PREFERENCES_SETTINS;
 
 /**
- * 根据时间选择MoreDigest
+ * Created by Cloud on 2017/6/26.
  */
-public class MoreDigestDialog extends DialogFragment {
 
+public class MoreDigestActivity extends BaseActivity{
     private DonutProgress donutProgress;
     private ValueAnimator valueAnimator;
     private static final String TAG = "MoreDigestDialog";
@@ -81,38 +75,30 @@ public class MoreDigestDialog extends DialogFragment {
     public static final String LANGUAGE_SELECTED = "LANGUAGE_SELECTED";
     private BlurredView iv_background;
     private Bitmap bitmap;
-
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
-
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        SharedPreferences pre_settings = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
+        StatusBarCompat.showSystemUI(this);
+        setContentView(R.layout.more_digest_dialog);
+        SharedPreferences pre_settings = getSharedPreferences(PREFERENCES_SETTINS, 0);
         section = pre_settings.getInt("DIGEST_EDITION", 0);
         mLang = pre_settings.getString("LANGUAGE", "en-AA");
         mDate = pre_settings.getString("DATE", Helper.getGlobalTime(mLang).trim().substring(0, 10));
+        initView();
 
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.more_digest_dialog, container);
-        final HorizontalScrollView hsv = (HorizontalScrollView) rootView.findViewById(R.id.hsv);
+    private void initView() {
+        final HorizontalScrollView hsv = (HorizontalScrollView) findViewById(R.id.hsv);
         //滑动
-        new Handler().postDelayed(new Runnable() {
+       new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 hsv.scrollTo(2000, 0);
             }
         }, 2000);
-        iv_background = (BlurredView) rootView.findViewById(R.id.iv_background);
-        String TAG = getArguments().getString("fragment");
+        iv_background = (BlurredView) findViewById(R.id.iv_background);
+        String TAG = getIntent().getStringExtra("fragment");
         if (TAG.equals("NewsListFragment")) {
             bitmap = NewsListFragment.bitmap;
         } else if (TAG.equals("LoadViewLayout")) {
@@ -124,33 +110,30 @@ public class MoreDigestDialog extends DialogFragment {
             iv_background.setBlurredImg(bitmap);
             iv_background.setBlurredLevel(100);
         }
-        linearLayout = (LinearLayout) rootView.findViewById(R.id.newsChooser);
-        Typeface typefaceLight = Typeface.createFromAsset(rootView.getContext().getAssets(), "fonts/Roboto-Light.ttf");
-        donutProgress = (DonutProgress) rootView.findViewById(R.id.progress);
+        linearLayout = (LinearLayout) findViewById(R.id.newsChooser);
+        Typeface typefaceLight = Typeface.createFromAsset(this.getAssets(), "fonts/Roboto-Light.ttf");
+        donutProgress = (DonutProgress) findViewById(R.id.progress);
         donutProgress.setMax(100);
-        layoutContainer = rootView.findViewById(R.id.container);
-        img = (ImageView) rootView.findViewById(R.id.img);
-        tvH = (TextView) rootView.findViewById(R.id.h);
+        layoutContainer = findViewById(R.id.container);
+        img = (ImageView) findViewById(R.id.img);
+        tvH = (TextView) findViewById(R.id.h);
         tvH.setTypeface(typefaceLight);
-        tvM = (TextView) rootView.findViewById(R.id.m);
+        tvM = (TextView) findViewById(R.id.m);
         tvM.setTypeface(typefaceLight);
-        tvS = (TextView) rootView.findViewById(R.id.s);
+        tvS = (TextView) findViewById(R.id.s);
         tvS.setTypeface(typefaceLight);
-        tvHour = (TextView) rootView.findViewById(R.id.hour);
+        tvHour = (TextView) findViewById(R.id.hour);
         tvHour.setTypeface(typefaceLight);
-        tvMinute = (TextView) rootView.findViewById(R.id.minute);
+        tvMinute = (TextView) findViewById(R.id.minute);
         tvMinute.setTypeface(typefaceLight);
-        tvSecond = (TextView) rootView.findViewById(R.id.second);
+        tvSecond = (TextView) findViewById(R.id.second);
         tvSecond.setTypeface(typefaceLight);
-        next = (TextView) rootView.findViewById(R.id.next);
+        next = (TextView) findViewById(R.id.next);
         next.setTypeface(typefaceLight);
-        infoType = (TextView) rootView.findViewById(R.id.infoType);
+        infoType = (TextView) findViewById(R.id.infoType);
         infoType.setTypeface(typefaceLight);
         mHandler = initHandler();
-
-        return rootView;
     }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -163,13 +146,13 @@ public class MoreDigestDialog extends DialogFragment {
         progressAnimation();
     }
 
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
+  /*  @Override
+    public void onFinish(DialogInterface dialog) {
+        super.onFinish(dialog);
         if (mHandler != null) {
             mHandler.removeMessages(0x110);
         }
-    }
+    }*/
 
     private Subscription getSelected() {
         return rx.Observable
@@ -394,7 +377,7 @@ public class MoreDigestDialog extends DialogFragment {
                 e.printStackTrace();
             }
             final String str = Helper.format(date);//Thu 06/08/2017 10:18:42 周四 Jun Thursday
-            View item = LayoutInflater.from(getContext()).inflate(R.layout.news_chooser_item, linearLayout, false);
+            View item = LayoutInflater.from(this).inflate(R.layout.news_chooser_item, linearLayout, false);
             TextView newsDate = (TextView) item.findViewById(R.id.newsDate);/**日期*/
             ImageView divider = (ImageView) item.findViewById(R.id.divider);
             newsDate.setText(str.substring(4, 9));
@@ -402,19 +385,20 @@ public class MoreDigestDialog extends DialogFragment {
             newsDay.setText(str.substring(0, 3));
             ImageView daytime = (ImageView) item.findViewById(R.id.daytime);
             daytime.setTag(str);
-            final Intent intent = new Intent(getContext(), NewsListActivity.class);
+            final Intent intent = new Intent(this, NewsListActivity.class);
             daytime.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    dismiss();
-                    getActivity().finish();
-                    SharedPreferences pre_settings = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
+
+
+                    SharedPreferences pre_settings = getSharedPreferences(PREFERENCES_SETTINS, 0);
                     SharedPreferences.Editor editor = pre_settings.edit();
                     String nowdate = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
                     editor.putString("DATE", nowdate);
                     editor.putInt("DIGEST_EDITION", SECTION_MORNING);
                     editor.apply();
-                    startActivity(intent);
+                    setResult(3,intent);
+                    finish();
                 }
             });
             ImageView night = (ImageView) item.findViewById(R.id.night);
@@ -422,15 +406,15 @@ public class MoreDigestDialog extends DialogFragment {
             night.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    getActivity().finish();
-                    SharedPreferences pre_settings = getContext().getSharedPreferences(PREFERENCES_SETTINS, 0);
+
+                    SharedPreferences pre_settings = getSharedPreferences(PREFERENCES_SETTINS, 0);
                     SharedPreferences.Editor editor = pre_settings.edit();
                     String nowdate = str.trim().substring(10, 14) + "-" + str.trim().substring(4, 6) + "-" + str.trim().substring(7, 9);
                     editor.putString("DATE", nowdate);
                     editor.putInt("DIGEST_EDITION", SECTION_EVENING);
                     editor.apply();
-                    startActivity(intent);
-                    dismiss();
+                    setResult(3,intent);
+                    finish();
                 }
             });
 

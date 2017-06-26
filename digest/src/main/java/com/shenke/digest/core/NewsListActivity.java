@@ -1,10 +1,7 @@
 package com.shenke.digest.core;
 
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -24,7 +21,6 @@ import com.shenke.digest.fragment.NewsListFragment;
 import com.shenke.digest.http.RetrofitSingleton;
 import com.shenke.digest.util.Helper;
 import com.shenke.digest.util.IntentUtil;
-import com.shenke.digest.util.LogUtil;
 import com.shenke.digest.util.StatusBarCompat;
 
 import java.util.ArrayList;
@@ -46,8 +42,6 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     private Subscription subscriptionInstall;
     private Subscription subscriptionSave;
     private DigestLoadDialog digestLoadDialog;
-    private MyReceiver myReceiver;
-    private int taskCount = 0;
     public static Bitmap bitmap = null;
     private Observer<NewsDigest> observer;
     private int mSection;
@@ -57,7 +51,6 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
     private int digest_edition = 0;
     public static String PREFERENCES_SETTINS = "PREFERENCES_SETTINS";
     public static String UPDATE_SETTINS = "UPDATE_SETTINS";
-    public static String ITEM_IS_CHECKED = "IS_CHECKED";
     private boolean first;//是否第一次打开APP
     private int cachetime; //缓存保留时长
     public  static DBManager mgr;
@@ -67,10 +60,6 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         super.onCreate(savedInstanceState);
         StatusBarCompat.showSystemUI(this);
         setContentView(R.layout.activity_news_list);
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(MyReceiver.ACTION_TASK_COUNT);
-        myReceiver = new MyReceiver();
-        registerReceiver(myReceiver, intentFilter);
         subscriptionInstall = checkInstall();
         digestLoadDialog = new DigestLoadDialog();
         SharedPreferences p_settings = getSharedPreferences(PREFERENCES_SETTINS, 0);
@@ -376,7 +365,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         if (subscriptionSave != null) {
             subscriptionSave.unsubscribe();
         }
-        unregisterReceiver(myReceiver);
+      //  unregisterReceiver(myReceiver);
         mgr.closeDB();
         super.onDestroy();
     }
@@ -390,29 +379,27 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         }
     }
 
-    public class MyReceiver extends BroadcastReceiver {
-        public static final String ACTION_TASK_COUNT = "com.shenke.digest.core.action.TASK_COUNT";
-        public static final String TASK_COUNT = "task_count";
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent != null) {
-                final String action = intent.getAction();
-                if (ACTION_TASK_COUNT.equals(action)) {
-                    int count = intent.getIntExtra(TASK_COUNT, 0);
-                    if (count == taskCount && count > 0) {
-                        LogUtil.d(TAG, " all news loaded");
-                        digestLoadDialog.onLoadSuccess();
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.container, new NewsListFragment(), "list")
-                                .commit();
-                    } else {
-                        LogUtil.d(TAG, count + " news loaded");
-                    }
-
-                }
-            }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //requestCode标示请求的标示   resultCode表示有数据
+        if ( resultCode == 2 ) {
+            SharedPreferences p_settings = getSharedPreferences(PREFERENCES_SETTINS, 0);
+            String strdate = Helper.format(new Date());
+            String nowdate = strdate.trim().substring(10, 14) + "-" + strdate.trim().substring(4, 6) + "-" + strdate.trim().substring(7, 9);
+            mDate = p_settings.getString("DATE", nowdate);
+            mSection = p_settings.getInt("DIGEST_EDITION", 2);
+            mLang = p_settings.getString("LANGUAGE", Helper.LanguageEdtion(3));
+            onLoad();
+        }
+        if ( resultCode == 3 ) {
+            SharedPreferences p_settings = getSharedPreferences(PREFERENCES_SETTINS, 0);
+            String strdate = Helper.format(new Date());
+            String nowdate = strdate.trim().substring(10, 14) + "-" + strdate.trim().substring(4, 6) + "-" + strdate.trim().substring(7, 9);
+            mDate = p_settings.getString("DATE", nowdate);
+            mSection = p_settings.getInt("DIGEST_EDITION", 2);
+            mLang = p_settings.getString("LANGUAGE", Helper.LanguageEdtion(3));
+            onLoad();
         }
     }
 }
