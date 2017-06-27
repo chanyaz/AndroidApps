@@ -97,7 +97,6 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
             @Override
             public void onNext(NewsDigest mNewsDigest) {
                 Log.i("fetchData", "onNext");
-                // digestLoadDialog.onLoadSuccess();
                 NewsListFragment mNewsListFragment = new NewsListFragment();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("NewsDigestData", mNewsDigest);

@@ -73,7 +73,19 @@
             android:scrollbars="none"
             android:stretchMode="columnWidth"
             android:verticalSpacing="@dimen/error_grid_vertical_space" />
-
+        <ImageView
+          android:id="@+id/error_nocontent"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_alignEnd="@+id/menu"
+          android:layout_centerVertical="true"
+          android:src="@mipmap/error"
+          android:layout_marginLeft="@dimen/error_reload_margin_left"
+          android:layout_marginRight="@dimen/error_reload_margin_right"
+          android:horizontalSpacing="@dimen/error_grid_horizontal_space"
+          android:importantForAccessibility="no"
+          android:isScrollContainer="false"
+          android:visibility="gone"/>
         <ImageButton
             android:id="@+id/menu"
             android:layout_width="wrap_content"

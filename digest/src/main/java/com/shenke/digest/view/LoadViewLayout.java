@@ -21,6 +21,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,7 +43,7 @@ public class LoadViewLayout extends FrameLayout {
     public OnLoadNewsListener onLoadNewsListener;
     private ImageButton menu;
     public static Bitmap bitmap;
-
+    private ImageView error_nocontent;
     public LoadViewLayout(Context context) {
         super(context);
         initChildView(context);
@@ -67,7 +68,9 @@ public class LoadViewLayout extends FrameLayout {
     private void initChildView(Context context) {
         childView = LayoutInflater.from(context).inflate(R.layout.loading_digest_view, this);
         error = childView.findViewById(R.id.error);
+
          tv_no_connection = (TextView) childView.findViewById(R.id.tv_no_connection);
+        error_nocontent =  (ImageView) childView.findViewById(R.id.error_nocontent);
         error.setVisibility(VISIBLE);
         gridView = (ErrorGridView) childView.findViewById(R.id.gvExclamation);
         gridView.setAdapter(new GridAdapter());
@@ -277,6 +280,8 @@ public class LoadViewLayout extends FrameLayout {
                     loadingView.setVisibility(GONE);
                     error.setVisibility(VISIBLE);
                     tv_no_connection.setVisibility(GONE);
+                    gridView.setVisibility(GONE);
+                    error_nocontent.setVisibility(VISIBLE);
                     menu.setVisibility(VISIBLE);
                     float cx = getMeasuredWidth() / 2;
                     float cy = getMeasuredHeight() / 2;

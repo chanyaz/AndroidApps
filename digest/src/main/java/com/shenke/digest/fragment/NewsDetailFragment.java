@@ -72,6 +72,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
+import static com.shenke.digest.R.id.sources;
 import static com.shenke.digest.selector.SelectableTextHelper.tts;
 
 /**
@@ -107,7 +108,6 @@ public class NewsDetailFragment extends BaseFragment {
     private ViewGroup infographs;
     private ViewGroup longreads;
     private ViewGroup locations;
-    private ViewGroup slideshow;
     private ViewGroup videos;
     private ViewGroup wikis;
     private ViewGroup tweets;
@@ -146,13 +146,12 @@ public class NewsDetailFragment extends BaseFragment {
      * @return A new instance of fragment NewsDetailFragment.
      */
 
-    public static NewsDetailFragment newInstance(String uuid, int color, int index, boolean checked, String source, NewsDigest mNewsDigest) {
+    public static NewsDetailFragment newInstance(String uuid, int color, int index,  String source, NewsDigest mNewsDigest) {
         NewsDetailFragment fragment = new NewsDetailFragment();
         Bundle args = new Bundle();
         args.putString(UUID, uuid);
         args.putInt(COLOR, color);
         args.putInt(INDEX, index);
-        args.putBoolean("CHECKED", checked);
         args.putString(SOURCE, source);
         args.putSerializable("NewsDigestData", mNewsDigest);
         fragment.setArguments(args);
@@ -275,7 +274,7 @@ public class NewsDetailFragment extends BaseFragment {
         wikis.removeAllViews();
         tweets = $(rootView, R.id.tweets);
         tweets.removeAllViews();
-        references = $(rootView, R.id.sources);
+        references = $(rootView, sources);
         references.removeAllViews();
         anchorArea = $(rootView, R.id.anchorArea);
         anchor = $(rootView, R.id.anchor);
@@ -283,7 +282,6 @@ public class NewsDetailFragment extends BaseFragment {
         referCount = $(rootView, R.id.referCount);
         summaryEdition = $(rootView, R.id.summaryEdition);
         line = $(rootView, R.id.line);
-        // referCount.setTypeface(typefaceThin);
         singleImage = $(rootView, R.id.singleImage);
         error = $(rootView, R.id.error);
         gallery = $(rootView, R.id.gallery);
@@ -322,7 +320,7 @@ public class NewsDetailFragment extends BaseFragment {
     private void sendEmail() {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:")); // only email apps should handle this
-        String[] addresses = {"yifanfeng@outlook.com"};
+        String[] addresses = {"858267873@qq.com"};
         intent.putExtra(Intent.EXTRA_EMAIL, addresses);
         String subject = "Please replace this text with your issues";
         intent.putExtra(Intent.EXTRA_SUBJECT, subject);
@@ -445,7 +443,6 @@ public class NewsDetailFragment extends BaseFragment {
             Glide.with(banner.getContext()).load(mNewsDigest.items.get(index).images.originalUrl).crossFade().into(banner);
             //title
             title.setText("" + mNewsDigest.items.get(index).title);
-            // title.setTag("" + itemRealm.getLink());
             title.setVisibility(View.VISIBLE);
             //quote
             addQuote(mNewsDigest.items.get(index));
@@ -477,8 +474,6 @@ public class NewsDetailFragment extends BaseFragment {
             //wiki
             addWiki(mNewsDigest.items.get(index));
 
-            //tweet
-            // addTweet(mNewsDigest.items.get(index));
             //reference
             addReference(mNewsDigest.items.get(index));
             line.setVisibility(View.VISIBLE);
@@ -486,7 +481,6 @@ public class NewsDetailFragment extends BaseFragment {
             if (getActivity() instanceof NewsDetailActivity) {
                 int pageIndex = ((NewsDetailActivity) getActivity()).getCurrentIndex();
                 if (pageIndex == index && !mNewsDigest.items.get(index).isChecked()) {
-                    // LogUtil.e(TAG, "Fragment index:" + (index - 1) + ";viewpager index:" + pageIndex);
                     activeItem();
                 }
             }
@@ -504,7 +498,7 @@ public class NewsDetailFragment extends BaseFragment {
         mSelectableTextHelper = new SelectableTextHelper.Builder(view)
                 .setSelectedColor(colorrr)
                 .setCursorHandleSizeInDp(24)
-                .setCursorHandleColor(color)//"#00B108"
+                .setCursorHandleColor(color)
                 .build();
         mSelectableTextHelper.setSelectListener(new OnSelectListener() {
             @Override
@@ -554,7 +548,6 @@ public class NewsDetailFragment extends BaseFragment {
             shapeDrawableAnchor.getPaint().setStrokeWidth(DimensionUtil.dp2px(getResources(), 1f));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 anchor.setBackground(shapeDrawableAnchor);
-                // toggleImage.setBackground(shapeDrawableAnchor);
             }
             DrawableCompat.setTint(anchor.getDrawable(), color);
             DrawableCompat.setTint(toggleImage.getDrawable(), color);
@@ -564,7 +557,6 @@ public class NewsDetailFragment extends BaseFragment {
             final View referencesItemView =
                     LayoutInflater.from(references.getContext()).inflate(R.layout.item_source, references, false);
             TextView publisher = $(referencesItemView, R.id.publisher);
-            //publisher.setTypeface(typefaceBold);
             publisher.setText(sources.get(0).publisher);
             ViewGroup titleContainer = $(referencesItemView, R.id.titleContainer);
 
@@ -597,7 +589,6 @@ public class NewsDetailFragment extends BaseFragment {
             shapeDrawableAnchor.getPaint().setStrokeWidth(DimensionUtil.dp2px(getResources(), 1f));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 anchor.setBackground(shapeDrawableAnchor);
-                // toggleImage.setBackground(shapeDrawableAnchor);
             }
             DrawableCompat.setTint(anchor.getDrawable(), color);
             DrawableCompat.setTint(toggleImage.getDrawable(), color);
@@ -622,7 +613,6 @@ public class NewsDetailFragment extends BaseFragment {
                                         LayoutInflater.from(references.getContext()).inflate(R.layout.item_source, references, false);
                                 TextView publisher = $(referencesItemView, R.id.publisher);
                                 publisher.setText(list.get(0).publisher);
-                                // publisher.setTypeface(typefaceBold);
                                 ViewGroup titleContainer = $(referencesItemView, R.id.titleContainer);
                                 //title
                                 for (NewsDigest.NewsItem.Source source : list) {
@@ -644,9 +634,7 @@ public class NewsDetailFragment extends BaseFragment {
                                     sourceTitle.setMovementMethod(LinkMovementMethod.getInstance());
                                     URLSpanNoUnderline.stripUnderlines(sourceTitle);
                                     titleContainer.addView(referencestitleItemView);
-                                    // LogUtil.d(TAG, "---------onCompleted getPublisher: " + source.getPublisher() + " -----");
                                 }
-                                //LogUtil.d(TAG, "---------onCompleted round-----");
 
                                 references.addView(referencesItemView);
                             }
@@ -690,7 +678,6 @@ public class NewsDetailFragment extends BaseFragment {
 
                 TextView wikiTitle = $(wikiItemView, R.id.wikiTitle);
                 wikiTitle.setText("" + wiki.title);
-                // wikiTitle.setTypeface(typefaceBold);
                 TextView wikiText = $(wikiItemView, R.id.wikiText);
                 wikiText.setText("" + wiki.text);
                 wikiText.setTypeface(typefaceLight);
@@ -800,7 +787,6 @@ public class NewsDetailFragment extends BaseFragment {
 
                 ImageView infographImg = $(infographItemView, R.id.infographImg);
 
-                //String src = EntityHelper.getImageSrc(infograph.getImages());
                 String src = infograph.images.originalUrl;
                 Glide.with(infographImg.getContext()).load(src).crossFade().into(infographImg);
 
@@ -864,12 +850,10 @@ public class NewsDetailFragment extends BaseFragment {
                     TextView quoteText = $(quoteContainer, R.id.quoteText);
                     quoteText.setTextColor(color);
                     addSelectableTextHelper(quoteText);//添加文字选择
-                    // quoteText.setTypeface(typefaceLight);
                     quoteText.setText(quote.text);
                     TextView quoteSource = $(quoteContainer, R.id.quoteSource);
                     quoteSource.setText(quote.source);
                     addSelectableTextHelper(quoteSource);//添加文字选择
-                    //quoteSource.setTypeface(typefaceBold);
                     View verticalLine = $(quoteContainer, R.id.verticalLine);
                     verticalLine.setBackgroundColor(color);
                     speakstr = speakstr + item.text + item.quote.text;
@@ -889,10 +873,6 @@ public class NewsDetailFragment extends BaseFragment {
                 View longReadItemView =
                         LayoutInflater.from(longreads.getContext()).inflate(R.layout.item_topic_in_depth, longreads, false);
 
-
-                // Image image = longRead.getImages();
-
-                //String src = getImageSource(image);
                 String src = longRead.images.originalUrl;
                 if (src != null && src.length() > 0) {
                     ImageView longreadImg = $(longReadItemView, R.id.longreadImg);
@@ -990,7 +970,6 @@ public class NewsDetailFragment extends BaseFragment {
                         startActivity(intent);
                     }
                 });
-                // caption.setTypeface(typefaceBold);
                 locations.addView(locationItemView);
             }
         }
@@ -1067,7 +1046,6 @@ public class NewsDetailFragment extends BaseFragment {
                         @Override
                         public void onNext(Integer integer) {
                             if (index == integer) {
-                                // LogUtil.e(TAG, "Fragment index:" + (index - 1) + ";viewpager index:" + integer);
                                 if (!newsItem.isChecked()) {
                                     activeItem();
                                 }

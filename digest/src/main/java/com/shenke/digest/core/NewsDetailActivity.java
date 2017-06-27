@@ -56,11 +56,9 @@ public class NewsDetailActivity extends AppCompatActivity {
         viewPager.setCurrentItem(index);
         data.addAll(mNewsDigest.items);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            //int preIndex = -1;
 
             @Override
             public void onPageScrolled(final int position, float positionOffset, int positionOffsetPixels) {
-                // LogUtil.e(TAG, "onPageScrolled position:" + position + ";positionOffset:" + positionOffset);
                 if (currentIndex != position) {
                     currentIndex = position;
 
@@ -131,11 +129,11 @@ public class NewsDetailActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             if (more && mNewsDigest != null && !mNewsDigest.items.isEmpty()) {
                 NewsDigest.NewsItem newsItem = mNewsDigest.items.get(position);
-                return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), position,true,source,mNewsDigest);
+                return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), position,source,mNewsDigest);
             } else if (!more && mNewsDigest != null && !mNewsDigest.items.isEmpty()) {
                 if (position < getCount() - 1) {
                     NewsDigest.NewsItem newsItem= mNewsDigest.items.get(position);
-                    return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), position,true,source,mNewsDigest);
+                    return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), position,source,mNewsDigest);
 
                 } else {
                     Fragment fragment = new ExtraFragment();
