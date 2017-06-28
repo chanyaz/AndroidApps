@@ -66,14 +66,13 @@ import com.shenke.digest.view.DonutProgress;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
 import static com.shenke.digest.R.id.sources;
-import static com.shenke.digest.selector.SelectableTextHelper.tts;
+import static com.shenke.digest.core.MyApplication.tts;
 
 /**
  * A simple {@link BaseFragment} subclass.
@@ -146,7 +145,7 @@ public class NewsDetailFragment extends BaseFragment {
      * @return A new instance of fragment NewsDetailFragment.
      */
 
-    public static NewsDetailFragment newInstance(String uuid, int color, int index,  String source, NewsDigest mNewsDigest) {
+    public static NewsDetailFragment newInstance(String uuid, int color, int index, String source, NewsDigest mNewsDigest) {
         NewsDetailFragment fragment = new NewsDetailFragment();
         Bundle args = new Bundle();
         args.putString(UUID, uuid);
@@ -171,7 +170,6 @@ public class NewsDetailFragment extends BaseFragment {
             mNewsDigest = (NewsDigest) getArguments().getSerializable("NewsDigestData");
 
         }
-        InitTtsEngine();
     }
 
 
@@ -186,6 +184,7 @@ public class NewsDetailFragment extends BaseFragment {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getActivity().setResult(2);
                 getActivity().finish();
             }
         });
@@ -350,31 +349,6 @@ public class NewsDetailFragment extends BaseFragment {
 
     }
 
-    /**
-     * 初始化语音引擎
-     */
-    private void InitTtsEngine() {
-        tts = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                //如果装载TTS引擎成功
-                if (status == TextToSpeech.SUCCESS) {
-                    //设置使用美式英语朗读
-                    int result = tts.setLanguage(Locale.US);
-                    tts.setSpeechRate(0.8f);//设置播放速率
-                    tts.setPitch(1.2f);//设置语音的声高
-                    //tts.setVoice();//设置文字语音转化的声音
-                    //setOnUtteranceProgressListener(UtteranceProgressListener listener)//设置监听播放进度的回调
-                    //如果不支持设置的语言
-                    if (result != TextToSpeech.LANG_COUNTRY_AVAILABLE
-                            && result != TextToSpeech.LANG_AVAILABLE) {
-                        // Toast.makeText(MainActivity.this, "TTS暂时不支持这种语言朗读", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
-    }
-
     public void activeItem() {
 
         rx.Observable
@@ -503,7 +477,6 @@ public class NewsDetailFragment extends BaseFragment {
         mSelectableTextHelper.setSelectListener(new OnSelectListener() {
             @Override
             public void onTextSelected(CharSequence content) {
-
             }
         });
     }
@@ -723,7 +696,6 @@ public class NewsDetailFragment extends BaseFragment {
                         LayoutInflater.from(videos.getContext()).inflate(R.layout.item_video, videos, false);
                 TextView title = $(videoItemView, R.id.title);
                 title.setText("" + video.title);
-                //title.setTypeface(typefaceBold);
                 ImageView playIcon = $(videoItemView, R.id.playIcon);
                 ShapeDrawable shapeDrawable = new ShapeDrawable(new OvalShape());
                 shapeDrawable.getPaint().setColor(color);
@@ -1072,6 +1044,5 @@ public class NewsDetailFragment extends BaseFragment {
             event.unsubscribe();
             event = null;
         }
-        SelectableTextHelper.ShutSpeech();
     }
 }

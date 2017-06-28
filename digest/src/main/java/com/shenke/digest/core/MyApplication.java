@@ -4,14 +4,17 @@ package com.shenke.digest.core;
 import android.app.Application;
 import android.content.Context;
 import android.os.RemoteException;
+import android.speech.tts.TextToSpeech;
 
 import com.amap.api.maps2d.MapsInitializer;
 import com.shenke.digest.http.RetrofitSingleton;
+
 
 public class MyApplication extends Application {
     public static MyApplication INSTANCE;
     public static String cacheDir = "";
     public static Context mAppContext = null;
+    public static TextToSpeech tts;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -43,4 +46,5 @@ public class MyApplication extends Application {
     public static MyApplication getInstance() {
         return INSTANCE;
     }
+
 }

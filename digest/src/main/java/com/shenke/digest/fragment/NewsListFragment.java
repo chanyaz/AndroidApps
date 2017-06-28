@@ -36,6 +36,7 @@ import java.util.Map;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -54,7 +55,9 @@ public class NewsListFragment extends BaseFragment {
     private String lang;
     public static Bitmap bitmap;
     public NewsDigest mNewsDigest;
-
+    private Subscription subscription;
+    private int lastPosition = 0;
+    private int lastOffset = 0;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -170,7 +173,7 @@ public class NewsListFragment extends BaseFragment {
                 intent.putExtra(NewsDetailActivity.MORE, false);
                 intent.putExtra(NewsDetailActivity.SOURCE, NewsAdapter.newssource);
                 intent.putExtra(NewsDetailActivity.DATA, mNewsDigest);
-                DigestStatus digestStatus =new DigestStatus();
+                DigestStatus digestStatus = new DigestStatus();
                 digestStatus.uuid = mNewsDigest.items.get(position).uuid;
                 digestStatus.isChecked = 1;
                 NewsListActivity.mgr.updateStatus(digestStatus);
@@ -182,6 +185,9 @@ public class NewsListFragment extends BaseFragment {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
+                if(recyclerView.getLayoutManager() != null) {
+                    getPositionAndOffset();
+                }
             }
 
             @Override
@@ -200,29 +206,73 @@ public class NewsListFragment extends BaseFragment {
 
             }
         });
-        if (adapter != null) {
-            adapter.clear();
-            list.clear();
-            list.addAll(mNewsDigest.items);
+        subscription = load();
+    }
+    /**
+     * 记录RecyclerView当前位置
+     */
+    private void getPositionAndOffset() {
+        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        //获取可视的第一个view
+        View topView = layoutManager.getChildAt(0);
+        if(topView != null) {
+            //获取与该view的顶部的偏移量
+            lastOffset = topView.getTop();
+            //得到该View的数组位置
+            lastPosition = layoutManager.getPosition(topView);
         }
-        addFooterView(list);
-        getConfg();
+    }
+    private Subscription load() {
+        return rx.Observable
+                .create(new Observable.OnSubscribe<NewsDigest>() {
+                    @Override
+                    public void call(Subscriber<? super NewsDigest> subscriber) {
 
+                        for(NewsDigest.NewsItem newsItem : mNewsDigest.items){
+                            list.add(newsItem);
+                        }
+                        subscriber.onNext(mNewsDigest);
+                        subscriber.onCompleted();
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<NewsDigest>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(NewsDigest newsItems) {
+                        if (adapter != null) {
+                            adapter.clear();
+                            list.clear();
+                            list.addAll(newsItems.items);
+                            for (NewsDigest.NewsItem item : newsItems.items) {
+                                adapter.addItem(item);
+                            }
+                        }
+                        addFooterView(list);
+                        getConfg();
+                    }
+                });
     }
 
     private void moreDigest() {
 
         Intent intent = new Intent(getContext(), MoreDigestActivity.class);
         intent.putExtra("fragment", TAG);
-        startActivityForResult(intent,3);
+        startActivityForResult(intent, 3);
     }
 
     private void setting() {
         Intent intent = new Intent(getContext(), SettingActivity.class);
         intent.putExtra("fragment", TAG);
-        startActivityForResult(intent,1);
+        startActivityForResult(intent, 1);
     }
-
     private void sendEmail() {
 
         Intent intent = new Intent(Intent.ACTION_SENDTO);
@@ -238,7 +288,6 @@ public class NewsListFragment extends BaseFragment {
         }
 
     }
-
 
     private void addFooterView(ArrayList<NewsDigest.NewsItem> items) {
         View footer = LayoutInflater.from(recyclerView.getContext()).inflate(R.layout.news_list_footer_view, recyclerView, false);
@@ -277,7 +326,9 @@ public class NewsListFragment extends BaseFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
+        if (subscription != null) {
+            subscription.unsubscribe();
+        }
     }
 
     @Override
@@ -290,6 +341,10 @@ public class NewsListFragment extends BaseFragment {
                     extraNews();
                 }
             }, 300);
+        }
+        if (resultCode == 2){
+            adapter.notifyDataSetChanged();
+           // ((LinearLayoutManager) recyclerView.getLayoutManager()).scrollToPositionWithOffset(lastPosition, lastOffset);
         }
     }
 

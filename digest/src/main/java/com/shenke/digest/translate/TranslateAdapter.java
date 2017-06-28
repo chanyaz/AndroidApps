@@ -19,7 +19,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static com.shenke.digest.selector.SelectableTextHelper.tts;
+import static com.shenke.digest.core.MyApplication.tts;
+
 
 public class TranslateAdapter extends BaseAdapter {
 

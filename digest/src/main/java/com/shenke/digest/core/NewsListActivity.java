@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
 import com.shenke.digest.BuildConfig;
@@ -26,6 +27,7 @@ import com.shenke.digest.util.StatusBarCompat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import rx.Observable;
@@ -36,6 +38,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
+
+import static com.shenke.digest.core.MyApplication.tts;
 
 public class NewsListActivity extends BaseActivity implements DigestLoadDialog.OnNewsLoadInActivityListener {
     private static final String TAG = "NewsListActivity";
@@ -78,7 +82,19 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().build());
         }
-
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    int result = tts.setLanguage(Locale.US);
+                    tts.setSpeechRate(0.8f);
+                    tts.setPitch(1.2f);
+                    if (result != TextToSpeech.LANG_COUNTRY_AVAILABLE
+                            && result != TextToSpeech.LANG_AVAILABLE) {
+                    }
+                }
+            }
+        });
     }
 
     private void fetchData() {
@@ -364,6 +380,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
             subscriptionSave.unsubscribe();
         }
         mgr.closeDB();
+        tts.shutdown();
         super.onDestroy();
     }
 
@@ -380,6 +397,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         } else {
             digestLoadDialog.onLoadError();
         }
+
     }
 
     @Override

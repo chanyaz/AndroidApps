@@ -15,14 +15,12 @@ import com.shenke.digest.entity.Cache;
 public class BaseActivity extends AppCompatActivity {
 
     public Cache aCache;
-
-    protected Context mContext;
+    protected  Context mContext;
     protected static final String TAG = "youmi-demo";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         aCache = Cache.get(BaseActivity.this);
-
     }
 
 

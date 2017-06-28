@@ -25,7 +25,7 @@ import android.widget.TextView;
 import com.shenke.digest.R;
 import com.shenke.digest.translate.TranslateActivity;
 
-import java.util.Locale;
+import static com.shenke.digest.core.MyApplication.tts;
 
 
 public class SelectableTextHelper {
@@ -52,7 +52,6 @@ public class SelectableTextHelper {
     private BackgroundColorSpan mSpan;
     private boolean isHideWhenScroll;
     private boolean isHide = true;
-    public static TextToSpeech tts;
     private ViewTreeObserver.OnPreDrawListener mOnPreDrawListener;
     ViewTreeObserver.OnScrollChangedListener mOnScrollChangedListener;
 
@@ -135,33 +134,6 @@ public class SelectableTextHelper {
         mTextView.getViewTreeObserver().addOnScrollChangedListener(mOnScrollChangedListener);
 
         mOperateWindow = new OperateWindow(mContext);
-        InitTtsEngine();
-
-    }
-
-    /**
-     * 初始化语音引擎
-     */
-    private void InitTtsEngine() {
-
-            tts = new TextToSpeech(mContext, new TextToSpeech.OnInitListener() {
-                @Override
-                public void onInit(int status) {
-                    //如果装载TTS引擎成功
-                    if (status == TextToSpeech.SUCCESS) {
-                        //设置使用美式英语朗读(虽然设置里有中文选项Locale.Chinese,但并不支持中文)
-                        int result = tts.setLanguage(Locale.US);
-                        tts.setSpeechRate(0.8f);//设置播放速率
-                        tts.setPitch(1.2f);//设置语音的声高
-                        //如果不支持设置的语言
-                        if (result != TextToSpeech.LANG_COUNTRY_AVAILABLE
-                                && result != TextToSpeech.LANG_AVAILABLE) {
-                            //Toast.makeText(mContext, "TTS暂时不支持这种语言朗读", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }
-            });
-
     }
 
     private void postShowSelectView(int duration) {
@@ -189,7 +161,7 @@ public class SelectableTextHelper {
         }
     };
 
-    private void hideSelectView() {
+    public void hideSelectView() {
         isHide = true;
         if (mStartHandle != null) {
             mStartHandle.dismiss();
@@ -228,7 +200,7 @@ public class SelectableTextHelper {
         selectText(startOffset, endOffset);
         showCursorHandle(mStartHandle);
         showCursorHandle(mEndHandle);
-        if(mOperateWindow!= null){
+        if (mOperateWindow != null) {
             mOperateWindow.show();
         }
     }
@@ -396,51 +368,6 @@ public class SelectableTextHelper {
 
         public boolean isShowing() {
             return mWindow.isShowing();
-        }
-    }
-
-    /**
-     * save recond file
-     *
-     * @param string
-     */
-    public void SaveSpeechRecond(String string) {
-        //将朗读文本的音频记录到指定文件
-        tts.synthesizeToFile(string, null, "/sdcard/sound.wav");
-    }
-
-    /**
-     * isSpeaking
-     *
-     * @return
-     */
-    public boolean IsSpeaking() {
-        if (tts != null) {
-            if (tts.isSpeaking()) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * shutdown
-     */
-    public static void ShutSpeech() {
-        if (tts != null) {
-            tts.shutdown();
-        }
-    }
-
-    /**
-     * stop
-     */
-    public void StopSpeech() {
-        if (tts != null) {
-            tts.stop();
         }
     }
 

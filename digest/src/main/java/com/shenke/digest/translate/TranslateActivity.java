@@ -1,6 +1,5 @@
 package com.shenke.digest.translate;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.shenke.digest.R;
+import com.shenke.digest.core.BaseActivity;
 import com.youdao.sdk.app.Language;
 import com.youdao.sdk.app.LanguageUtils;
 import com.youdao.sdk.app.YouDaoApplication;
@@ -26,13 +26,11 @@ import com.youdao.sdk.ydtranslate.Translate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.shenke.digest.selector.SelectableTextHelper.tts;
-
 
 /**
  * TODO: default from zh to en
  */
-public class TranslateActivity extends Activity {
+public class TranslateActivity extends BaseActivity {
 
     // 查询列表
     private ListView translateList;
@@ -244,13 +242,6 @@ public class TranslateActivity extends Activity {
         this.finish();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (tts != null) {
-            tts.shutdown();
-        }
-    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

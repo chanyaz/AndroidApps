@@ -297,7 +297,6 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
         holder.smallTitle.setTypeface(typeface);
         holder.urd.setTypeface(ty);
         holder.textView.setTypeface(ty);
-        // final int count = getAllItems().size();
         final int count = mNewsDigest.items.size();
         holder.textView.setText(holder.circleLayout.getActiveCount() + " of " + count);
 
@@ -309,7 +308,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
                 index++;
             }
             for (int i = 0; i < count; i++) {
-                if (digests.get(i).isChecked > 0) {
+                if (digests.get(i).isChecked > 0 ) {
                     holder.circleLayout.activeItem(i);
                 }
             }
