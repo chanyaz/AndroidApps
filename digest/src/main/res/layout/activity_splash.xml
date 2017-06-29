@@ -1,23 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	>
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffeeece2">
 
-	<RelativeLayout
-		android:id="@+id/rl_splash"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_alignParentTop="true"
-		android:layout_alignParentStart="true">
+    <RelativeLayout
+        android:id="@+id/rl_splash"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="80dp">
 
-		<View
-			android:id="@+id/view_divider"
-			android:layout_width="match_parent"
-			android:layout_height="3dp"
-			android:layout_alignParentBottom="true"
-			android:background="@drawable/bg_divider"
-			/>
-	</RelativeLayout >
+        <View
+            android:id="@+id/view_divider"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/bg_divider" />
+    </RelativeLayout>
 
-</RelativeLayout >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:text="News Digest"
+            android:textStyle="italic"
+            android:textColor="@color/extra_news_end_view"
+            android:drawableLeft="@mipmap/icon_yahoo_logo"/>
+    </LinearLayout>
+
+</RelativeLayout>
