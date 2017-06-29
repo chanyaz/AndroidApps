@@ -35,7 +35,7 @@ public class LoadViewLayout extends FrameLayout {
     private final String TAG = "LoadViewLayout";
     private View childView;
     private View error;
-    private TextView tv_no_connection;
+    private TextView tv_no_connection, tvErrorTitle, tvErrorMessage;
     private ErrorGridView gridView;
     private Button reload;
     private LoadingView loadingView;
@@ -43,7 +43,8 @@ public class LoadViewLayout extends FrameLayout {
     public OnLoadNewsListener onLoadNewsListener;
     private ImageButton menu;
     public static Bitmap bitmap;
-    private ImageView error_nocontent;
+    private ImageView iv_no_content;
+
     public LoadViewLayout(Context context) {
         super(context);
         initChildView(context);
@@ -68,9 +69,10 @@ public class LoadViewLayout extends FrameLayout {
     private void initChildView(Context context) {
         childView = LayoutInflater.from(context).inflate(R.layout.loading_digest_view, this);
         error = childView.findViewById(R.id.error);
-
-         tv_no_connection = (TextView) childView.findViewById(R.id.tv_no_connection);
-        error_nocontent =  (ImageView) childView.findViewById(R.id.error_nocontent);
+        tvErrorTitle = (TextView) childView.findViewById(R.id.tvErrorTitle);
+        tvErrorMessage = (TextView) childView.findViewById(R.id.tvErrorMessage);
+        iv_no_content = (ImageView) childView.findViewById(R.id.iv_no_content);
+        tv_no_connection = (TextView) childView.findViewById(R.id.tv_no_connection);
         error.setVisibility(VISIBLE);
         gridView = (ErrorGridView) childView.findViewById(R.id.gvExclamation);
         gridView.setAdapter(new GridAdapter());
@@ -128,13 +130,13 @@ public class LoadViewLayout extends FrameLayout {
     private void moreDigest() {
         Intent intent = new Intent(getContext(), MoreDigestActivity.class);
         intent.putExtra("fragment", TAG);
-        ((Activity)getContext()).startActivityForResult(intent,3);
+        ((Activity) getContext()).startActivityForResult(intent, 3);
     }
 
     private void setting() {
         Intent intent = new Intent(getContext(), SettingActivity.class);
         intent.putExtra("fragment", TAG);
-        ((Activity) getContext()).startActivityForResult(intent,2);
+        ((Activity) getContext()).startActivityForResult(intent, 2);
     }
 
     private void sendEmail() {
@@ -261,18 +263,15 @@ public class LoadViewLayout extends FrameLayout {
             }
         });
 
-
     }
 
     public void onLoadError(final Throwable e) {
         if (IntentUtil.isNetworkConnected(getContext())) {
             loadingView.setVisibility(VISIBLE);
-
             loadingView.setState(LoadingView.STATE_RADICAL);
             loadingView.setOnLoadingAnimationListener(new LoadingView.OnLoadingAnimationListener() {
                 @Override
                 public void onLoading() {
-
                 }
 
                 @Override
@@ -280,9 +279,11 @@ public class LoadViewLayout extends FrameLayout {
                     loadingView.setVisibility(GONE);
                     error.setVisibility(VISIBLE);
                     tv_no_connection.setVisibility(GONE);
-                    gridView.setVisibility(GONE);
-                    error_nocontent.setVisibility(VISIBLE);
                     menu.setVisibility(VISIBLE);
+                    gridView.setVisibility(GONE);
+                    tvErrorTitle.setText("sorry");
+                    tvErrorMessage.setText("Digest not found and patience is a virtue,\n"+"Meanwhile read other edition digest.");
+                    iv_no_content.setVisibility(VISIBLE);
                     float cx = getMeasuredWidth() / 2;
                     float cy = getMeasuredHeight() / 2;
                     simpleRippleView.reveal(cx, cy, 30, 400, Color.parseColor("#ffeeece2"), new AnimatorListenerAdapter() {
@@ -302,15 +303,12 @@ public class LoadViewLayout extends FrameLayout {
                             }
                         }
                     });
-
-
                 }
             });
 
-        }else {
+        } else {
 
             loadingView.setVisibility(VISIBLE);
-
             loadingView.setState(LoadingView.STATE_RADICAL);
             loadingView.setOnLoadingAnimationListener(new LoadingView.OnLoadingAnimationListener() {
                 @Override
@@ -322,6 +320,12 @@ public class LoadViewLayout extends FrameLayout {
                 public void onLoadEnd() {
                     loadingView.setVisibility(GONE);
                     error.setVisibility(VISIBLE);
+                    tvErrorTitle.setText("oops");
+                    tvErrorMessage.setText("Something happened but we'll be back soon.\n" +
+                            "Meanwhile check your network connection");
+                    iv_no_content.setVisibility(GONE);
+                    gridView.setVisibility(VISIBLE);
+                    tv_no_connection.setVisibility(VISIBLE);
                     menu.setVisibility(VISIBLE);
                     float cx = getMeasuredWidth() / 2;
                     float cy = getMeasuredHeight() / 2;
@@ -342,8 +346,6 @@ public class LoadViewLayout extends FrameLayout {
                             }
                         }
                     });
-
-
                 }
             });
         }

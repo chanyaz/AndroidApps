@@ -21,7 +21,6 @@ import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.fragment.NewsListFragment;
 import com.shenke.digest.http.RetrofitSingleton;
 import com.shenke.digest.util.Helper;
-import com.shenke.digest.util.IntentUtil;
 import com.shenke.digest.util.StatusBarCompat;
 
 import java.util.ArrayList;
@@ -386,18 +385,12 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
 
     @Override
     public void onLoad() {
-        if (IntentUtil.isNetworkConnected(NewsListActivity.this)) {
             digestLoadDialog.onLoading();
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.container, digestLoadDialog, "loading")
                     .commit();
             fetchData();
-
-        } else {
-            digestLoadDialog.onLoadError();
-        }
-
     }
 
     @Override

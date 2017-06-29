@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     android:background="#ffeeece2">
 
-
     <RelativeLayout
         android:id="@+id/error"
         android:layout_width="match_parent"
@@ -38,7 +37,9 @@
             android:id="@id/btReloadButton"
             android:layout_width="match_parent"
             android:layout_height="@dimen/error_reload_button_height"
-            android:layout_below="@id/gvExclamation"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="right|top"
+            android:layout_marginBottom="30dp"
             android:layout_marginLeft="@dimen/error_reload_margin_left"
             android:layout_marginRight="@dimen/error_reload_margin_right"
             android:layout_marginTop="@dimen/error_reload_margin_top"
@@ -47,7 +48,7 @@
             android:textColor="@color/white"
             android:textSize="@dimen/error_reload_button_text_size" />
 
-        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        <TextView
             android:id="@+id/tv_no_connection"
             android:layout_width="match_parent"
             android:layout_height="@dimen/error_footnote_height"
@@ -73,19 +74,18 @@
             android:scrollbars="none"
             android:stretchMode="columnWidth"
             android:verticalSpacing="@dimen/error_grid_vertical_space" />
+
         <ImageView
-          android:id="@+id/error_nocontent"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_alignEnd="@+id/menu"
-          android:layout_centerVertical="true"
-          android:src="@mipmap/error"
-          android:layout_marginLeft="@dimen/error_reload_margin_left"
-          android:layout_marginRight="@dimen/error_reload_margin_right"
-          android:horizontalSpacing="@dimen/error_grid_horizontal_space"
-          android:importantForAccessibility="no"
-          android:isScrollContainer="false"
-          android:visibility="gone"/>
+            android:id="@+id/iv_no_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/menu"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/error_reload_margin_left"
+            android:layout_marginRight="@dimen/error_reload_margin_right"
+            android:src="@mipmap/error_content"
+            android:visibility="invisible" />
+
         <ImageButton
             android:id="@+id/menu"
             android:layout_width="wrap_content"
@@ -99,7 +99,6 @@
             android:src="@drawable/menu_drawable_black"
             android:visibility="invisible" />
     </RelativeLayout>
-
 
     <com.shenke.digest.view.LoadingView
         android:id="@+id/loadingView"

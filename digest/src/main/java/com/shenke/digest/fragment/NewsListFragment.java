@@ -186,7 +186,15 @@ public class NewsListFragment extends BaseFragment {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(recyclerView.getLayoutManager() != null) {
-                    getPositionAndOffset();
+                    //获取可视的第一个view
+                    final int firstCompletelyVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+                    View topView = recyclerView.getLayoutManager().getChildAt(firstCompletelyVisibleItemPosition);
+                    if(topView != null) {
+                        //获取与该view的顶部的偏移量
+                        lastOffset = topView.getTop();
+                        //得到该View的数组位置
+                        lastPosition = recyclerView.getLayoutManager().getPosition(topView);
+                    }
                 }
             }
 
@@ -207,20 +215,6 @@ public class NewsListFragment extends BaseFragment {
             }
         });
         subscription = load();
-    }
-    /**
-     * 记录RecyclerView当前位置
-     */
-    private void getPositionAndOffset() {
-        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-        //获取可视的第一个view
-        View topView = layoutManager.getChildAt(0);
-        if(topView != null) {
-            //获取与该view的顶部的偏移量
-            lastOffset = topView.getTop();
-            //得到该View的数组位置
-            lastPosition = layoutManager.getPosition(topView);
-        }
     }
     private Subscription load() {
         return rx.Observable
@@ -344,7 +338,7 @@ public class NewsListFragment extends BaseFragment {
         }
         if (resultCode == 2){
             adapter.notifyDataSetChanged();
-           // ((LinearLayoutManager) recyclerView.getLayoutManager()).scrollToPositionWithOffset(lastPosition, lastOffset);
+            ((LinearLayoutManager) recyclerView.getLayoutManager()).scrollToPositionWithOffset(lastPosition, lastOffset);
         }
     }
 
