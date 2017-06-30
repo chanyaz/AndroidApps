@@ -58,15 +58,6 @@ public class DBManager {
     public void deleteOldDigest(DigestStatus digestStatus) {
         db.delete("digestStatus", "uuid >= ?", new String[]{digestStatus.uuid});
     }
-    public void deleteOldDigest() {
-        db.beginTransaction();  //开始事务
-        try {
-            db.execSQL( "DELETE FROM digestStatus");
-            db.setTransactionSuccessful();  //设置事务成功完成
-        } finally {
-            db.endTransaction();    //结束事务
-        }
-    }
     /**
      * query all digest, return list
      *
@@ -93,26 +84,6 @@ public class DBManager {
      */
     public Cursor queryTheCursor() {
         Cursor c = db.rawQuery("SELECT * FROM digestStatus", null);
-        return c;
-    }
-
-    /**
-     * query one
-     */
-
-    public DigestStatus queryItemStatus(String uuid) {
-        DigestStatus digestStatus = new DigestStatus();
-        Cursor c = queryItemCursor(uuid);
-        digestStatus.isChecked = c.getInt(c.getColumnIndex("isChecked"));
-        c.close();
-        return digestStatus;
-    }
-
-    public Cursor queryItemCursor(String uuid) {
-        String[] projection = {"_id", "uuid", "isChecked"};
-        String selection = "uuid LIKE ?";
-        String[] selectionArgs = {uuid};
-        Cursor c = db.query("digestStatus", projection, selection, selectionArgs, null, null, null);
         return c;
     }
 

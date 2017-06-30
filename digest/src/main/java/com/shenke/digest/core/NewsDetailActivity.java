@@ -133,7 +133,6 @@ public class NewsDetailActivity extends AppCompatActivity {
                 if (position < getCount() - 1) {
                     NewsDigest.NewsItem newsItem= mNewsDigest.items.get(position);
                     return NewsDetailFragment.newInstance(newsItem.uuid, android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode), position,source,mNewsDigest);
-
                 } else {
                     Fragment fragment = new ExtraFragment();
                     Bundle bundle = new Bundle();

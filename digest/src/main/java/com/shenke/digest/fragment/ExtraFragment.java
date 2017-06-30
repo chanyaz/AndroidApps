@@ -48,7 +48,7 @@ public class ExtraFragment extends BaseFragment {
     private Subscription subscription;
     private Handler mHandler;
     public List<DigestStatus> digests = NewsListActivity.mgr.query();
-
+    public ArrayList<DigestStatus>extra_list = new ArrayList<DigestStatus>();
     public ExtraFragment() {
     }
 
@@ -58,6 +58,17 @@ public class ExtraFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         mNewsDigest = (NewsDigest) getArguments().getSerializable("NewsDigestData");
         index = getArguments().getInt(INDEX);
+        for(NewsDigest.NewsItem newsItem : mNewsDigest.items){
+            for(int i = 0; i<digests.size();i++){
+                if(digests.get(i).uuid.equals(newsItem.uuid)){
+                    DigestStatus digestStatus = new DigestStatus();
+                    digestStatus.uuid = newsItem.uuid;
+                    digestStatus.isChecked = digests.get(i).isChecked;
+                    extra_list.add(digestStatus);
+                }
+            }
+        }
+
     }
 
     @Override
@@ -103,8 +114,8 @@ public class ExtraFragment extends BaseFragment {
                 circleLayout.addItem("" + (i + 1), activeColor);
             }
             for (int i = 0; i < mNewsDigest.items.size(); i++) {
-                if (mNewsDigest.items.get(i).uuid.equals(digests.get(i).uuid)) {
-                    if (digests.get(i).isChecked > 0 && !circleLayout.isItemActive(i)) {
+                if (mNewsDigest.items.get(i).uuid.equals(extra_list.get(i).uuid)) {
+                    if (extra_list.get(i).isChecked > 0 && !circleLayout.isItemActive(i)) {
                         circleLayout.activeItem(i);
                         read.setText(circleLayout.getActiveCount() + " of " + mNewsDigest.items.size());
                     }
@@ -230,8 +241,8 @@ public class ExtraFragment extends BaseFragment {
                             if (arrayList != null && !allChecked) {
                                 mNewsDigest.items = arrayList;
                                 for (int i = 0; i < mNewsDigest.items.size(); i++) {
-                                    if (mNewsDigest.items.get(i).uuid.equals(digests.get(i).uuid)) {
-                                        if (digests.get(i).isChecked > 0 && !circleLayout.isItemActive(i)) {
+                                    if (mNewsDigest.items.get(i).uuid.equals(extra_list.get(i).uuid)) {
+                                        if (extra_list.get(i).isChecked > 0 && !circleLayout.isItemActive(i)) {
                                             Message msg = mHandler.obtainMessage(0x110, i);
                                             mHandler.sendMessageDelayed(msg, 500);
                                         }

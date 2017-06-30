@@ -46,9 +46,8 @@ public class NewsListFragment extends BaseFragment {
     private RecyclerView recyclerView;
     private ImageButton menu;
     private boolean initFooterView = false;
-    private ArrayList<NewsDigest.NewsItem> list = new ArrayList<NewsDigest.NewsItem>();
+    public  ArrayList<DigestStatus>foot_list = new ArrayList<DigestStatus>();
     private int mSection;
-    private int mEdition;
     private String mDate;
     private String lang;
     public static Bitmap bitmap;
@@ -182,7 +181,14 @@ public class NewsListFragment extends BaseFragment {
                     public void call(Subscriber<? super NewsDigest> subscriber) {
 
                         for(NewsDigest.NewsItem newsItem : mNewsDigest.items){
-                            list.add(newsItem);
+                            for(int i = 0; i<digests.size();i++){
+                                if(digests.get(i).uuid.equals(newsItem.uuid)){
+                                    DigestStatus digestStatus = new DigestStatus();
+                                    digestStatus.uuid = newsItem.uuid;
+                                    digestStatus.isChecked = digests.get(i).isChecked;
+                                    foot_list.add(digestStatus);
+                                }
+                            }
                         }
                         subscriber.onNext(mNewsDigest);
                         subscriber.onCompleted();
@@ -201,14 +207,20 @@ public class NewsListFragment extends BaseFragment {
                     @Override
                     public void onNext(NewsDigest newsItems) {
                         if (adapter != null) {
-                            adapter.clear();
-                            list.clear();
-                            list.addAll(newsItems.items);
+                           // adapter.clear();
+                            foot_list.clear();
                             for (NewsDigest.NewsItem item : newsItems.items) {
-                                adapter.addItem(item);
+                               for(int i = 0; i<digests.size();i++){
+                                   if(digests.get(i).uuid.equals(item.uuid)){
+                                       DigestStatus digestStatus = new DigestStatus();
+                                       digestStatus.uuid = item.uuid;
+                                       digestStatus.isChecked = digests.get(i).isChecked;
+                                       foot_list.add(digestStatus);
+                                   }
+                               }
                             }
                         }
-                        addFooterView(list);
+                        addFooterView(foot_list);
                     }
                 });
     }
@@ -241,7 +253,7 @@ public class NewsListFragment extends BaseFragment {
 
     }
 
-    private void addFooterView(ArrayList<NewsDigest.NewsItem> items) {
+    private void addFooterView(ArrayList<DigestStatus> items) {
         View footer = LayoutInflater.from(recyclerView.getContext()).inflate(R.layout.news_list_footer_view, recyclerView, false);
         adapter.setFooterView(footer);
         View toggleButton = adapter.getFooterView().findViewById(R.id.toggleButton);

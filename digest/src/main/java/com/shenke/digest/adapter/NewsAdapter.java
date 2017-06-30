@@ -54,7 +54,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
     public static Bitmap bitmap;
     public static String newssource;
     public List<DigestStatus> digests = NewsListActivity.mgr.query();
-
+    public ArrayList<DigestStatus>foot_list = new ArrayList<DigestStatus>();
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
@@ -62,6 +62,19 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
     public NewsAdapter(Context mContext, NewsDigest mNewsDigest) {
         this.mContext = mContext;
         this.mNewsDigest = mNewsDigest;
+        if(mNewsDigest != null){
+            foot_list.clear();
+            for (NewsDigest.NewsItem item : mNewsDigest.items) {
+                for(int i = 0; i<digests.size();i++){
+                    if(digests.get(i).uuid.equals(item.uuid)){
+                        DigestStatus digestStatus = new DigestStatus();
+                        digestStatus.uuid = item.uuid;
+                        digestStatus.isChecked = digests.get(i).isChecked;
+                        foot_list.add(digestStatus);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -207,9 +220,9 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
 
             int stateColor = android.graphics.Color.parseColor(newsItem.colors.get(0).hexcode);
             //index
-            for (int i = 0; i < digests.size(); i++) {
-                if (newsItem.uuid.equals(digests.get(i).uuid)) {
-                    isChecked = digests.get(i).isChecked > 0;
+            for (int i = 0; i < foot_list.size(); i++) {
+                if (newsItem.uuid.equals(foot_list.get(i).uuid)) {
+                    isChecked = foot_list.get(i).isChecked > 0;
                     if (isChecked) {
                         holder.donutProgress.setFinishedStrokeColor(stateColor);
                         holder.donutProgress.setUnfinishedStrokeColor(stateColor);
@@ -274,7 +287,6 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
 
     @Override
     public void bindFooterView(RecyclerView.ViewHolder footViewHolder, int position) {
-
         final FooterViewHolder holder = (FooterViewHolder) footViewHolder;
         final int readColor = holder.revealView.getContext().getResources().getColor(R.color.read_color);
         Typeface typeface = Typeface.createFromAsset(holder.itemView.getContext().getAssets(), "fonts/Roboto-Thin.ttf");
@@ -294,7 +306,7 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
                 index++;
             }
             for (int i = 0; i < count; i++) {
-                if (digests.get(i).isChecked > 0 ) {
+                if (foot_list.get(i).isChecked > 0 ) {
                     holder.circleLayout.activeItem(i);
                 }
             }

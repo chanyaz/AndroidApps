@@ -208,7 +208,7 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
                         }
                         mgr.add(digestStatuses);
                         cachetime = Helper.getCacheSaveTime(lang, "08:00:00", "18:00:00");
-                        aCache.put(mLang + "-NewsDigestData-" + date + "-" + String.valueOf(digest_edition), mNewsDigest, cachetime);//有新内容时缓存失效
+                        aCache.put(mLang + "-NewsDigestData-" + date + "-" + String.valueOf(digest_edition), mNewsDigest, cachetime);
                     }
                 })
                 .subscribe(observer);
