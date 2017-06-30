@@ -1028,7 +1028,6 @@ public class NewsDetailFragment extends BaseFragment {
         }
         return null;
     }
-
     @Override
     public void onDestroy() {
         super.onDestroy();

@@ -309,10 +309,10 @@ public class MoreDigestActivity extends BaseActivity {
                 progress = 100 - (int) (100 * delta / (1000 * 14 * 60 * 60));
             } else if (present.after(evening) && present.before(nighttoday)) {//18:00:00至23:59:59之间
                 delta = nighttoday.getTime() - present.getTime() + morning.getTime() - night.getTime();
-                progress = (int) (100 * delta / (1000 * 14 * 60 * 60));
+                progress = 100 - (int) (100 * delta / (1000 * 14 * 60 * 60));
             } else {//08:00至18:00之间
                 delta = evening.getTime() - present.getTime();
-                progress = (int) (100 * delta / (1000 * 10 * 60 * 60));
+                progress =100 -  (int) (100 * delta / (1000 * 10 * 60 * 60));
             }
 
             day = (int) (delta / (24 * 60 * 60 * 1000));

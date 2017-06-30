@@ -24,23 +24,21 @@ import com.shenke.digest.core.NewsDetailActivity;
 import com.shenke.digest.core.NewsListActivity;
 import com.shenke.digest.core.SettingActivity;
 import com.shenke.digest.db.DigestStatus;
-import com.shenke.digest.dialog.EditionDialog;
 import com.shenke.digest.entity.NewsDigest;
 import com.shenke.digest.util.Helper;
 import com.shenke.digest.util.StatusBarCompat;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 import static com.shenke.digest.core.NewsListActivity.PREFERENCES_SETTINS;
+import static com.shenke.digest.core.NewsListActivity.mgr;
 
 public class NewsListFragment extends BaseFragment {
     private final String TAG = "NewsListFragment";
@@ -58,6 +56,7 @@ public class NewsListFragment extends BaseFragment {
     private Subscription subscription;
     private int lastPosition = 0;
     private int lastOffset = 0;
+    public List<DigestStatus> digests = NewsListActivity.mgr.query();
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,45 +69,6 @@ public class NewsListFragment extends BaseFragment {
         lang = p_settings.getString("LANGUAGE", Helper.LanguageEdtion(3));
     }
 
-    private void getConfg() {
-        Observable
-                .create(new Observable.OnSubscribe<Map<String, String>>() {
-                    @Override
-                    public void call(Subscriber<? super Map<String, String>> subscriber) {
-                        try {
-                            Map<String, String> map = new HashMap<String, String>();
-                            map.put(EditionDialog.SECTION_SELECTED, String.valueOf(mSection));
-                            map.put(EditionDialog.DATE_SELECTED, mDate);
-                            map.put(EditionDialog.EDITION, String.valueOf(lang));
-                            subscriber.onNext(map);
-                            subscriber.onCompleted();
-                        } catch (Exception e) {
-                            subscriber.onError(e);
-                        }
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Map<String, String>>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(Map<String, String> map) {
-                        mEdition = Integer.parseInt(map.get(EditionDialog.EDITION));
-                        mDate = map.get(EditionDialog.SECTION_SELECTED);
-                        mSection = Integer.parseInt(map.get(EditionDialog.SECTION_SELECTED));
-                        adapter.resetArea(mEdition, mSection, mDate);
-                    }
-                });
-    }
 
     @Override
     protected int getLayoutId() {
@@ -121,8 +81,6 @@ public class NewsListFragment extends BaseFragment {
         super.onResume();
         if (initFooterView) {
             updateFooterView();
-            getConfg();
-
         }
     }
 
@@ -176,7 +134,8 @@ public class NewsListFragment extends BaseFragment {
                 DigestStatus digestStatus = new DigestStatus();
                 digestStatus.uuid = mNewsDigest.items.get(position).uuid;
                 digestStatus.isChecked = 1;
-                NewsListActivity.mgr.updateStatus(digestStatus);
+                mgr.updateStatus(digestStatus);
+                mNewsDigest.items.get(position).checked = true;
                 startActivityForResult(intent, 0x111);
 
             }
@@ -250,7 +209,6 @@ public class NewsListFragment extends BaseFragment {
                             }
                         }
                         addFooterView(list);
-                        getConfg();
                     }
                 });
     }

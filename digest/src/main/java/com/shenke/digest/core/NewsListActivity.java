@@ -41,7 +41,6 @@ import rx.schedulers.Schedulers;
 import static com.shenke.digest.core.MyApplication.tts;
 
 public class NewsListActivity extends BaseActivity implements DigestLoadDialog.OnNewsLoadInActivityListener {
-    private static final String TAG = "NewsListActivity";
     private Subscription subscriptionInstall;
     private Subscription subscriptionSave;
     private DigestLoadDialog digestLoadDialog;
@@ -378,8 +377,14 @@ public class NewsListActivity extends BaseActivity implements DigestLoadDialog.O
         if (subscriptionSave != null) {
             subscriptionSave.unsubscribe();
         }
-        mgr.closeDB();
-        tts.shutdown();
+        if(mgr != null){
+
+            mgr.closeDB();
+        }
+        if(tts != null){
+
+            tts.shutdown();
+        }
         super.onDestroy();
     }
 

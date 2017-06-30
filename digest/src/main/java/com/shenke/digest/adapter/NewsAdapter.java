@@ -43,9 +43,7 @@ import static com.shenke.digest.core.MoreDigestActivity.SECTION_MORNING;
 
 public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
 
-    private int editon;
     private int section;
-    private String date;
     private boolean allChecked;
     private boolean isChecked;
     public Context mContext;
@@ -281,18 +279,6 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
         final int readColor = holder.revealView.getContext().getResources().getColor(R.color.read_color);
         Typeface typeface = Typeface.createFromAsset(holder.itemView.getContext().getAssets(), "fonts/Roboto-Thin.ttf");
         Typeface ty = Typeface.createFromAsset(holder.itemView.getContext().getAssets(), "fonts/Roboto-Light.ttf");
-       /* if (mNewsDigest.edition == 1) {
-            holder.ll_newslist_footer.setBackgroundResource(R.color.black);
-            holder.urd.setTextColor(Color.BLACK);
-            holder.read.setTextColor(Color.BLACK);
-            holder.bigTitle.setTextColor(Color.BLACK);
-            holder.textView.setTextColor(Color.BLACK);
-            holder.foot_view.setBackgroundResource(R.color.countdown_text_evening_light);
-            holder.toggleButton.setTextColor(Color.WHITE);
-            Drawable downDrawable = holder.toggleButton.getContext().getResources().getDrawable(R.mipmap.extranews_arrow_down_w);
-            downDrawable.setBounds(0, 0, downDrawable.getMinimumWidth(), downDrawable.getMinimumHeight());
-            holder.toggleButton.setCompoundDrawables(null, null, null, downDrawable);
-        }*/
         holder.bigTitle.setTypeface(typeface);
         holder.smallTitle.setTypeface(typeface);
         holder.urd.setTypeface(ty);
@@ -481,20 +467,6 @@ public class NewsAdapter extends BaseRecyclerViewAdapter<NewsDigest.NewsItem> {
 
     public interface OnItemClickListener {
         void onItemClick(ViewHolder holder, int position);
-    }
-
-    /**
-     * 更新NewsListDigest 页面的date 和section，
-     *
-     * @param edition
-     * @param section
-     * @param date
-     */
-    public void resetArea(int edition, int section, String date) {
-        this.editon = edition;
-        this.section = section;
-        this.date = date;
-        notifyDataSetChanged();
     }
 
     public boolean isAllChecked() {
