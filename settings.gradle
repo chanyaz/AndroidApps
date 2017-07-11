@@ -1,1 +1,1 @@
-include ':digest', ':youdaotrans', ':copypaste', ':speechdemo', ':countdowndemo', ':timepickerdemo', ':sqlitedemo', ':vedioplay'
+include ':digest', ':rippple'
